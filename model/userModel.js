@@ -1,6 +1,6 @@
 //define user models
 const mongoose = require("mongoose");
-// const bcrypt = require("bcrypt");
+const bcrypt = require("bcrypt");
 const userSchema = new mongoose.Schema(
   {
     fullName: {
@@ -97,12 +97,12 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-// userSchema.pre("save", async function (next) {
-//   const salt = await bcrypt.genSalt();
-//   this.password = await bcrypt.hash(this.password, salt);
-//   console.log("user about to be created & saved", this);
-//   next();
-// });
+userSchema.pre("save", async function (next) {
+  const salt = await bcrypt.genSalt();
+  this.password = await bcrypt.hash(this.password, salt);
+  console.log("user about to be created & saved", this);
+  next();
+});
 userSchema.post("save", function (doc, next) {
   console.log("new user was created & saved", doc);
   next();
@@ -110,10 +110,10 @@ userSchema.post("save", function (doc, next) {
 
 userSchema.pre("findOneAndUpdate", async function (next) {
   try {
-    // const salt = await bcrypt.genSalt(10);
-    // this.password = await bcrypt.hash(this.password, salt);
-    // console.log(this.password);
-    // next();
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    console.log(this.password);
+    next();
     if (this._update.password) {
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(

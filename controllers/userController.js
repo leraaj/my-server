@@ -1,6 +1,6 @@
 const UserModel = require("../model/userModel");
 const jwt = require("jsonwebtoken");
-// const bcrypt = require("bcrypt");
+const bcrypt = require("bcrypt");
 require("dotenv").config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -125,51 +125,52 @@ const deleteUser = async (request, response) => {
     response.status(500).json({ message: error.message });
   }
 };
-// const login = async (request, response) => {
-//   try {
-//     const inputUsername = request.body.username;
-//     const inputPassword = request.body.password;
-//     const user = await UserModel.findOne({
-//       username: inputUsername,
-//     });
-//     if (!user) {
-//       return response
-//         .status(401)
-//         .json({ message: "Invalid username or password" });
-//       // User does not exists
-//     }
-//     const passwordMatch = await bcrypt.compare(inputPassword, user.password);
-//     if (passwordMatch) {
-//       var userToken = createToken(user.id);
-//       response
-//         .cookie("Auth_Token", userToken, {
-//           httpOnly: true,
-//           maxAge: cookieExpires,
-//         })
-//         .status(200)
-//         .json({
-//           user: user,
-//           token: userToken,
-//         });
-//     } else {
-//       response.status(401).json({ message: "Invalid username or password" });
-//       // Invalid credentials
-//     }
-//   } catch (error) {
-//     response.status(500).json({ message: error.message });
-//   }
-// };
-// const logout = async (request, response) => {
-//   try {
-//     response.clearCookie("Auth_Token");
-//     response.status(200).json({
-//       message: "Cookie unset!",
-//       redirectUrl: `/`,
-//     });
-//   } catch (error) {
-//     response.status(500).json({ message: error.message });
-//   }
-// };
+const login = async (request, response) => {
+  try {
+    const inputUsername = request.body.username;
+    const inputPassword = request.body.password;
+    const user = await UserModel.findOne({
+      username: inputUsername,
+    });
+    if (!user) {
+      return response
+        .status(401)
+        .json({ message: "Invalid username or password" });
+      // User does not exists
+    }
+    const passwordMatch = await bcrypt.compare(inputPassword, user.password);
+    if (passwordMatch) {
+      var userToken = createToken(user.id);
+      response
+        .cookie("Auth_Token", userToken, {
+          httpOnly: true,
+          maxAge: cookieExpires,
+        })
+        .status(200)
+        .json({
+          user: user,
+          token: userToken,
+        });
+    } else {
+      response.status(401).json({ message: "Invalid username or password" });
+      // Invalid credentials
+    }
+  } catch (error) {
+    response.status(500).json({ message: error.message });
+  }
+};
+const logout = async (request, response) => {
+  try {
+    response.clearCookie("Auth_Token");
+    response.status(200).json({
+      message: "Cookie unset!",
+      redirectUrl: `/`,
+    });
+  } catch (error) {
+    response.status(500).json({ message: error.message });
+  }
+};
+
 const currentUser = async (request, response) => {
   try {
     // Extract the token from the request (assuming it's stored in a cookie)
@@ -205,7 +206,7 @@ module.exports = {
   addUser,
   updateUser,
   deleteUser,
-  // login,
-  // logout,
+  login,
+  logout,
   currentUser,
 };
