@@ -13,12 +13,15 @@ const useLogin = () => {
   const login = async (data, setError) => {
     try {
       setIsLoading(true);
-      const response = await fetch(api_url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        "https://darkshots-server.onrender.com/api/user/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(data),
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
