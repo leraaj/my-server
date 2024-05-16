@@ -1,0 +1,208 @@
+:root {
+  --dark-100: #000000;
+  --dark-90: #131313;
+  --dark-80: #262626;
+  --dark-70: #393939;
+  --dark-60: #4b4b4b;
+  --dark-50: #5e5e5e;
+  --dark-40: #494949;
+
+  --light-100: #ffffff;
+  --light-90: #f8f8f8;
+  --light-80: #f2f2f2;
+  --light-70: #ebebeb;
+  --light-60: #e4e4e4;
+  --light-50: #dedede;
+
+  --bg-light-100: #f2f2f2;
+  --bg-light-90: #ededed;
+  --bg-light-80: #e7e7e7;
+  --bg-light-60: #dcdcdc;
+  --bg-light-50: #d7d7d7;
+
+  --color-primary: rgb(104, 180, 215);
+  --color-secondary: rgb(174, 180, 183);
+  --color-dark: rgb(86, 89, 91);
+  --color-light: var(--bg-light-100);
+  --color-success: rgb(104, 215, 104);
+  --color-danger: rgb(234, 102, 102);
+  --color-warning: rgb(247, 234, 88);
+
+  --color-shade-primary: rgb(92, 160, 192);
+  --color-shade-secondary: rgb(150, 156, 159);
+  --color-shade-dark: rgb(65, 68, 69);
+  --color-shade-light: var(--bg-light-80);
+  --color-shade-success: rgb(100, 203, 100);
+  --color-shade-danger: rgb(222, 97, 97);
+  --color-shade-warning: rgb(232, 219, 83);
+}
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: none;
+  height: 100dvh;
+  width: 100dvw;
+  overflow: hidden;
+}
+.cs-button {
+  text-wrap: nowrap;
+  background-color: transparent;
+  border: 0;
+  border-radius: 0.5rem;
+  padding-inline: 1rem;
+}
+/* COLORS */
+.cs-button.primary {
+  background-color: var(--color-primary);
+  color: var(--light-100);
+}
+.cs-button.secondary {
+  background-color: var(--color-secondary);
+  color: var(--light-100);
+}
+.cs-button.dark {
+  background-color: var(--color-dark);
+  color: var(--light-100);
+}
+.cs-button.light {
+  background-color: var(--color-light);
+  color: var(--dark-80);
+}
+.cs-button.success {
+  background-color: var(--color-success);
+  color: var(--light-100);
+}
+.cs-button.danger {
+  background-color: var(--color-danger);
+  color: var(--light-100);
+}
+.cs-button.warning {
+  background-color: var(--color-warning);
+  color: var(--dark-90);
+}
+/*  */
+.cs-button.outline-primary {
+  border: 2px var(--color-primary) solid !important;
+  color: rgb(104, 180, 215);
+}
+.cs-button.outline-secondary {
+  border: 2px var(--color-secondary) solid;
+  color: rgb(174, 180, 183);
+}
+.cs-button.outline-dark {
+  border: 2px var(--color-dark) solid;
+  color: rgb(86, 89, 91);
+}
+.cs-button.outline-light {
+  border: 2px var(--color-light) solid;
+  color: var(--bg-light-100);
+}
+.cs-button.outline-success {
+  border: 2px var(--color-success) solid;
+  color: rgb(104, 215, 104);
+}
+.cs-button.outline-danger {
+  border: 2px var(--color-danger) solid;
+  color: rgb(234, 102, 102);
+}
+.cs-button.outline-warning {
+  border: 2px var(--color-warning) solid;
+  color: rgb(247, 234, 88);
+}
+/* BUTTON SIZE */
+.cs-button.size-sm {
+  border-radius: 0.5rem;
+  height: 30px;
+  font-size: 0.8rem;
+}
+.cs-button {
+  border-radius: 0.5rem;
+  height: 40px;
+}
+.cs-button.size-md {
+  border-radius: 0.5rem;
+  height: 50px;
+}
+.cs-button.size-lg {
+  border-radius: 0.5rem;
+  font-size: 1.3rem;
+  height: 60px;
+}
+/* HOVER */
+.cs-button.outline-primary:hover,
+.cs-button.outline-primary:focus {
+  background-color: var(--color-shade-primary);
+  color: var(--light-100);
+}
+.cs-button.outline-secondary:hover,
+.cs-button.outline-secondary:focus {
+  background-color: var(--color-shade-secondary);
+  color: var(--light-100);
+}
+.cs-button.outline-dark:hover,
+.cs-button.outline-dark:focus {
+  background-color: var(--color-shade-dark);
+  color: var(--light-100);
+}
+.cs-button.outline-light:hover,
+.cs-button.outline-light:focus {
+  background-color: var(--color-shade-light);
+  color: var(--dark-80);
+}
+.cs-button.outline-success:hover,
+.cs-button.outline-success:focus {
+  background-color: var(--color-shade-success);
+  color: var(--light-100);
+}
+.cs-button.outline-danger:hover,
+.cs-button.outline-danger:focus {
+  background-color: var(--color-shade-danger);
+  color: var(--light-100);
+}
+.cs-button.outline-warning:hover,
+.cs-button.outline-warning:focus {
+  background-color: var(--color-shade-warning);
+  color: var(--dark-90);
+}
+/* STATES */
+.cs-button:hover,
+.cs-button:focus {
+  transition: box-shadow 0.1s ease-in-out;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+.cs-button.primary:active,
+.cs-button.primary:focus {
+  background-color: var(--color-shade-primary);
+  color: var(--light-100);
+}
+.cs-button.secondary:active,
+.cs-button.secondary:focus {
+  background-color: var(--color-shade-secondary);
+  color: var(--light-100);
+}
+.cs-button.dark:active,
+.cs-button.dark:focus {
+  background-color: var(--color-shade-dark);
+  color: var(--light-100);
+}
+.cs-button.light:active,
+.cs-button.light:focus {
+  background-color: var(--color-shade-light);
+  color: var(--dark-80);
+}
+.cs-button.success:active,
+.cs-button.success:focus {
+  background-color: var(--color-shade-success);
+  color: var(--light-100);
+}
+.cs-button.danger:active,
+.cs-button.danger:focus {
+  background-color: var(--color-shade-danger);
+  color: var(--light-100);
+}
+.cs-button.warning:active,
+.cs-button.warning:focus {
+  background-color: var(--color-shade-warning);
+  color: var(--dark-90);
+}
+/* BUTTON OUTLINE */
