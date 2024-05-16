@@ -48,6 +48,11 @@ const DeleteModal = ({ show, onHide, refresh, selectedUser }) => {
       title="Delete User">
       <div className="col">
         <label className="form-label">
+          This action cannot be undone. Are you sure you want to delete this
+          user?
+          <br />
+          {selectedUser?.fullName}
+          <br />
           To confirm, type "<span className="text-danger">delete</span>" in the
           box below
         </label>
