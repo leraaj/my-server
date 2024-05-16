@@ -2,9 +2,8 @@ import { createContext, useLayoutEffect, useReducer, useState } from "react";
 import useToggle from "../hooks/useToggle";
 
 export const AuthContext = createContext();
-const API = `https://darkshots-server.onrender.com/api/`;
-// const API = `http://localhost:3001/api/`;https://darkshots-server.onrender.com/api/user/login
-const URL = `https://darkshots-server.onrender.com/api/user/current-user`;
+const API = `http://localhost:3001/api/`;
+const URL = `http://localhost:3001/api/user/current-user`;
 
 export const authReducer = (state, action) => {
   switch (action.type) {
