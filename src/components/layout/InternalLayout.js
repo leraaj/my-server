@@ -27,6 +27,7 @@ const InternalLayout = () => {
           "Content-Type": "application/json",
         },
         credentials: "include",
+        sameSite: "None",
       });
       const data = await response.json();
       if (response.ok) {

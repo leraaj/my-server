@@ -29,6 +29,7 @@ export const AuthContextProvider = ({ children }) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
+        sameSite: "None",
       });
       const data = await response.json();
       if (response.ok) {
