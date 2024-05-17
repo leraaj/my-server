@@ -39,6 +39,7 @@ const AddModal = ({ show, onHide, refresh }) => {
     refresh();
   };
   const onSubmit = async (data) => {
+    console.log(data);
     setIsLoading(true);
     try {
       const response = await fetch(API, {
@@ -49,23 +50,22 @@ const AddModal = ({ show, onHide, refresh }) => {
       });
       const fnResponse = await response.json();
       if (response.ok) {
+        console.log(fnResponse);
         toast.success("User added successfully");
         submitComplete();
         setIsLoading(false);
-      }
-      if (!response.ok) {
-        console.table(fnResponse);
-        const fieldError = Object.keys(
-          fnResponse.message.errorResponse.keyPattern
-        )[0];
-        setError(fieldError, {
-          "duplicate-field": `${fieldError} already exists`,
-        });
-        setError(`${fieldError}`, {
-          type: "duplicated",
-          message: `This ${fieldError} already exists`,
-        });
-        setIsLoading(false);
+      } else {
+        console.log(fnResponse);
+        if (fnResponse.duplicates.length > 0) {
+          toast.error("Error 409: Conflict");
+          fnResponse.duplicates.forEach((fieldError) => {
+            setError(`${fieldError}`, {
+              type: "duplicated",
+              message: `This ${fieldError} already exists`,
+            });
+          });
+          setIsLoading(false);
+        }
       }
     } catch (error) {
       toast.error(error);

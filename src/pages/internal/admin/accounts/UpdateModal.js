@@ -43,8 +43,6 @@ const UpdateModal = ({ show, onHide, refresh, selectedUser }) => {
       delete formData.password; // Remove password field if it's empty
     }
     try {
-      console.log("Updated Data");
-      console.log(data);
       setIsLoading(true);
       const response = await fetch(API, {
         method: "PUT",
@@ -54,23 +52,22 @@ const UpdateModal = ({ show, onHide, refresh, selectedUser }) => {
       });
       const fnResponse = await response.json();
       if (response.ok) {
-        toast.success("Changes saved successfully");
+        console.log(fnResponse);
+        toast.success("User added successfully");
         submitComplete();
         setIsLoading(false);
-      }
-      if (!response.ok) {
-        console.table(fnResponse);
-        const fieldError = Object.keys(
-          fnResponse.message.errorResponse.keyPattern
-        )[0];
-        setError(fieldError, {
-          "duplicate-field": `${fieldError} already exists`,
-        });
-        setError(`${fieldError}`, {
-          type: "duplicated",
-          message: `This ${fieldError} already exists`,
-        });
-        setIsLoading(false);
+      } else {
+        console.log(fnResponse);
+        if (fnResponse.duplicates.length > 0) {
+          toast.error("Error 409: Conflict");
+          fnResponse.duplicates.forEach((fieldError) => {
+            setError(`${fieldError}`, {
+              type: "duplicated",
+              message: `This ${fieldError} already exists`,
+            });
+          });
+          setIsLoading(false);
+        }
       }
     } catch (error) {
       console.log(error);
