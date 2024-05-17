@@ -11,7 +11,7 @@ import "./styles.css";
 import "./sidebar.css";
 import Sidebar from "./Sidebar";
 const InternalLayout = () => {
-  const API = `http://localhost:3001/api/user/logout`;
+  const API = `${process.env.REACT_APP_API_URL}/api/user/logout`;
   const [hasErrors, setHasErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
