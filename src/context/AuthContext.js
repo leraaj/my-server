@@ -3,7 +3,7 @@ import useToggle from "../hooks/useToggle";
 
 export const AuthContext = createContext();
 const API = `http://localhost:3001/api/`;
-const URL = `http://localhost:3001/api/user/current-user`;
+const URL = `${process.env.REACT_APP_API_URL}/api/user/current-user`;
 
 export const authReducer = (state, action) => {
   switch (action.type) {

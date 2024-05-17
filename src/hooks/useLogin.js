@@ -5,7 +5,6 @@ import { useAuthContext } from "./context/useAuthContext";
 const useLogin = () => {
   const api_url = `${process.env.REACT_APP_API_URL}/api/user/login`;
   console.log(process.env.REACT_APP_API_URL);
-  // const api_url = "http://localhost:3001/api/user/login";
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -13,7 +12,7 @@ const useLogin = () => {
   const login = async (data, setError) => {
     try {
       setIsLoading(true);
-      const response = await fetch("http://localhost:3001/api/user/login", {
+      const response = await fetch(api_url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

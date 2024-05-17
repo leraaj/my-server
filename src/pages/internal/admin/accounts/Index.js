@@ -8,7 +8,12 @@ import UpdateModal from "./UpdateModal";
 import DeleteModal from "./DeleteModal";
 const Accounts = () => {
   const API = `${process.env.REACT_APP_API_URL}/api/`;
-  const { data: users, loading, refresh, error } = useFetch(`${API}users`);
+  const {
+    data: users,
+    loading,
+    refresh,
+    error,
+  } = useFetch(`http://localhost:3001/api/users`);
   const data = useMemo(() => {
     if (!users) return []; // Return empty array if users data is not available
 
