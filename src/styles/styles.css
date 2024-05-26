@@ -1,3 +1,23 @@
+@font-face {
+  font-family: "Agdasima";
+  src: url("../assets/fonts/Agdasima/Agdasima-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Agdasima-Bold";
+  src: url("../assets/fonts/Agdasima/Agdasima-Bold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("../assets/fonts/Poppins/Poppins-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Poppins-Bold";
+  src: url("../assets/fonts/Poppins/Poppins-Bold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Bayon";
+  src: url("../assets/fonts/Bayon/Bayon-Regular.ttf") format("truetype");
+}
 :root {
   --dark-100: #000000;
   --dark-90: #131313;
@@ -36,13 +56,66 @@
   --color-shade-danger: rgb(222, 97, 97);
   --color-shade-warning: rgb(232, 219, 83);
 }
+* {
+  font-family: "Poppins";
+}
+.bar-title {
+  position: relative;
+  display: inline-block;
+  font-size: 3rem;
+  font-family: "Bayon";
+  line-height: 3rem;
+}
+.bar-title::before {
+  content: "";
+  position: absolute;
+  top: -15px; /* Adjust this value to control the distance of the bar from the text */
+  left: 10;
+  width: 10%;
+  height: 5px; /* Adjust this value to control the thickness of the bar */
+  background-color: white; /* Adjust the color of the bar as needed */
+}
 body {
   margin: 0;
   padding: 0;
   box-sizing: none;
   height: 100dvh;
-  width: 100dvw;
-  overflow: hidden;
+  width: 100%;
+}
+.primary-btn,
+.secondary-btn {
+  height: 40px;
+  min-height: auto;
+  width: auto;
+  padding-inline: 1rem;
+  text-transform: uppercase;
+  text-wrap: nowrap;
+  flex-wrap: nowrap;
+  font-family: "Agdasima-Bold";
+}
+.primary-btn {
+  background-color: rgba(0, 0, 0, 0.2); /* Semi-transparent background */
+  backdrop-filter: blur(10px); /* Apply Gaussian blur effect */
+  border: none;
+  color: var(--color-light);
+  border: 1px white solid;
+}
+.primary-btn:hover {
+  transition: all 0.3s ease-in-out;
+  background-color: rgba(255, 255, 255, 0.05); /* Semi-transparent background */
+}
+.secondary-btn {
+  background-color: rgba(242, 242, 242); /* Semi-transparent background */
+  backdrop-filter: blur(10px); /* Apply Gaussian blur effect */
+  border: none;
+  color: #000 !important;
+  border: 1px #000 solid;
+}
+.secondary-btn:hover {
+  transition: all 0.3s ease-in-out;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: var(--color-light) !important;
+  border: 1px white solid;
 }
 .cs-button {
   text-wrap: nowrap;

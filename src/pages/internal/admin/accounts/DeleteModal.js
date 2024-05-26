@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Modal from "../../../../components/modal/Modal";
 import { toast } from "sonner";
 const DeleteModal = ({ show, onHide, refresh, selectedUser }) => {
-  const API = `${process.env.REACT_APP_API_URL}/api/`;
+  const DELETE_API_URL = `${process.env.REACT_APP_API_URL}/api/user/${selectedUser?.id}`;
   const [isLoading, setIsLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const handleValue = (e) => {
@@ -21,7 +21,7 @@ const DeleteModal = ({ show, onHide, refresh, selectedUser }) => {
     if (!checkValue(inputValue)) return;
     try {
       setIsLoading(true);
-      const response = await fetch(`${API}user/${selectedUser?.id}`, {
+      const response = await fetch(`${DELETE_API_URL}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

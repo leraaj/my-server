@@ -1,8 +1,13 @@
-import { createContext, useLayoutEffect, useReducer, useState } from "react";
+import {
+  createContext,
+  useEffect,
+  useLayoutEffect,
+  useReducer,
+  useState,
+} from "react";
 import useToggle from "../hooks/useToggle";
 
 export const AuthContext = createContext();
-const API = `http://localhost:3001/api/`;
 const URL = `${process.env.REACT_APP_API_URL}/api/user/current-user`;
 
 export const authReducer = (state, action) => {
@@ -17,10 +22,14 @@ export const authReducer = (state, action) => {
   }
 };
 export const AuthContextProvider = ({ children }) => {
-  const { toggle, toggler } = useToggle(false);
+  const sidebarLS = localStorage.getItem("toggleSidebar") === "false";
+  const { toggle, toggler } = useToggle(sidebarLS);
   const [state, dispatch] = useReducer(authReducer, {});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  useEffect(() => {
+    localStorage.setItem("toggleSidebar", toggle);
+  }, [toggle]);
   const refreshUser = async () => {
     setIsLoading(true);
     try {
@@ -49,7 +58,7 @@ export const AuthContextProvider = ({ children }) => {
 
   useLayoutEffect(() => {
     refreshUser();
-  }, [URL]);
+  }, []);
 
   return (
     <AuthContext.Provider

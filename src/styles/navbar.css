@@ -1,0 +1,57 @@
+#navbar {
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.3); /* Semi-transparent background */
+  backdrop-filter: blur(5px); /* Apply Gaussian blur effect */
+  display: flex;
+  padding: 1rem 2rem;
+  flex-wrap: wrap;
+  align-items: center !important;
+}
+
+.navbar-brand {
+  flex: 1; /* Ensures brand takes available space */
+}
+
+.nav-link {
+  text-transform: capitalize;
+  cursor: pointer;
+  font-family: "Bayon";
+}
+
+.list-stack {
+  display: none; /* Initially hidden */
+  width: 100%; /* Takes up full width */
+  flex-direction: column;
+  align-items: start;
+  row-gap: 1rem;
+  padding-block-start: 1rem;
+  padding-inline-start: 0;
+}
+
+.list-stack.show {
+  display: flex; /* Display flex when 'show' class is added */
+}
+
+@media (min-width: 768px) {
+  .navbar-brand {
+    flex: 0;
+  }
+  .list-stack {
+    padding-block-start: 0;
+    padding-inline-start: 1rem;
+    column-gap: 0.7rem;
+    display: flex; /* Display flex by default for larger screens */
+    flex-direction: row; /* Arrange links horizontally */
+    align-items: center;
+    flex: 1;
+  }
+  .btn-toggler {
+    display: none;
+  }
+}
+
+.d-end {
+  display: flex;
+  gap: 0.8rem;
+  margin-left: auto; /* Push the button to the end */
+}

@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "./context/useAuthContext";
 const useLogin = () => {
   const api_url = `${process.env.REACT_APP_API_URL}/api/user/login`;
-  console.log(process.env.REACT_APP_API_URL);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);

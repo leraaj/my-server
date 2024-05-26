@@ -6,7 +6,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { useAuthContext } from "./hooks/context/useAuthContext";
-import Home from "./pages/external/home/Index";
+import Home from "./pages/external/landing/Index";
 import Login from "./pages/external/login/Index";
 import InternalLayout from "./components/layout/InternalLayout";
 import LoadingPage from "./pages/external/LoadingPage";
@@ -78,6 +78,11 @@ function App() {
         ) : (
           <div>Signup</div>
         ),
+    },
+    {
+      isPrivate: false,
+      path: "/test",
+      element: <Test />,
     },
   ]; // Routes for admin
   const adminRoutes = [

@@ -1,260 +1,261 @@
 import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-const Index = () => {
-  const API = `${process.env.REACT_APP_API_URL}/api/user`;
-  const [hasErrors, setHasErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const schema = yup.object().shape({
-    fullName: yup.string().required("Full name is required"),
-    email: yup.string().email().required("Email is required"),
-    contact: yup.number().required("Contact number is required"),
-    username: yup.string().required("Username is required"),
-    password: yup.string().required("Password is required"),
-    position: yup.number().required("Position is required"),
-    applicationStatus: yup.number().default(2),
+import useFetch from "../../../hooks/useFetch";
+import { getValue } from "@testing-library/user-event/dist/utils";
+
+const JobForm = () => {
+  const [page, setPage] = useState(0);
+
+  const next = () => {
+    setPage((prevPage) => (prevPage >= 3 ? 0 : prevPage + 1));
+  };
+
+  const back = () => {
+    setPage((prevPage) => (prevPage <= 0 ? 3 : prevPage - 1));
+  };
+
+  const { data: categoryData, loading: categoryLoading } = useFetch(
+    `${process.env.REACT_APP_API_URL}/api/categories`
+  );
+  const JobSchema = yup.object().shape({
+    title: yup.string().required("Title is required"),
+    category: yup.string().required("Category is required"),
+    details: yup.object().shape({
+      why: yup.string().required("Description (why) is required"),
+      what: yup.string().required("Description (what) is required"),
+      benefits: yup.object().shape({
+        pay: yup.string().required("Pay is required"),
+        schedule: yup.string().required("Schedule is required"),
+      }),
+      responsibilities: yup
+        .array()
+        .of(yup.string().required("Responsibility is required"))
+        .min(1, "At least one responsibility is required"),
+      requirements: yup
+        .array()
+        .of(yup.string().required("Requirement is required"))
+        .min(1, "At least one requirement is required"),
+    }),
   });
   const {
-    register,
-    getValues,
-    setError,
-    reset,
     handleSubmit,
+    register,
+    control,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(JobSchema),
+    defaultValues: {
+      title: "",
+      category: "",
+      details: {
+        why: "",
+        what: "",
+        benefits: {
+          pay: "",
+          schedule: "",
+        },
+        responsibilities: [""],
+        requirements: [""],
+      },
+    },
   });
-  const onClose = () => {
-    onHide();
-    reset();
-  };
-  const onSubmit = async (data) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(data),
-      });
-      const addData = await response.json();
-      if (!response.ok) {
-        console.log(response);
-        if (response.status === 400 || response.status === 500) {
-          toast.warning(response.status);
-        } else if (response.status === 401) {
-          toast.error("Error 401");
-        }
-        setIsLoading(false);
-      } else {
-        toast.success("User added successfully");
-        onClose();
-        setIsLoading(false);
-      }
-    } catch (error) {
-      toast.error(error);
-      setIsLoading(false);
-    }
-  };
-  const [showModal, setShowModal] = useState(null);
 
-  const openModal = () => {
-    setShowModal(true);
-  };
+  const {
+    fields: responsibilityFields,
+    append: appendResponsibility,
+    remove: removeResponsibility,
+  } = useFieldArray({
+    control,
+    name: "details.responsibilities",
+  });
 
-  const onHide = () => {
-    setShowModal(false);
+  const {
+    fields: requirementFields,
+    append: appendRequirement,
+    remove: removeRequirement,
+  } = useFieldArray({
+    control,
+    name: "details.requirements",
+  });
+
+  const onSubmit = (data) => {
+    console.log(data);
   };
 
   return (
-    <>
-      {/* <button className="btn btn-primary" onClick={openModal}>
-        Open Modal
-      </button>
-      <Modal
-        show={showModal}
-        onHide={onHide}
-        isStatic
-        onSubmit={handleSubmit(onSubmit)}
-        reset={reset}>
-        <div className="row mx-0 g-2">
-          <div className="col-12 col-lg-8">
-            <label className="form-label">Full name</label>
-            <input
-              type="text"
-              className={`form-control ${errors?.fullName && "is-invalid"}`}
-              placeholder={`Enter your full name`}
-              name="fullName"
-              {...register("fullName")}
-              required
-            />
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      style={{ height: "100vh", overflow: "auto" }}>
+      <div className="row mx-0 g-2">
+        {page == 0 && (
+          <>
+            <div className="col-12">
+              <label className="form-label">Title</label>
+              <input className={`form-control`} {...register("title")} />
+              {errors.title && (
+                <p className="text-danger">{errors.title.message}</p>
+              )}
+            </div>
+            <div className="col-12">
+              <label className="form-label">Category</label>
+              <select className="form-select " {...register("category")}>
+                {categoryData?.map((cat) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.title}
+                  </option>
+                ))}
+              </select>
+              {errors.category && (
+                <p className="text-danger">{errors.category.message}</p>
+              )}
+            </div>
+            <div className="col-12">
+              <label className="form-label">Why</label>
+              <input className={`form-control`} {...register("details.why")} />
+              {errors.details?.why && (
+                <p className="text-danger">{errors.details.why.message}</p>
+              )}
+            </div>
+            <div className="col-12">
+              <label className="form-label">What</label>
+              <input className={`form-control`} {...register("details.what")} />
+              {errors.details?.what && (
+                <p className="text-danger">{errors.details.what.message}</p>
+              )}
+            </div>
+          </>
+        )}
+        {/* LISTS */}
+        {page == 1 && (
+          <>
+            <div className="row mx-0">
+              <div className="row mx-0 g-2 col h-100">
+                <label className="form-label">Responsibilities</label>
+                <button
+                  className="btn btn-dark"
+                  type="button"
+                  onClick={() => appendResponsibility("")}>
+                  Add Responsibility
+                </button>
+                {errors.details?.responsibilities ? (
+                  <p className="text-danger">Required atleast one</p>
+                ) : (
+                  ""
+                )}
+                {responsibilityFields.map((field, index) => (
+                  <>
+                    <div key={field.id} className="input-group">
+                      <input
+                        className={`form-control`}
+                        {...register(`details.responsibilities.${index}`)}
+                      />
+                      <button
+                        className="btn btn-dark"
+                        type="button"
+                        onClick={() => removeResponsibility(index)}>
+                        Remove
+                      </button>
+                    </div>
+                    {errors.details?.responsibilities?.[index] && (
+                      <p className="text-danger">
+                        {errors.details.responsibilities[index].message}
+                      </p>
+                    )}
+                  </>
+                ))}
+              </div>
+              <div className="row mx-0 g-2 col h-100">
+                <label className="form-label">Requirements</label>
+                <button
+                  className="btn btn-dark"
+                  type="button"
+                  onClick={() => appendRequirement("")}>
+                  Add Requirement
+                </button>
+                {errors.details?.requirements ? (
+                  <p className="text-danger">Required atleast one</p>
+                ) : (
+                  ""
+                )}
+                {requirementFields.map((field, index) => (
+                  <>
+                    <div key={field.id} className="input-group">
+                      <input
+                        className={`form-control`}
+                        {...register(`details.requirements.${index}`)}
+                      />
+                      <button
+                        className="btn btn-dark"
+                        type="button"
+                        onClick={() => removeRequirement(index)}>
+                        Remove
+                      </button>
+                    </div>
+                    {errors.details?.requirements?.[index] && (
+                      <p className="text-danger">
+                        {errors.details.requirements[index].message}
+                      </p>
+                    )}
+                  </>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+        {/* BENEFITS */}
+        {page == 2 && (
+          <>
+            <div className="col-12">
+              <label className="form-label">Pay</label>
+              <input
+                className={`form-control`}
+                {...register("details.benefits.pay")}
+              />
+              {errors.details?.benefits?.pay && (
+                <p className="text-danger">
+                  {errors.details.benefits.pay.message}
+                </p>
+              )}
+            </div>
+            <div className="col-12">
+              <label className="form-label">Schedule</label>
+              <input
+                className={`form-control`}
+                {...register("details.benefits.schedule")}
+              />
+              {errors.details?.benefits?.schedule && (
+                <p className="text-danger">
+                  {errors.details.benefits.schedule.message}
+                </p>
+              )}
+            </div>
+          </>
+        )}
+        {/* SUBMIT BUTTON */}
+        <div className="d-flex justify-content-between  col">
+          <div className="col d-flex gap-2">
+            <button
+              className="btn btn-dark"
+              disabled={page == 0}
+              onClick={back}>
+              back
+            </button>
+            <button
+              className="btn btn-dark"
+              disabled={page == 2}
+              onClick={next}>
+              next
+            </button>
           </div>
-          <div className="col-12 col-lg-4">
-            <label className="form-label">Position</label>
-            <select
-              className={`form-control ${errors?.position && "is-invalid"}`}
-              name="position"
-              {...register("position")}
-              required>
-              <option value="">Select position</option>
-              <option value="1">Admin</option>
-              <option value="2">Client</option>
-              <option value="3">Applicant</option>
-            </select>
-          </div>
-          <div className="col-12 col-lg-6">
-            <label className="form-label">Email</label>
-            <input
-              type="email"
-              className={`form-control ${errors?.email && "is-invalid"}`}
-              placeholder="Enter your email"
-              name="email"
-              {...register("email")}
-              required
-            />
-          </div>
-          <div className="col-12 col-lg-6">
-            <label className="form-label">Contact Number</label>
-            <input
-              type="number"
-              className={`form-control ${errors?.contact && "is-invalid"}`}
-              placeholder="Enter your contact number"
-              name="contact"
-              {...register("contact")}
-              required
-            />
-          </div>
-          <div className="col-12 col-lg-6">
-            <label className="form-label">Username</label>
-            <input
-              type="text"
-              className={`form-control ${errors?.username && "is-invalid"}`}
-              placeholder="Enter your username"
-              name="username"
-              {...register("username")}
-              required
-            />
-          </div>
-          <div className="col-12 col-lg-6">
-            <label className="form-label">Password</label>
-            <input
-              type="password"
-              className={`form-control ${errors?.password && "is-invalid"}`}
-              placeholder={`Enter your password`}
-              name="password"
-              {...register("password")}
-              required
-            />
-          </div>
+          <button type="submit" disabled={page < 2} className="btn btn-dark">
+            Submit
+          </button>
         </div>
-      </Modal> */}
-      <div className="py-2 d-flex align-items-center gap-2">
-        <button className="cs-button primary">primary</button>
-        <button className="cs-button secondary">secondary</button>
-        <button className="cs-button dark">dark</button>
-        <button className="cs-button light">light</button>
-        <button className="cs-button success">success</button>
-        <button className="cs-button danger">danger</button>
-        <button className="cs-button warning">warning</button>
       </div>
-      <div className="py-2 d-flex align-items-center gap-2 ">
-        <button className="cs-button primary size-sm">sm</button>
-        <button className="cs-button primary">default</button>
-        <button className="cs-button primary size-md">md</button>
-        <button className="cs-button primary size-lg">lg</button>
-      </div>
-      <div className="py-2  d-flex align-items-center gap-2 ">
-        <button className="cs-button outline-primary">outline-primary</button>
-        <button className="cs-button outline-secondary">
-          outline-secondary
-        </button>
-        <button className="cs-button outline-dark">outline-dark</button>
-        <button className="cs-button outline-light">outline-light</button>
-        <button className="cs-button outline-success">outline-success</button>
-        <button className="cs-button outline-danger">outline-danger</button>
-        <button className="cs-button outline-warning">outline-warning</button>
-      </div>
-    </>
+    </form>
   );
 };
 
-export default Index;
-{
-  /* <ModalBody>
-          <div className="row mx-0 g-2">
-            <div className="col-12 col-lg-8">
-              <label className="form-label">Full name</label>
-              <input
-                type="text"
-                className={`form-control ${errors?.fullName && "is-invalid"}`}
-                placeholder={`Enter your full name`}
-                name="fullName"
-                {...register("fullName")}
-                required
-              />
-            </div>
-            <div className="col-12 col-lg-4">
-              <label className="form-label">Position</label>
-              <select
-                className={`form-control ${errors?.position && "is-invalid"}`}
-                name="position"
-                {...register("position")}
-                required>
-                <option value="">Select position</option>
-                <option value="1">Admin</option>
-                <option value="2">Client</option>
-                <option value="3">Applicant</option>
-              </select>
-            </div>
-            <div className="col-12 col-lg-6">
-              <label className="form-label">Email</label>
-              <input
-                type="email"
-                className={`form-control ${errors?.email && "is-invalid"}`}
-                placeholder="Enter your email"
-                name="email"
-                {...register("email")}
-                required
-              />
-            </div>
-            <div className="col-12 col-lg-6">
-              <label className="form-label">Contact Number</label>
-              <input
-                type="number"
-                className={`form-control ${errors?.contact && "is-invalid"}`}
-                placeholder="Enter your contact number"
-                name="contact"
-                {...register("contact")}
-                required
-              />
-            </div>
-            <div className="col-12 col-lg-6">
-              <label className="form-label">Username</label>
-              <input
-                type="text"
-                className={`form-control ${errors?.username && "is-invalid"}`}
-                placeholder="Enter your username"
-                name="username"
-                {...register("username")}
-                required
-              />
-            </div>
-            <div className="col-12 col-lg-6">
-              <label className="form-label">Password</label>
-              <input
-                type="password"
-                className={`form-control ${errors?.password && "is-invalid"}`}
-                placeholder={`Enter your password`}
-                name="password"
-                {...register("password")}
-                required
-              />
-            </div>
-          </div>
-        </ModalBody>
-        <ModalFooter handleCloseModal={onClose} isLoading={isLoading} /> */
-}
+export default JobForm;

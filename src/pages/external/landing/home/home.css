@@ -1,0 +1,21 @@
+#home {
+  /* background-image: url("../../../../assets/images/brand/cinema_bg.png"); */
+  object-fit: contain;
+  position: relative;
+  background-image: linear-gradient(
+      rgba(0, 0, 0, 1),
+      rgba(0, 0, 0, 0),
+      rgba(0, 0, 0, 1) 95%
+    ),
+    url("../../../../assets/images/brand/cinema_bg.png");
+  background-position: 90% 0%;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+}
+.home-title {
+  font-size: 4rem;
+  text-transform: uppercase;
+  font-family: "Bayon";
+  line-height: 5rem;
+}

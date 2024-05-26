@@ -3,7 +3,7 @@
   --md-container-zindex: 1002 !important;
   --md-zindex: 1003 !important;
 }
-#md-form {
+.md-form {
   background-color: transparent;
 }
 #md-container {
@@ -15,6 +15,7 @@
   height: 100vh; /* Use vh instead of dvh */
   width: 100%;
   background-color: rgba(0, 0, 0, 0.5); /* semi-transparent black overlay */
+  filter: blur(5);
   display: flex;
   justify-content: center;
   align-items: start;

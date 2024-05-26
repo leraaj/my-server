@@ -33,8 +33,7 @@ const Modal = ({
   return (
     <>
       <form
-        id="md-form"
-        className={`needs-validation`}
+        className={`md-form needs-validation`}
         noValidate
         onSubmit={onSubmit || null}>
         <div
@@ -55,7 +54,7 @@ const Modal = ({
             <div id="md-footer">
               <span>
                 <button
-                  type="reset"
+                  type="button"
                   className="btn btn-outline-dark"
                   onClick={closeModal}>
                   Cancel

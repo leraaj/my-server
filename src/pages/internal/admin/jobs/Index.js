@@ -12,26 +12,28 @@ const Jobs = () => {
     data: jobs,
     loading: jobsLoading,
     refresh: jobsRefresh,
-    error: jobsError,
   } = useFetch(`${API}jobs`);
-  const {
-    data: category,
-    loading: categoryLoading,
-    refresh: categoryRefresh,
-    error: categoryError,
-  } = useFetch(`${API}categories`);
   const data = useMemo(() => {
-    if (!jobs) return []; // Return empty array if jobs data is not available
-
+    if (!jobs) return []; // Return empty array if jobs or categories data is not available
     return jobs.map((job) => {
       return {
         id: job?._id,
-        title: job?.title, // Assuming job.fullName is the full name
-        categoryId: job?.category._id, // Assuming job.fullName is the full name
-        categoryTitle: job?.category.title, // Assuming job.fullName is the full name
-        position: job?.position,
+        title: job?.title,
+        categoryId: job?.category?._id,
+        categoryTitle: job?.category?.title,
+        benefitsPay: job?.details?.benefits?.pay,
+        benefitsSchedule: job?.details?.benefits?.schedule,
+        why: job?.details?.why,
+        what: job?.details?.what,
+        requirements: job?.details?.requirements,
+        responsibilities: job?.details?.responsibilities,
       };
     });
+  }, [jobs]);
+  const uniqueCategories = useMemo(() => {
+    if (!jobs) return [];
+    const categories = jobs?.map((job) => job?.category?.title).filter(Boolean);
+    return [...new Set(categories)];
   }, [jobs]);
   const columns = useMemo(
     () => [
@@ -41,10 +43,16 @@ const Jobs = () => {
       },
       {
         accessorKey: "categoryTitle", // Since the full name is directly accessible
-        header: "Category Title",
+        header: "Category",
+        filterVariant: "multi-select",
+        filterSelectOptions: uniqueCategories,
+      },
+      {
+        accessorKey: "benefitsPay",
+        header: "Pay",
       },
     ],
-    []
+    [uniqueCategories]
   );
   // ADD JOB MODAL VARIABLES
   const [addJobModal, setAddJobModal] = useState(null);
@@ -67,6 +75,20 @@ const Jobs = () => {
         data={data}
         columns={columns}
         enableLoading={jobsLoading}
+        renderRowActions={({ row }) => (
+          <div className={"d-flex gap-1"}>
+            <CustomButton
+              size="sm"
+              color="dark"
+              isModal
+              label="Update"
+              onClick={() => {
+                const user = row.original;
+                console.log(user);
+              }}
+            />
+          </div>
+        )}
         renderTopToolbarCustomActions={() => (
           <>
             <div className="d-flex gap-2">
@@ -88,7 +110,11 @@ const Jobs = () => {
           </>
         )}
       />
-      <AddJobModal show={addJobModal} onHide={hideAddJobModal} />
+      <AddJobModal
+        show={addJobModal}
+        onHide={hideAddJobModal}
+        refresh={jobsRefresh}
+      />
       <AddCategoryModal show={addCategoryModal} onHide={hideAddCategoryModal} />
     </>
   );

@@ -54,12 +54,11 @@ const CustomTable = ({
     columns,
     data: data,
     initialState: {
-      // showColumnFilters: true,
+      showColumnFilters: true,
       // showGlobalFilter: true,
       pagination: { pageSize: pageSize || 10 },
       enableColumnPinning: true,
       columnPinning: {
-        left: ["mrt-row-expand", "mrt-row-select"],
         right: ["mrt-row-actions"],
       },
     },
@@ -85,10 +84,14 @@ const CustomTable = ({
         zIndex: table.getState().isFullScreen ? 1001 : 1000,
       },
     }),
-    muiTableContainerProps: () => ({
+    muiTableContainerProps: ({ table }) => ({
       sx: {
-        height: "calc(100dvh - 200px - 0.5rem)",
-        minHeight: "350px",
+        minHeight: table.getState().isFullScreen
+          ? "calc(100dvh - 200px - 0.5rem)"
+          : "350px",
+        height: table.getState().isFullScreen
+          ? "100%"
+          : "calc(100dvh - 200px - 0.5rem)",
       },
     }),
   });

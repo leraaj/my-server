@@ -7,18 +7,19 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
 const UpdateModal = ({ show, onHide, refresh, selectedUser }) => {
-  const API = `${process.env.REACT_APP_API_URL}/api/user/${selectedUser?.id}`;
-  const [hasErrors, setHasErrors] = useState({});
+  const UPDATE_API_URL = `${process.env.REACT_APP_API_URL}/api/user/${selectedUser?.id}`;
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const schema = yup.object().shape({
-    fullName: yup.string().required("Full name is required"),
-    email: yup.string().email().required("Email is required"),
-    contact: yup.string().required("Contact number is required"),
-    username: yup.string().required("Username is required"),
-    password: yup.string(),
-    position: yup.number().required("Position is required"),
-  });
+  const schema = yup.object().shape(
+    {
+      fullName: yup.string().required("Full name is required"),
+      email: yup.string().email().required("Email is required"),
+      contact: yup.string().required("Contact number is required"),
+      username: yup.string().required("Username is required"),
+      password: yup.string(),
+      position: yup.string().required("Position is required"),
+    },
+    [selectedUser]
+  );
   const {
     register,
     setValue,
@@ -28,10 +29,28 @@ const UpdateModal = ({ show, onHide, refresh, selectedUser }) => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
+    defaultValues: {
+      fullName: selectedUser?.fullName || "",
+      email: selectedUser?.email || "",
+      contact: selectedUser?.contact || "",
+      username: selectedUser?.username || "",
+      position: selectedUser?.position || "",
+    },
   });
+  useEffect(() => {
+    if (selectedUser) {
+      // SET DEFAULT VALUES
+      reset({
+        fullName: selectedUser?.fullName,
+        email: selectedUser?.email,
+        contact: selectedUser?.contact,
+        username: selectedUser?.username,
+        position: selectedUser?.position,
+      });
+    }
+  }, [selectedUser, reset]);
   const onClose = () => {
     onHide();
-    reset();
   };
   const submitComplete = () => {
     onClose();
@@ -44,7 +63,7 @@ const UpdateModal = ({ show, onHide, refresh, selectedUser }) => {
     }
     try {
       setIsLoading(true);
-      const response = await fetch(API, {
+      const response = await fetch(UPDATE_API_URL, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -52,36 +71,34 @@ const UpdateModal = ({ show, onHide, refresh, selectedUser }) => {
       });
       const fnResponse = await response.json();
       if (response.ok) {
-        console.log(fnResponse);
-        toast.success("User added successfully");
+        toast.success("Success: The request was successful.");
         submitComplete();
-        setIsLoading(false);
       } else {
-        console.log(fnResponse);
-        if (fnResponse.duplicates.length > 0) {
-          toast.error("Error 409: Conflict");
+        if (
+          response.status === 409 &&
+          fnResponse.duplicates &&
+          fnResponse.duplicates.length > 0
+        ) {
+          toast.error(
+            "Conflict: There is a conflict with the current state of the resource."
+          );
           fnResponse.duplicates.forEach((fieldError) => {
-            setError(`${fieldError}`, {
+            setError(fieldError, {
               type: "duplicated",
-              message: `This ${fieldError} already exists`,
+              message: `This field already exists`,
             });
           });
-          setIsLoading(false);
+        } else {
+          toast.error(response);
         }
       }
     } catch (error) {
-      console.log(error);
-      toast.error(`${error}`);
+      toast.error("An error occurred. Please try again.");
+    } finally {
       setIsLoading(false);
     }
   };
-  useEffect(() => {
-    setValue("fullName", selectedUser?.fullName);
-    setValue("email", selectedUser?.email);
-    setValue("contact", selectedUser?.contact);
-    setValue("username", selectedUser?.username);
-    setValue("position", selectedUser?.position);
-  }, [selectedUser]);
+
   return (
     <Modal
       show={show}
@@ -139,7 +156,7 @@ const UpdateModal = ({ show, onHide, refresh, selectedUser }) => {
         <div className="col-12 col-lg-6">
           <label className="form-label">Contact Number</label>
           <input
-            type="number"
+            type="text"
             className={`form-control ${errors?.contact && "is-invalid"}`}
             placeholder="Enter your contact number"
             name="contact"

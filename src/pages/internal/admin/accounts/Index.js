@@ -14,13 +14,7 @@ const Accounts = () => {
 
     return users.map((user) => {
       const positionLabel =
-        user.position === 1
-          ? "Admin"
-          : user.position === 2
-          ? "Client"
-          : user.position === 3
-          ? "Applicant"
-          : ""; // Assuming user.fullName is the full name
+        { 1: "admin", 2: "client", 3: "applicant" }[user.position] || "";
 
       return {
         id: user?._id,
@@ -39,37 +33,27 @@ const Accounts = () => {
       {
         accessorKey: "fullName", // Since the full name is directly accessible
         header: "Full Name",
-        size: 50,
-        grow: true,
       },
       {
         accessorKey: "contact", // Since the full name is directly accessible
         header: "Contact Number",
-        size: 50,
-        grow: true,
       },
       {
         accessorKey: "email", // Since the full name is directly accessible
         header: "Email",
-        size: 50,
-        grow: true,
       },
       {
         accessorKey: "username", // Since the full name is directly accessible
         header: "Username",
-        size: 50,
-        grow: true,
       },
       {
         accessorKey: "positionLabel", // Since the full name is directly accessible
         header: "Position",
-        size: 50,
-        grow: true,
         filterVariant: "multi-select",
-        filterSelectOptions: ["Admin", "Applicant", "Client"],
+        filterSelectOptions: ["admin", "applicant", "client"],
       },
     ],
-    []
+    [users]
   );
   const [selectedUser, setSelectedUser] = useState({});
   // ADD MODAL VARIABLES

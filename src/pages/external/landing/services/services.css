@@ -1,0 +1,45 @@
+#services {
+  object-fit: contain;
+  position: relative;
+  background-image: linear-gradient(
+      rgba(0, 0, 0, 1),
+      rgba(0, 0, 0, 0),
+      rgba(0, 0, 0, 1) 95%
+    ),
+    url("../../../../assets/images/brand/cinema_bg.png");
+  background-position: 90% 0%;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+}
+.carousel-images {
+  height: 20rem;
+  width: 12.5rem;
+  border-radius: 0.3rem;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+.carousel-number {
+  position: absolute;
+  top: 50%;
+  left: 1%;
+  transform: translateY(-50%);
+  font-size: 8rem;
+  font-family: "Bayon";
+  color: black !important;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.7); /* Adjust the shadow color and blur radius as needed */
+  z-index: 0;
+  padding: 0;
+  margin: 0;
+}
+.carousel-title {
+  position: absolute;
+  position: absolute;
+  top: 50%;
+  left: 5%;
+  transform: translateY(-50%);
+  font-size: 3rem;
+  z-index: 1 !important;
+  font-family: "Bayon";
+}

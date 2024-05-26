@@ -7,22 +7,19 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
 const AddModal = ({ show, onHide, refresh }) => {
-  const API = `${process.env.REACT_APP_API_URL}/api/user`;
-  const [hasErrors, setHasErrors] = useState({});
+  const ADD_API_URL = `${process.env.REACT_APP_API_URL}/api/user`;
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
   const schema = yup.object().shape({
     fullName: yup.string().required("Full name is required"),
     email: yup.string().email().required("Email is required"),
     contact: yup.string().required("Contact number is required"),
     username: yup.string().required("Username is required"),
     password: yup.string().required("Password is required"),
-    position: yup.number().required("Position is required"),
+    position: yup.string().required("Position is required"),
     applicationStatus: yup.number().default(2),
   });
   const {
     register,
-    getValues,
     setError,
     reset,
     handleSubmit,
@@ -39,39 +36,47 @@ const AddModal = ({ show, onHide, refresh }) => {
     refresh();
   };
   const onSubmit = async (data) => {
-    console.log(data);
     setIsLoading(true);
     try {
-      const response = await fetch(API, {
+      const response = await fetch(ADD_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify(data),
       });
+
       const fnResponse = await response.json();
+
       if (response.ok) {
-        console.log(fnResponse);
-        toast.success("User added successfully");
+        toast.success("Success: The request was successful.");
         submitComplete();
-        setIsLoading(false);
       } else {
-        console.log(fnResponse);
-        if (fnResponse.duplicates.length > 0) {
-          toast.error("Error 409: Conflict");
-          fnResponse.duplicates.forEach((fieldError) => {
-            setError(`${fieldError}`, {
+        if (
+          response.status === 409 &&
+          fnResponse?.duplicates &&
+          fnResponse?.duplicates.length > 0
+        ) {
+          toast.error(
+            "Conflict: There is a conflict with the current state of the resource.",
+            response
+          );
+          fnResponse?.duplicates.forEach((fieldError) => {
+            setError(fieldError, {
               type: "duplicated",
-              message: `This ${fieldError} already exists`,
+              message: `This field already exists`,
             });
           });
-          setIsLoading(false);
+        } else {
+          toast.error(response);
         }
       }
     } catch (error) {
-      toast.error(error);
+      toast.error("An error occurred. Please try again.");
+    } finally {
       setIsLoading(false);
     }
   };
+
   return (
     <Modal
       show={show}

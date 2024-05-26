@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../hooks/context/useAuthContext";
 import { toast } from "sonner";
@@ -49,7 +49,12 @@ const InternalLayout = () => {
         <Sidebar />
         <div id="content-container">
           <nav id="content-navbar">
-            <span id="toggle-btn" onClick={toggler}>
+            <span
+              id="toggle-btn"
+              onClick={() => {
+                toggler();
+                localStorage.setItem("toggleSidebar", toggle);
+              }}>
               {toggle ? <MenuIcon /> : <MenuOpenIcon />}
             </span>
             <button

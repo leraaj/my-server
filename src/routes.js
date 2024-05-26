@@ -46,11 +46,6 @@ export const adminRoutes = [
     element: <Chats />,
   },
   {
-    isPrivate: true,
-    path: "/test",
-    element: <Test />,
-  },
-  {
     isPrivate: false,
     path: "*",
     element: <Navigate to={"/login"} replace />,
