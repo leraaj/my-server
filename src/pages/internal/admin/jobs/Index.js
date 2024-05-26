@@ -61,13 +61,6 @@ const Jobs = () => {
   };
   const hideAddJobModal = () => {
     setAddJobModal(false);
-  }; // ADD CATEGORY MODAL VARIABLES
-  const [addCategoryModal, setAddCategoryModal] = useState(null);
-  const showAddCategoryModal = () => {
-    setAddCategoryModal(true);
-  };
-  const hideAddCategoryModal = () => {
-    setAddCategoryModal(false);
   };
   return (
     <>
@@ -98,13 +91,6 @@ const Jobs = () => {
                 isModal
                 label="Add job"
                 onClick={showAddJobModal}
-              />
-              <CustomButton
-                size="sm"
-                color="dark"
-                isModal
-                label="Add category"
-                onClick={showAddCategoryModal}
               />
             </div>
           </>
