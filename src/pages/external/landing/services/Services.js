@@ -108,18 +108,18 @@ const Services = () => {
         </div>
       </div>
       <div
-        className="  col-lg col-md col-sm-12 row mx-0 justify-content-center"
-        style={{ marginBottom: "5rem" }}>
+        className="col-lg col-md col-sm-12 row mx-0 justify-content-center"
+        style={{ marginBottom: "8rem" }}>
         <span
           className="col-12 position-relative"
           style={{ marginBottom: "5rem" }}>
           <span className="carousel-number">{servicesTitle[img1Index].id}</span>
-          <span className="carousel-title">
+          <span className="carousel-title text-nowrap">
             {servicesTitle[img1Index].title}
           </span>
         </span>
-        <div className="col-12   d-flex justify-content-center align-content-center gap-2">
-          <span className={`carousel-img-1 img-${img1Index} mb-2 `}>
+        <div className="col-12 d-flex justify-content-center align-content-center gap-3">
+          <span className={`carousel-img-1 mb-3 `}>
             <img
               className="carousel-images"
               style={{ objectFit: "cover" }}
@@ -127,7 +127,7 @@ const Services = () => {
               alt={`slide ${img1Index + 1}`}
             />
           </span>
-          <span className={`carousel-img-2 img-${img2Index} mt-2 `}>
+          <span className={`carousel-img-2 mt-3 `}>
             <img
               src={img2Images[img2Index]}
               className="carousel-images"
