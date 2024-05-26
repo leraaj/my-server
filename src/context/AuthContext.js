@@ -22,7 +22,7 @@ export const authReducer = (state, action) => {
   }
 };
 export const AuthContextProvider = ({ children }) => {
-  const sidebarLS = localStorage.getItem("toggleSidebar") === "false";
+  const sidebarLS = localStorage.getItem("toggleSidebar") === false;
   const { toggle, toggler } = useToggle(sidebarLS);
   const [state, dispatch] = useReducer(authReducer, {});
   const [isLoading, setIsLoading] = useState(false);
