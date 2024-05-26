@@ -101,7 +101,6 @@ const Jobs = () => {
         onHide={hideAddJobModal}
         refresh={jobsRefresh}
       />
-      <AddCategoryModal show={addCategoryModal} onHide={hideAddCategoryModal} />
     </>
   );
 };
