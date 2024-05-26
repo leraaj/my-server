@@ -122,8 +122,6 @@ const Services = () => {
           <span className={`carousel-img-1 mb-3 `}>
             <img
               className="carousel-images"
-              height={300}
-              width={200}
               style={{ objectFit: "cover" }}
               src={img1Images[img1Index]}
               alt={`slide ${img1Index + 1}`}

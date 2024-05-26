@@ -117,14 +117,22 @@ const AddJobModal = ({ show, onHide, refresh }) => {
       <div className="row mx-0 g-2 col-12">
         <div className="col-12">
           <label className="form-label">Title</label>
-          <input className={`form-control`} {...register("title")} />
+          <input
+            className={`form-control ${errors.title && "is-invalid"}`}
+            {...register("title")}
+          />
           {errors.title && (
-            <p className="text-danger">{errors.title.message}</p>
+            <span className="invalid-feedback">{errors.title.message}</span>
           )}
         </div>
         <div className="col-12">
           <label className="form-label">Category</label>
-          <select className="form-select " {...register("category")}>
+          <select
+            className={`form-select ${errors.category && "is-invalid"}`}
+            {...register("category")}>
+            <option value={``} selected>
+              Select a category
+            </option>
             {categoryData?.map((cat) => (
               <option key={cat._id} value={cat._id}>
                 {cat.title}
@@ -132,7 +140,7 @@ const AddJobModal = ({ show, onHide, refresh }) => {
             ))}
           </select>
           {errors.category && (
-            <p className="text-danger">{errors.category.message}</p>
+            <span className="invalid-feedback">{errors.category.message}</span>
           )}
         </div>
         <div className="col-12">
@@ -150,17 +158,19 @@ const AddJobModal = ({ show, onHide, refresh }) => {
           )}
         </div>
         {/* LISTS */}
-        <div className="row mx-0 h-100">
-          <div className="row mx-0 g-2 col h-100">
-            <label className="form-label">Responsibilities</label>
-            <button
-              className={`btn ${
-                errors.details?.responsibilities ? "btn-danger" : "btn-dark"
-              }`}
-              type="button"
-              onClick={() => appendResponsibility("")}>
-              Add Responsibility
-            </button>
+        <div className="row mx-0 gap-2 h-100 m-0 p-0">
+          <div className="row mx-0 g-2 col h-100  border rounded-3 p-2">
+            <div className="col-12 d-flex justify-content-between align-items-center ">
+              <label className="form-label">Responsibilities</label>
+              <button
+                className={`btn ${
+                  errors.details?.responsibilities ? "btn-danger" : "btn-dark"
+                }`}
+                type="button"
+                onClick={() => appendResponsibility("")}>
+                +
+              </button>
+            </div>
             {responsibilityFields.map((field, index) => (
               <>
                 <div key={field.id} className="input-group">
@@ -183,16 +193,18 @@ const AddJobModal = ({ show, onHide, refresh }) => {
               </>
             ))}
           </div>
-          <div className="row mx-0 g-2 col h-100">
-            <label className="form-label">Requirements</label>
-            <button
-              className={`btn ${
-                errors.details?.requirements ? "btn-danger" : "btn-dark"
-              }`}
-              type="button"
-              onClick={() => appendRequirement("")}>
-              Add Requirement
-            </button>
+          <div className="row mx-0 g-2 col h-100  border rounded-3 p-2">
+            <div className="col-12 d-flex justify-content-between align-items-center">
+              <label className="form-label">Requirements</label>
+              <button
+                className={`btn ${
+                  errors.details?.requirements ? "btn-danger" : "btn-dark"
+                }`}
+                type="button"
+                onClick={() => appendRequirement("")}>
+                +
+              </button>
+            </div>
             {requirementFields.map((field, index) => (
               <>
                 <div key={field.id} className="input-group">
