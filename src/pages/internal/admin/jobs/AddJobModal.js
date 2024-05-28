@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Modal from "../../../../components/modal/Modal";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import useFetch from "../../../../hooks/useFetch";
@@ -34,6 +34,7 @@ const AddJobModal = ({ show, onHide, refresh }) => {
     handleSubmit,
     register,
     control,
+    getValues,
     reset,
     setError,
     formState: { errors },
@@ -119,6 +120,7 @@ const AddJobModal = ({ show, onHide, refresh }) => {
           <label className="form-label">Title</label>
           <input
             className={`form-control ${errors.title && "is-invalid"}`}
+            placeholder="Enter title"
             {...register("title")}
           />
           {errors.title && (
@@ -145,14 +147,27 @@ const AddJobModal = ({ show, onHide, refresh }) => {
         </div>
         <div className="col-12">
           <label className="form-label">Why</label>
-          <input className={`form-control`} {...register("details.why")} />
+          <input
+            className={`form-control`}
+            placeholder={`Why become a ${
+              useWatch({
+                control,
+                name: "title",
+              }) || "..."
+            }`}
+            {...register("details.why")}
+          />
           {errors.details?.why && (
             <p className="text-danger">{errors.details.why.message}</p>
           )}
         </div>
         <div className="col-12">
           <label className="form-label">What</label>
-          <input className={`form-control`} {...register("details.what")} />
+          <input
+            className={`form-control`}
+            placeholder="What does the role require?"
+            {...register("details.what")}
+          />
           {errors.details?.what && (
             <p className="text-danger">{errors.details.what.message}</p>
           )}
@@ -235,6 +250,7 @@ const AddJobModal = ({ show, onHide, refresh }) => {
             <div className="col">
               <input
                 className={`form-control`}
+                placeholder="Pay"
                 {...register("details.benefits.pay")}
               />
               {errors.details?.benefits?.pay && (
@@ -246,6 +262,7 @@ const AddJobModal = ({ show, onHide, refresh }) => {
             <div className="col">
               <input
                 className={`form-control`}
+                placeholder="Schedule"
                 {...register("details.benefits.schedule")}
               />
               {errors.details?.benefits?.schedule && (

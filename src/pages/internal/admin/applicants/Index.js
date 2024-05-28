@@ -56,6 +56,9 @@ const Applicants = () => {
             <button className="btn btn-sm btn-dark text-nowrap">
               View profile
             </button>
+            <button className="btn btn-sm btn-dark text-nowrap">
+              Job history
+            </button>
           </div>
         )}
         renderTopToolbarCustomActions={() => <></>}
