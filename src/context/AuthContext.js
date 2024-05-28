@@ -22,7 +22,8 @@ export const authReducer = (state, action) => {
   }
 };
 export const AuthContextProvider = ({ children }) => {
-  const sidebarLS = localStorage.getItem("toggleSidebar") === false;
+  // const sidebarLS = localStorage.getItem("toggleSidebar") === false;
+  const sidebarLS = localStorage.getItem("server_toggleSidebar") === false;
   console.log(`Local Storage: ${localStorage.getItem("toggleSidebar")}`);
   console.log(`Default Storage: ${false}`);
   const { toggle, toggler } = useToggle(sidebarLS);
@@ -30,7 +31,8 @@ export const AuthContextProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   useEffect(() => {
-    localStorage.setItem("toggleSidebar", toggle);
+    // localStorage.setItem("toggleSidebar", toggle);
+    localStorage.setItem("server_toggleSidebar", toggle);
   }, [toggle]);
   const refreshUser = async () => {
     setIsLoading(true);
