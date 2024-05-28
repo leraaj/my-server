@@ -151,7 +151,7 @@ const AddJobModal = ({ show, onHide, refresh }) => {
             Why
           </label>
           <input
-            className={`form-control`}
+            className={`form-control ${errors.details?.why && "is-invalid"}`}
             placeholder={`Why become a ${
               useWatch({
                 control,
@@ -161,7 +161,9 @@ const AddJobModal = ({ show, onHide, refresh }) => {
             {...register("details.why")}
           />
           {errors.details?.why && (
-            <p className="text-danger">{errors.details.why.message}</p>
+            <div className="invalid-feedback">
+              {errors.details?.why.message}
+            </div>
           )}
         </div>
         <div className="col-12">
@@ -172,7 +174,9 @@ const AddJobModal = ({ show, onHide, refresh }) => {
             {...register("details.what")}
           />
           {errors.details?.what && (
-            <p className="text-danger">{errors.details.what.message}</p>
+            <div className="invalid-feedback">
+              {errors.details?.what.message}
+            </div>
           )}
         </div>
         {/* LISTS */}
@@ -279,9 +283,9 @@ const AddJobModal = ({ show, onHide, refresh }) => {
                 {...register("details.benefits.pay")}
               />
               {errors.details?.benefits?.pay && (
-                <p className="text-danger">
+                <div className="invalid-feedback">
                   {errors.details.benefits.pay.message}
-                </p>
+                </div>
               )}
             </div>
             <div className="col">
@@ -293,9 +297,9 @@ const AddJobModal = ({ show, onHide, refresh }) => {
                 {...register("details.benefits.schedule")}
               />
               {errors.details?.benefits?.schedule && (
-                <p className="text-danger">
+                <div className="invalid-feedback">
                   {errors.details.benefits.schedule.message}
-                </p>
+                </div>
               )}
             </div>
           </div>
