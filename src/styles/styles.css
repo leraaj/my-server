@@ -75,6 +75,15 @@
   height: 5px; /* Adjust this value to control the thickness of the bar */
   background-color: white; /* Adjust the color of the bar as needed */
 }
+.bar-title.dark::before {
+  content: "";
+  position: absolute;
+  top: -15px; /* Adjust this value to control the distance of the bar from the text */
+  left: 10;
+  width: 10%;
+  height: 5px; /* Adjust this value to control the thickness of the bar */
+  background-color: black; /* Adjust the color of the bar as needed */
+}
 body {
   margin: 0;
   padding: 0;

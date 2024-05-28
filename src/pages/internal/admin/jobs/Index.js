@@ -1,11 +1,8 @@
 import React, { useMemo, useState } from "react";
 import useFetch from "../../../../hooks/useFetch";
 import CustomTable from "../../../../components/table/CustomTable";
-import { toast } from "sonner";
 import CustomButton from "../../../../components/button/CustomButton";
-import Modal from "../../../../components/modal/Modal";
 import AddJobModal from "./AddJobModal";
-import AddCategoryModal from "./AddCategoryModal";
 const Jobs = () => {
   const API = `${process.env.REACT_APP_API_URL}/api/`;
   const {
