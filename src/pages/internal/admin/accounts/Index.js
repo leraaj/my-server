@@ -8,6 +8,7 @@ import UpdateModal from "./UpdateModal";
 import DeleteModal from "./DeleteModal";
 const Accounts = () => {
   const API = `${process.env.REACT_APP_API_URL}`;
+  const [selectedUser, setSelectedUser] = useState({});
   const { data: users, loading, refresh, error } = useFetch(`${API}/api/users`);
   const data = useMemo(() => {
     if (!users) return []; // Return empty array if users data is not available
@@ -55,7 +56,6 @@ const Accounts = () => {
     ],
     [users]
   );
-  const [selectedUser, setSelectedUser] = useState({});
   // ADD MODAL VARIABLES
   const [addUserModal, setAddUserModal] = useState(null);
   const showAddUserModal = () => {

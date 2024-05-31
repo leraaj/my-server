@@ -3,8 +3,10 @@ import useFetch from "../../../../hooks/useFetch";
 import CustomTable from "../../../../components/table/CustomTable";
 import CustomButton from "../../../../components/button/CustomButton";
 import AddJobModal from "./AddJobModal";
+import UpdateModal from "./UpdateJobModal";
 const Jobs = () => {
   const API = `${process.env.REACT_APP_API_URL}/api/`;
+  const [selectedUser, setSelectedUser] = useState({});
   const {
     data: jobs,
     loading: jobsLoading,
@@ -58,6 +60,13 @@ const Jobs = () => {
   };
   const hideAddJobModal = () => {
     setAddJobModal(false);
+  }; // EDIT MODAL VARIABLES
+  const [editUserModal, setEditUserModal] = useState(null);
+  const showEditUserModal = () => {
+    setEditUserModal(true);
+  };
+  const hideEditUser = () => {
+    setEditUserModal(false);
   };
   return (
     <>
@@ -70,11 +79,11 @@ const Jobs = () => {
             <CustomButton
               size="sm"
               color="dark"
-              isModal
-              label="Update"
+              label="View"
               onClick={() => {
                 const user = row.original;
-                console.log(user);
+                setSelectedUser(user);
+                showEditUserModal();
               }}
             />
           </div>
@@ -97,6 +106,12 @@ const Jobs = () => {
         show={addJobModal}
         onHide={hideAddJobModal}
         refresh={jobsRefresh}
+      />
+      <UpdateModal
+        show={editUserModal}
+        onHide={hideEditUser}
+        refresh={jobsRefresh}
+        selectedUser={selectedUser}
       />
     </>
   );
