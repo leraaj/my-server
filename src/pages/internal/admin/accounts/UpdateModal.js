@@ -35,6 +35,7 @@ const UpdateModal = ({ show, onHide, refresh, selectedUser }) => {
       contact: selectedUser?.contact || "",
       username: selectedUser?.username || "",
       position: selectedUser?.position || "",
+      applicationStatus: selectedUser?.applicationStatus || "",
     },
   });
   useEffect(() => {
@@ -46,6 +47,7 @@ const UpdateModal = ({ show, onHide, refresh, selectedUser }) => {
         contact: selectedUser?.contact,
         username: selectedUser?.username,
         position: selectedUser?.position,
+        applicationStatus: selectedUser?.applicationStatus,
       });
     }
   }, [selectedUser, reset]);
@@ -113,7 +115,9 @@ const UpdateModal = ({ show, onHide, refresh, selectedUser }) => {
           <label className="form-label">Full name</label>
           <input
             type="text"
-            className={`form-control ${errors?.fullName && "is-invalid"}`}
+            className={`form-control form-control-light ${
+              errors?.fullName && "is-invalid"
+            }`}
             placeholder={`Enter your full name`}
             name="fullName"
             {...register("fullName")}
@@ -126,7 +130,9 @@ const UpdateModal = ({ show, onHide, refresh, selectedUser }) => {
         <div className="col-12 col-lg-4">
           <label className="form-label">Position</label>
           <select
-            className={`form-control ${errors?.position && "is-invalid"}`}
+            className={`form-control form-control-light ${
+              errors?.position && "is-invalid"
+            }`}
             name="position"
             {...register("position")}
             required>
@@ -143,7 +149,9 @@ const UpdateModal = ({ show, onHide, refresh, selectedUser }) => {
           <label className="form-label">Email</label>
           <input
             type="email"
-            className={`form-control ${errors?.email && "is-invalid"}`}
+            className={`form-control  form-control-light ${
+              errors?.email && "is-invalid"
+            }`}
             placeholder="Enter your email"
             name="email"
             {...register("email")}
@@ -157,7 +165,9 @@ const UpdateModal = ({ show, onHide, refresh, selectedUser }) => {
           <label className="form-label">Contact Number</label>
           <input
             type="text"
-            className={`form-control ${errors?.contact && "is-invalid"}`}
+            className={`form-control  form-control-light ${
+              errors?.contact && "is-invalid"
+            }`}
             placeholder="Enter your contact number"
             name="contact"
             {...register("contact")}
@@ -171,7 +181,9 @@ const UpdateModal = ({ show, onHide, refresh, selectedUser }) => {
           <label className="form-label">Username</label>
           <input
             type="text"
-            className={`form-control ${errors?.username && "is-invalid"}`}
+            className={`form-control  form-control-light ${
+              errors?.username && "is-invalid"
+            }`}
             placeholder="Enter your username"
             name="username"
             {...register("username")}
@@ -185,7 +197,9 @@ const UpdateModal = ({ show, onHide, refresh, selectedUser }) => {
           <label className="form-label">Password</label>
           <input
             type="password"
-            className={`form-control ${errors?.password && "is-invalid"}`}
+            className={`form-control  form-control-light ${
+              errors?.password && "is-invalid"
+            }`}
             placeholder={`Enter your password`}
             name="password"
             {...register("password")}
@@ -193,6 +207,24 @@ const UpdateModal = ({ show, onHide, refresh, selectedUser }) => {
           />
           {errors?.password && (
             <span className="invalid-feedback">{errors.password.message}</span>
+          )}
+        </div>
+        <div className="col-12 col-lg-4">
+          <label className="form-label">Application Status</label>
+          <select
+            className={`form-control form-control-light ${
+              errors?.position && "is-invalid"
+            }`}
+            name="position"
+            {...register("applicationStatus")}
+            required>
+            <option value="">Select Application Status</option>
+            <option value="2">Pending</option>
+            <option value="3">Accepted</option>
+            <option value="4">Declined</option>
+          </select>
+          {errors?.position && (
+            <span className="invalid-feedback">{errors.position.message}</span>
           )}
         </div>
       </div>

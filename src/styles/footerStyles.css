@@ -1,0 +1,25 @@
+footer {
+  padding-inline: 5rem;
+  padding-block: 5rem;
+  background-color: #252525;
+  display: flex;
+  justify-content: start;
+}
+
+footer > * {
+  color: var(--light-100);
+}
+.footer-logo {
+  object-fit: contain;
+}
+.footer-description {
+  font-family: "Poppins";
+  font-size: 13px;
+}
+.footer-title {
+  font-family: "Bayon";
+  font-size: 20px;
+}
+.social-media-logo {
+  height: 25px;
+}

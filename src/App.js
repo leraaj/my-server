@@ -24,6 +24,7 @@ import MediaFiles from "./pages/internal/employees/mediaFiles/Index";
 // TEST
 import Test from "./pages/internal/test/Index";
 import { useEffect, useState } from "react";
+import Register from "./pages/external/register/Register";
 function App() {
   const { user, isLoading } = useAuthContext();
   const position = user?.position;
@@ -74,9 +75,9 @@ function App() {
         ) : user?.position == 3 ? (
           <Navigate to={localStorage.getItem("url") || "/profile"} replace />
         ) : user?.position === undefined ? (
-          <div>Signup</div>
+          <Register />
         ) : (
-          <div>Signup</div>
+          <Register />
         ),
     },
     {
@@ -143,7 +144,7 @@ function App() {
     {
       isPrivate: true,
       path: "/chats",
-      element: <>Chats</>,
+      element: <Chats />,
     },
   ];
 

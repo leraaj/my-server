@@ -26,11 +26,11 @@ export const sidebarLinks = [
         icon: <BadgeIcon {...(size && { fontSize: size })} />,
         label: "clients",
       },
-      {
-        url: "/posts",
-        icon: <NoteAddIcon {...(size && { fontSize: size })} />,
-        label: "posts",
-      },
+      // {
+      //   url: "/posts",
+      //   icon: <NoteAddIcon {...(size && { fontSize: size })} />,
+      //   label: "posts",
+      // },
       {
         url: "/jobs",
         icon: <WorkIcon {...(size && { fontSize: size })} />,
@@ -52,14 +52,9 @@ export const sidebarLinks = [
         label: "profile",
       },
       {
-        url: "/orders",
-        icon: <ShoppingCartIcon {...(size && { fontSize: size })} />,
-        label: "orders",
-      },
-      {
-        url: "/media-files",
-        icon: <WorkIcon {...(size && { fontSize: size })} />,
-        label: "media-files",
+        url: "/chats",
+        icon: <ChatBubbleIcon {...(size && { fontSize: size })} />,
+        label: "chats",
       },
     ],
   },
@@ -72,14 +67,9 @@ export const sidebarLinks = [
         label: "profile",
       },
       {
-        url: "/orders",
-        icon: <ShoppingCartIcon {...(size && { fontSize: size })} />,
-        label: "orders",
-      },
-      {
-        url: "/media-files",
-        icon: <WorkIcon {...(size && { fontSize: size })} />,
-        label: "media-files",
+        url: "/chats",
+        icon: <ChatBubbleIcon {...(size && { fontSize: size })} />,
+        label: "chats",
       },
     ],
   },

@@ -1,5 +1,5 @@
 .landing-section {
-  min-height: calc(700px);
+  min-height: calc(100dvh);
   height: calc(100%);
   width: 100%;
   background-color: black;

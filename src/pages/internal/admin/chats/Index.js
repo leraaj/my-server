@@ -1,16 +1,17 @@
 import React from "react";
-
+import "../../../../styles/chatStyles.css";
 const Chats = () => {
   return (
-    <div className="d-flex gap-2 " style={{ height: "100%" }}>
-      <div className="rounded-3 col-3 bg-dark-subtle justify-content-center">
-        <div className="vstack">
-          <div className="p-2 ">Jobs</div>
-          <div className=" bg-dark-subtle p-2">Username</div>
-        </div>
-      </div>
-      <div className="rounded-3 col bg-light bg-gradient">2</div>
-    </div>
+    <content className="chat-container col-12 col-lg-12">
+      <section className="chat-list col-3 col-lg-3">
+        <div className="chat-header">Header</div>
+        <div className="chat-content">Chat Content</div>
+      </section>
+      <section className="chat-conversation col col-lg">
+        <div className="chat-header">Header</div>
+        <div className="chat-content">Chat Content</div>
+      </section>
+    </content>
   );
 };
 

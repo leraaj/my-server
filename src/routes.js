@@ -61,23 +61,13 @@ export const employeeRoutes = [
   },
   {
     isPrivate: true,
-    path: "/orders",
-    element: <Orders />,
-  },
-  {
-    isPrivate: true,
-    path: "/media-files",
-    element: <MediaFiles />,
-  },
-  {
-    isPrivate: true,
     path: "/jobs",
     element: <>Jobs</>,
   },
   {
     isPrivate: true,
     path: "/chats",
-    element: <>Chats</>,
+    element: <Chats />,
   },
   {
     isPrivate: false,

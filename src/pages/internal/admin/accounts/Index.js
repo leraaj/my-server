@@ -16,6 +16,10 @@ const Accounts = () => {
     return users.map((user) => {
       const positionLabel =
         { 1: "admin", 2: "client", 3: "applicant" }[user.position] || "";
+      const applicationStatusLabel =
+        { 2: "Pending", 3: "Accepted", 4: "Declined" }[
+          user.applicationStatus
+        ] || "";
 
       return {
         id: user?._id,
@@ -26,6 +30,8 @@ const Accounts = () => {
         password: user?.password,
         positionLabel: positionLabel,
         position: user?.position,
+        applicationStatusLabel: applicationStatusLabel,
+        applicationStatus: user?.applicationStatus,
       };
     });
   }, [users]);
@@ -44,8 +50,10 @@ const Accounts = () => {
         header: "Email",
       },
       {
-        accessorKey: "username", // Since the full name is directly accessible
-        header: "Username",
+        accessorKey: "applicationStatusLabel", // Since the full name is directly accessible
+        header: "Application Status",
+        filterVariant: "multi-select",
+        filterSelectOptions: ["Pending", "Accepted", "Declined"],
       },
       {
         accessorKey: "positionLabel", // Since the full name is directly accessible

@@ -1,261 +1,147 @@
-import React, { useEffect, useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
+import React, { useState, useEffect } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 import useFetch from "../../../hooks/useFetch";
-import { getValue } from "@testing-library/user-event/dist/utils";
 
-const JobForm = () => {
-  const [page, setPage] = useState(0);
+const Register = () => {
+  const navigate = useNavigate();
+  const { data: jobs } = useFetch(`${process.env.REACT_APP_API_URL}/api/jobs`);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedSkills, setSelectedSkills] = useState([]);
+  const [selectedPosition, setSelectedPosition] = useState(null);
 
-  const next = () => {
-    setPage((prevPage) => (prevPage >= 3 ? 0 : prevPage + 1));
-  };
-
-  const back = () => {
-    setPage((prevPage) => (prevPage <= 0 ? 3 : prevPage - 1));
-  };
-
-  const { data: categoryData, loading: categoryLoading } = useFetch(
-    `${process.env.REACT_APP_API_URL}/api/categories`
-  );
-  const JobSchema = yup.object().shape({
-    title: yup.string().required("Title is required"),
-    category: yup.string().required("Category is required"),
-    details: yup.object().shape({
-      why: yup.string().required("Description (why) is required"),
-      what: yup.string().required("Description (what) is required"),
-      benefits: yup.object().shape({
-        pay: yup.string().required("Pay is required"),
-        schedule: yup.string().required("Schedule is required"),
-      }),
-      responsibilities: yup
-        .array()
-        .of(yup.string().required("Responsibility is required"))
-        .min(1, "At least one responsibility is required"),
-      requirements: yup
-        .array()
-        .of(yup.string().required("Requirement is required"))
-        .min(1, "At least one requirement is required"),
-    }),
+  const schema = yup.object().shape({
+    position: yup.number().required("Position is required"),
+    skills: yup
+      .array()
+      .min(1, "At least one skill is required when position is 'Applicant'")
+      .required("At least one skill is required when position is 'Applicant'"),
   });
+
   const {
-    handleSubmit,
     register,
+    setValue,
+    handleSubmit,
     control,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(JobSchema),
-    defaultValues: {
-      title: "",
-      category: "",
-      details: {
-        why: "",
-        what: "",
-        benefits: {
-          pay: "",
-          schedule: "",
-        },
-        responsibilities: [""],
-        requirements: [""],
-      },
-    },
+    resolver: yupResolver(schema),
   });
 
-  const {
-    fields: responsibilityFields,
-    append: appendResponsibility,
-    remove: removeResponsibility,
-  } = useFieldArray({
-    control,
-    name: "details.responsibilities",
-  });
+  useEffect(() => {
+    setValue("skills", selectedSkills);
+  }, [selectedSkills, setValue]);
 
-  const {
-    fields: requirementFields,
-    append: appendRequirement,
-    remove: removeRequirement,
-  } = useFieldArray({
-    control,
-    name: "details.requirements",
-  });
+  useEffect(() => {
+    console.log(selectedSkills);
+  }, [selectedSkills]);
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+    setIsLoading(true);
+    try {
+      alert(JSON.stringify(data));
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const CheckFieldValue = (value) => {
+    const valid = useWatch({
+      control,
+      name: `${value}`,
+    });
+    return valid ? "is-valid" : "";
+  };
+
+  const handleSkillToggle = (skillId) => {
+    setSelectedSkills((prevSkills) =>
+      prevSkills.includes(skillId)
+        ? prevSkills.filter((id) => id !== skillId)
+        : [...prevSkills, skillId]
+    );
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      style={{ height: "100vh", overflow: "auto" }}>
-      <div className="row mx-0 g-2">
-        {page == 0 && (
-          <>
-            <div className="col-12">
-              <label className="form-label">Title</label>
-              <input className={`form-control`} {...register("title")} />
-              {errors.title && (
-                <p className="text-danger">{errors.title.message}</p>
-              )}
-            </div>
-            <div className="col-12">
-              <label className="form-label">Category</label>
-              <select className="form-select " {...register("category")}>
-                {categoryData?.map((cat) => (
-                  <option key={cat._id} value={cat._id}>
-                    {cat.title}
-                  </option>
-                ))}
-              </select>
-              {errors.category && (
-                <p className="text-danger">{errors.category.message}</p>
-              )}
-            </div>
-            <div className="col-12">
-              <label className="form-label">Why</label>
-              <input className={`form-control`} {...register("details.why")} />
-              {errors.details?.why && (
-                <p className="text-danger">{errors.details.why.message}</p>
-              )}
-            </div>
-            <div className="col-12">
-              <label className="form-label">What</label>
-              <input className={`form-control`} {...register("details.what")} />
-              {errors.details?.what && (
-                <p className="text-danger">{errors.details.what.message}</p>
-              )}
-            </div>
-          </>
-        )}
-        {/* LISTS */}
-        {page == 1 && (
-          <>
-            <div className="row mx-0">
-              <div className="row mx-0 g-2 col h-100">
-                <label className="form-label">Responsibilities</label>
+    <div className="landing-section d-flex justify-content-center">
+      <div className="col">
+        <span className="bar-title" style={{ paddingBottom: "3rem" }}>
+          create
+          <br />
+          your account
+        </span>
+        <form
+          className="needs-validation row mx-0 g-3"
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate>
+          {/* Position */}
+          <div className="input-container col-12 col-md-6">
+            <span className="form-label">position</span>
+            <select
+              className={`form-control form-control-light ${
+                errors.position && "is-invalid"
+              }`}
+              {...register("position")}
+              required>
+              <option value="" selected>
+                Select your position
+              </option>
+              <option value="2">Client</option>
+              <option value="3">Applicant</option>
+            </select>
+            {errors.position && (
+              <span className="invalid-feedback">
+                {errors.position.message}
+              </span>
+            )}
+          </div>
+          <div className="input-container col-12 col-md-6">
+            <span className="form-label">skills</span>
+            <div
+              className={`text-wrap row mx-0 gap-2 col-12 border ${
+                errors.skills && "border-danger"
+              }`}>
+              {jobs?.map((job, index) => (
                 <button
-                  className="btn btn-dark"
                   type="button"
-                  onClick={() => appendResponsibility("")}>
-                  Add Responsibility
+                  key={index}
+                  className={`btn btn-outline-light col-auto rounded-pill ${
+                    selectedSkills.includes(job._id) ? "active" : ""
+                  }`}
+                  onClick={() => handleSkillToggle(job._id)}>
+                  {job.title}
                 </button>
-                {errors.details?.responsibilities ? (
-                  <p className="text-danger">Required atleast one</p>
-                ) : (
-                  ""
-                )}
-                {responsibilityFields.map((field, index) => (
-                  <>
-                    <div key={field.id} className="input-group">
-                      <input
-                        className={`form-control`}
-                        {...register(`details.responsibilities.${index}`)}
-                      />
-                      <button
-                        className="btn btn-dark"
-                        type="button"
-                        onClick={() => removeResponsibility(index)}>
-                        Remove
-                      </button>
-                    </div>
-                    {errors.details?.responsibilities?.[index] && (
-                      <p className="text-danger">
-                        {errors.details.responsibilities[index].message}
-                      </p>
-                    )}
-                  </>
-                ))}
-              </div>
-              <div className="row mx-0 g-2 col h-100">
-                <label className="form-label">Requirements</label>
-                <button
-                  className="btn btn-dark"
-                  type="button"
-                  onClick={() => appendRequirement("")}>
-                  Add Requirement
-                </button>
-                {errors.details?.requirements ? (
-                  <p className="text-danger">Required atleast one</p>
-                ) : (
-                  ""
-                )}
-                {requirementFields.map((field, index) => (
-                  <>
-                    <div key={field.id} className="input-group">
-                      <input
-                        className={`form-control`}
-                        {...register(`details.requirements.${index}`)}
-                      />
-                      <button
-                        className="btn btn-dark"
-                        type="button"
-                        onClick={() => removeRequirement(index)}>
-                        Remove
-                      </button>
-                    </div>
-                    {errors.details?.requirements?.[index] && (
-                      <p className="text-danger">
-                        {errors.details.requirements[index].message}
-                      </p>
-                    )}
-                  </>
-                ))}
-              </div>
+              ))}
             </div>
-          </>
-        )}
-        {/* BENEFITS */}
-        {page == 2 && (
-          <>
-            <div className="col-12">
-              <label className="form-label">Pay</label>
-              <input
-                className={`form-control`}
-                {...register("details.benefits.pay")}
-              />
-              {errors.details?.benefits?.pay && (
-                <p className="text-danger">
-                  {errors.details.benefits.pay.message}
-                </p>
-              )}
-            </div>
-            <div className="col-12">
-              <label className="form-label">Schedule</label>
-              <input
-                className={`form-control`}
-                {...register("details.benefits.schedule")}
-              />
-              {errors.details?.benefits?.schedule && (
-                <p className="text-danger">
-                  {errors.details.benefits.schedule.message}
-                </p>
-              )}
-            </div>
-          </>
-        )}
-        {/* SUBMIT BUTTON */}
-        <div className="d-flex justify-content-between  col">
-          <div className="col d-flex gap-2">
+            {errors.skills && (
+              <span className="invalid-feedback">{errors.skills.message}</span>
+            )}
+          </div>
+
+          {/* Form Submission Buttons */}
+          <div className="col-12 d-flex justify-content-between align-items-end">
             <button
-              className="btn btn-dark"
-              disabled={page == 0}
-              onClick={back}>
+              type="button"
+              className="secondary-btn"
+              onClick={() => navigate("/")}>
               back
             </button>
             <button
-              className="btn btn-dark"
-              disabled={page == 2}
-              onClick={next}>
-              next
+              type="submit"
+              className={`primary-btn btn-${
+                isLoading ? "secondary" : "success"
+              } order-2`}>
+              {isLoading ? "Loading" : "register"}
             </button>
           </div>
-          <button type="submit" disabled={page < 2} className="btn btn-dark">
-            Submit
-          </button>
-        </div>
+        </form>
       </div>
-    </form>
+    </div>
   );
 };
 
-export default JobForm;
+export default Register;

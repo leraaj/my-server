@@ -11,8 +11,12 @@
   src: url("../assets/fonts/Poppins/Poppins-Regular.ttf") format("truetype");
 }
 @font-face {
+  font-family: "Poppins-Medium";
+  src: url("../assets/fonts/Poppins/Poppins-Regular.ttf") format("truetype");
+}
+@font-face {
   font-family: "Poppins-Bold";
-  src: url("../assets/fonts/Poppins/Poppins-Bold.ttf") format("truetype");
+  src: url("../assets/fonts/Poppins/Poppins-Medium.ttf") format("truetype");
 }
 @font-face {
   font-family: "Bayon";
@@ -71,7 +75,7 @@
   position: absolute;
   top: -15px; /* Adjust this value to control the distance of the bar from the text */
   left: 10;
-  width: 10%;
+  width: 50px;
   height: 5px; /* Adjust this value to control the thickness of the bar */
   background-color: white; /* Adjust the color of the bar as needed */
 }
@@ -80,7 +84,7 @@
   position: absolute;
   top: -15px; /* Adjust this value to control the distance of the bar from the text */
   left: 10;
-  width: 10%;
+  width: 50px;
   height: 5px; /* Adjust this value to control the thickness of the bar */
   background-color: black; /* Adjust the color of the bar as needed */
 }
@@ -288,3 +292,72 @@ body {
   color: var(--dark-90);
 }
 /* BUTTON OUTLINE */
+.input-container {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+}
+.input-container .form-label {
+  font-family: "Bayon";
+  font-size: medium;
+  margin-bottom: 0.5rem;
+}
+input.form-control-light {
+  background-color: transparent !important;
+  border-top: transparent none !important;
+  border-right: transparent none !important;
+  border-left: transparent none !important;
+  border-radius: 0 !important;
+}
+textarea.form-control-light {
+  background-color: transparent !important;
+  border-radius: 0 !important;
+}
+.form-control-light::placeholder {
+  color: #999 !important; /* Change the color to whatever you prefer */
+}
+.form-control.form-control-light:focus,
+.form-control:focus,
+select.form-control:focus,
+select:focus,
+input:focus,
+textarea:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom-color: rgb(120, 107, 255);
+  border-bottom-width: 1.5px;
+  border-style: inset;
+}
+.form-control.is-invalid,
+select.form-control.is-invalid {
+  /* box-shadow: 0px 1px 3px 0.5px var(--bs-danger); */
+}
+.form-control.is-valid,
+select.form-control.is-valid {
+  /* box-shadow: 0px 1px 3px 0.5px var(--bs-success); */
+}
+.invalid-feedback {
+  color: var(--bs-danger) !important;
+}
+
+select.form-control {
+  background-color: transparent !important;
+  border-radius: 0 !important;
+  appearance: none; /* Remove default appearance */
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+select.form-control option {
+  background-color: black !important;
+  color: #fff !important;
+  border-radius: 0 !important;
+}
+select.form-control option:hover {
+  background-color: var(--bg-light-80) !important;
+  border-radius: 0 !important;
+}

@@ -7,7 +7,7 @@ import * as yup from "yup";
 import useFetch from "../../../../hooks/useFetch";
 import { getValue } from "@testing-library/user-event/dist/utils";
 
-const UpdateModal = ({ show, onHide, refresh, selectedUser }) => {
+const UpdateModal = ({ show, onHide, refresh, selectedJob }) => {
   const { data: categoryData, loading: categoryLoading } = useFetch(
     `${process.env.REACT_APP_API_URL}/api/categories`
   );
@@ -77,24 +77,24 @@ const UpdateModal = ({ show, onHide, refresh, selectedUser }) => {
     name: "details.requirements",
   });
   useEffect(() => {
-    if (selectedUser) {
+    if (selectedJob) {
       reset({
-        title: selectedUser?.title || "",
-        category: selectedUser?.categoryId || "",
+        title: selectedJob?.title || "",
+        category: selectedJob?.categoryId || "",
         details: {
-          why: selectedUser?.why || "",
-          what: selectedUser?.what || "",
+          why: selectedJob?.why || "",
+          what: selectedJob?.what || "",
           benefits: {
-            pay: selectedUser?.benefitsPay || "",
-            schedule: selectedUser?.benefitsSchedule || "",
+            pay: selectedJob?.benefitsPay || "",
+            schedule: selectedJob?.benefitsSchedule || "",
           },
-          responsibilities: selectedUser?.responsibilities || [""],
-          requirements: selectedUser?.requirements || [""],
+          responsibilities: selectedJob?.responsibilities || [""],
+          requirements: selectedJob?.requirements || [""],
         },
       });
     }
-    console.table(selectedUser);
-  }, [selectedUser, reset]);
+    console.table(selectedJob);
+  }, [selectedJob, reset]);
   const onSubmit = async (data) => {
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/job`, {
@@ -187,7 +187,7 @@ const UpdateModal = ({ show, onHide, refresh, selectedUser }) => {
         <div class="col">
           <span class="form-label fw-bold">
             {`Why become a  ${getValues("title") || "..."}? (${
-              selectedUser?.categoryTitle
+              selectedJob?.categoryTitle
             })  `}
           </span>
           <p>{getValues("details.why")}</p>

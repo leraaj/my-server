@@ -3,10 +3,12 @@ import useFetch from "../../../../hooks/useFetch";
 import CustomTable from "../../../../components/table/CustomTable";
 import CustomButton from "../../../../components/button/CustomButton";
 import AddJobModal from "./AddJobModal";
-import UpdateModal from "./UpdateJobModal";
+import ViewJobModal from "./UpdateJobModal";
+import JobAppointmentModal from "./JobAppointmentModal";
+import JobApplicationModal from "./JobApplicationModal";
 const Jobs = () => {
   const API = `${process.env.REACT_APP_API_URL}/api/`;
-  const [selectedUser, setSelectedUser] = useState({});
+  const [selectedJob, setSelectedJob] = useState({});
   const {
     data: jobs,
     loading: jobsLoading,
@@ -60,13 +62,29 @@ const Jobs = () => {
   };
   const hideAddJobModal = () => {
     setAddJobModal(false);
-  }; // EDIT MODAL VARIABLES
-  const [editUserModal, setEditUserModal] = useState(null);
-  const showEditUserModal = () => {
-    setEditUserModal(true);
   };
-  const hideEditUser = () => {
-    setEditUserModal(false);
+  // VIEW JOB MODAL VARIABLES
+  const [jobModal, setJobModal] = useState(null);
+  const showJobModal = () => {
+    setJobModal(true);
+  };
+  const hideJobModal = () => {
+    setJobModal(false);
+  };
+  // VIEW JOB APPOINTMENT MODAL VARIABLES
+  const [appointmentModal, setAppointmentModal] = useState(null);
+  const showAppointmentModal = () => {
+    setAppointmentModal(true);
+  };
+  const hideAppointmentModal = () => {
+    setAppointmentModal(false);
+  }; // VIEW JOB APPLICATION MODAL VARIABLES
+  const [applicationModal, setApplicationModal] = useState(null);
+  const showApplicationModal = () => {
+    setApplicationModal(true);
+  };
+  const hideApplicationModal = () => {
+    setApplicationModal(false);
   };
   return (
     <>
@@ -81,9 +99,9 @@ const Jobs = () => {
               color="dark"
               label="View"
               onClick={() => {
-                const user = row.original;
-                setSelectedUser(user);
-                showEditUserModal();
+                const job = row.original;
+                setSelectedJob(job);
+                showJobModal();
               }}
             />
           </div>
@@ -98,6 +116,22 @@ const Jobs = () => {
                 label="Add job"
                 onClick={showAddJobModal}
               />
+              <CustomButton
+                size="sm"
+                color="dark"
+                label="Applications"
+                onClick={() => {
+                  showApplicationModal();
+                }}
+              />
+              <CustomButton
+                size="sm"
+                color="dark"
+                label="Appointments"
+                onClick={() => {
+                  showAppointmentModal();
+                }}
+              />
             </div>
           </>
         )}
@@ -107,11 +141,21 @@ const Jobs = () => {
         onHide={hideAddJobModal}
         refresh={jobsRefresh}
       />
-      <UpdateModal
-        show={editUserModal}
-        onHide={hideEditUser}
+      <ViewJobModal
+        show={jobModal}
+        onHide={hideJobModal}
         refresh={jobsRefresh}
-        selectedUser={selectedUser}
+        selectedJob={selectedJob}
+      />
+      <JobApplicationModal
+        show={applicationModal}
+        onHide={hideApplicationModal}
+        refresh={jobsRefresh}
+      />
+      <JobAppointmentModal
+        show={appointmentModal}
+        onHide={hideAppointmentModal}
+        refresh={jobsRefresh}
       />
     </>
   );
