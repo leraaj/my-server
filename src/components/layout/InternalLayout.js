@@ -21,7 +21,7 @@ const InternalLayout = () => {
     sidebarLinks.find((link) => link.position === user?.position)?.links || [];
   const handleLogout = async () => {
     try {
-      const response = await fetch(API, {
+      const response = await fetch(`${API}/${user._id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

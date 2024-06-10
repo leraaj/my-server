@@ -26,6 +26,7 @@ const useLogin = () => {
         navigate(data.user?.position === 1 ? "/accounts" : "/profile");
         setIsLoading(false);
       } else {
+        const data = await response.json();
         const inputError = [
           {
             type: "invalid-input",
@@ -38,13 +39,20 @@ const useLogin = () => {
             message: " ", //Invalid username or password
           },
         ];
-        inputError.forEach(({ name, type, message }) =>
-          setError(name, { type, message })
-        );
-        const errorMessage = await response.text(); // assuming error message comes as text
-        setError(errorMessage); // set error state
+        if (response.status === 401) {
+          inputError.forEach(({ name, type, message }) =>
+            setError(name, { type, message })
+          );
+        }
+        if (response.status === 403) {
+          console.log(data, response);
+          inputError.forEach(({ name, type, message }) =>
+            setError(name, { type, message })
+          );
+        } else {
+        }
         setIsLoading(false);
-        toast.error("Invalid username or password");
+        toast.error(`Error: ${data.message}`);
       }
     } catch (error) {
       console.error(error);

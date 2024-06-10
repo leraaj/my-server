@@ -107,33 +107,33 @@ const Jobs = () => {
           </div>
         )}
         renderTopToolbarCustomActions={() => (
-          <>
-            <div className="d-flex gap-2">
-              <CustomButton
-                size="sm"
-                color="dark"
-                isModal
-                label="Add job"
-                onClick={showAddJobModal}
-              />
-              <CustomButton
-                size="sm"
-                color="dark"
-                label="Applications"
-                onClick={() => {
-                  showApplicationModal();
-                }}
-              />
-              <CustomButton
-                size="sm"
-                color="dark"
-                label="Appointments"
-                onClick={() => {
-                  showAppointmentModal();
-                }}
-              />
-            </div>
-          </>
+          <div className="d-flex align-items-center gap-2">
+            <CustomButton
+              size="sm"
+              color="dark"
+              isModal
+              label="Add job"
+              onClick={showAddJobModal}
+            />
+            <CustomButton
+              size="sm"
+              color="dark"
+              label="Applications"
+              onClick={() => {
+                showApplicationModal();
+                jobsRefresh();
+              }}
+            />
+            <CustomButton
+              size="sm"
+              color="dark"
+              label="Appointments"
+              onClick={() => {
+                showAppointmentModal();
+                jobsRefresh();
+              }}
+            />
+          </div>
         )}
       />
       <AddJobModal

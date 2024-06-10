@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Modal from "../../../../components/modal/Modal";
 import { toast } from "sonner";
 import { useForm, useFieldArray, useWatch } from "react-hook-form";
@@ -7,6 +7,7 @@ import * as yup from "yup";
 import useFetch from "../../../../hooks/useFetch";
 import { getValue } from "@testing-library/user-event/dist/utils";
 import CustomButton from "../../../../components/button/CustomButton";
+import CustomTable from "../../../../components/table/CustomTable";
 
 const JobApplicationModal = ({ show, onHide, refresh }) => {
   const {
@@ -16,6 +17,33 @@ const JobApplicationModal = ({ show, onHide, refresh }) => {
   } = useFetch(`${process.env.REACT_APP_API_URL}/api/applications`);
   const [selectedApplicant, setSelectedApplicant] = useState({});
   const [applicantsApplication, setAppointmentsApplication] = useState({});
+  // Table Data
+  const data = useMemo(() => {
+    if (!applications) return []; // Return empty array if jobs or categories data is not available
+    return applications.map((app) => {
+      return {
+        id: app?._id,
+        user: app?.user?.fullName,
+        job: app?.job?.title,
+        userDetails: app?.user,
+        applicationDetails: app,
+        jobDetails: app?.job,
+      };
+    });
+  }, [applications]);
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "user", // Since the full name is directly accessible
+        header: "Applicants",
+      },
+      {
+        accessorKey: "job", // Since the full name is directly accessible
+        header: "Applied to",
+      },
+    ],
+    [applications]
+  );
   // Modal Varaiables
   const [applicantAppModal, setApplicantAppModal] = useState(null);
   const showApplicantAppModal = () => {
@@ -92,8 +120,7 @@ const JobApplicationModal = ({ show, onHide, refresh }) => {
         title="Job Applications"
         size="fullscreen"
         isStatic>
-        <div class="vstack gap-3">
-          {applicationLoading
+        {/* {applicationLoading
             ? "loading..."
             : applications?.map((app) => {
                 return (
@@ -111,8 +138,30 @@ const JobApplicationModal = ({ show, onHide, refresh }) => {
                     {`   ${app?.job.title} - ${app?.user?.fullName}`}
                   </div>
                 );
-              })}
-        </div>
+              })} */}
+
+        <CustomTable
+          data={data}
+          columns={columns}
+          enableLoading={applicationLoading}
+          renderRowActions={({ row }) => (
+            <div className={"d-flex gap-1"}>
+              <CustomButton
+                size="sm"
+                color="dark"
+                label="View Application"
+                onClick={() => {
+                  const applicationDetails = row.original;
+                  showApplicantAppModal();
+                  setSelectedApplicant(applicationDetails?.userDetails);
+                  setAppointmentsApplication(
+                    applicationDetails?.applicationDetails
+                  );
+                }}
+              />
+            </div>
+          )}
+        />
       </Modal>
       <Modal
         show={applicantAppModal}
@@ -131,12 +180,6 @@ const JobApplicationModal = ({ show, onHide, refresh }) => {
             </p>
             {applicantsApplication?.applicationStatus === 2 && (
               <div className="row mx-0 g-3">
-                <div className="col-12">
-                  <p>
-                    <strong>Application Status: </strong>
-                    {applicantsApplication?.applicationStatus}
-                  </p>
-                </div>
                 <div className="col-12 input-container">
                   <label className="form-label">Meeting Link</label>
                   <input
