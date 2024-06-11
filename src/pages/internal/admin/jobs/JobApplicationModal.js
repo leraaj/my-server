@@ -11,9 +11,14 @@ import CustomTable from "../../../../components/table/CustomTable";
 
 const JobApplicationModal = ({ show, onHide, refresh }) => {
   const {
+    data: appointments,
+    loading: appointmentLoading,
+    refresh: appointmentRefresh,
+  } = useFetch(`${process.env.REACT_APP_API_URL}/api/appointments`);
+  const {
     data: applications,
     loading: applicationLoading,
-    refresh: jobRefresh,
+    refresh: applicationRefresh,
   } = useFetch(`${process.env.REACT_APP_API_URL}/api/applications`);
   const [selectedApplicant, setSelectedApplicant] = useState({});
   const [applicantsApplication, setAppointmentsApplication] = useState({});
@@ -25,6 +30,8 @@ const JobApplicationModal = ({ show, onHide, refresh }) => {
         id: app?._id,
         user: app?.user?.fullName,
         job: app?.job?.title,
+        applicationStatus: app?.applicationStatus,
+        statusLabel: app?.applicationStatus === 2 ? "Completed" : "Pending",
         userDetails: app?.user,
         applicationDetails: app,
         jobDetails: app?.job,
@@ -40,6 +47,10 @@ const JobApplicationModal = ({ show, onHide, refresh }) => {
       {
         accessorKey: "job", // Since the full name is directly accessible
         header: "Applied to",
+      },
+      {
+        accessorKey: "statusLabel", // Since the full name is directly accessible
+        header: "Status",
       },
     ],
     [applications]
@@ -72,7 +83,8 @@ const JobApplicationModal = ({ show, onHide, refresh }) => {
           "Success: The request for application was successfully handled."
         );
         hideApplicantAppModal();
-        jobRefresh();
+        applicationRefresh();
+        appointmentRefresh();
         console.log("Response: " + JSON.stringify(fnResponse));
       } else {
         toast.success("Error: The request for application was un-successful.");
@@ -103,7 +115,7 @@ const JobApplicationModal = ({ show, onHide, refresh }) => {
           "Success: The request for appointment was successfully created"
         );
         hideApplicantAppModal();
-        jobRefresh();
+        applicationRefresh();
         console.log("Response: " + JSON.stringify(fnResponse));
       } else {
         toast.success("Error: The request for application was un-successful.");
@@ -120,26 +132,6 @@ const JobApplicationModal = ({ show, onHide, refresh }) => {
         title="Job Applications"
         size="fullscreen"
         isStatic>
-        {/* {applicationLoading
-            ? "loading..."
-            : applications?.map((app) => {
-                return (
-                  <div>
-                    <CustomButton
-                      size="sm"
-                      color="dark"
-                      label="View Application"
-                      onClick={() => {
-                        showApplicantAppModal();
-                        setSelectedApplicant(app?.user);
-                        setAppointmentsApplication(app);
-                      }}
-                    />
-                    {`   ${app?.job.title} - ${app?.user?.fullName}`}
-                  </div>
-                );
-              })} */}
-
         <CustomTable
           data={data}
           columns={columns}
@@ -178,41 +170,47 @@ const JobApplicationModal = ({ show, onHide, refresh }) => {
               <strong>Applied for job: </strong>
               {applicantsApplication?.job?.title}
             </p>
-            {applicantsApplication?.applicationStatus === 2 && (
-              <div className="row mx-0 g-3">
-                <div className="col-12 input-container">
-                  <label className="form-label">Meeting Link</label>
-                  <input
-                    type="text"
-                    className="form-control form-control-light"
-                    onChange={(e) => setMeetingLink(e.target.value)}
-                  />
+            {applicantsApplication?.applicationStatus === 2 &&
+              (applicantsApplication.disabled ? (
+                "You've already created an appointment for this application"
+              ) : (
+                <div className="row mx-0 g-3">
+                  <div className="col-12 input-container">
+                    <label className="form-label">Meeting Link</label>
+                    <input
+                      type="text"
+                      onClick={() => console.log(applicantsApplication)}
+                      className="form-control form-control-light"
+                      onChange={(e) => setMeetingLink(e.target.value)}
+                    />
+                  </div>
+                  <div className="col-12 input-container">
+                    <label className="form-label">Meeting Time</label>
+                    <input
+                      type="text"
+                      className="form-control form-control-light"
+                      onClick={() => console.log(applicantsApplication)}
+                      onChange={(e) => setMeetingTime(e.target.value)}
+                    />
+                  </div>
+                  <div className="col-12 d-flex justify-content-end">
+                    <CustomButton
+                      color={"danger"}
+                      label={"Create an Appointment"}
+                      disabled={applicantsApplication.disabled}
+                      onClick={() => {
+                        const updatedData = {
+                          userId: selectedApplicant._id,
+                          jobId: applicantsApplication.job?._id,
+                          meetingLink: meetingLink,
+                          meetingTime: meetingTime,
+                        };
+                        handleUserAppointment(updatedData);
+                      }}
+                    />
+                  </div>
                 </div>
-                <div className="col-12 input-container">
-                  <label className="form-label">Meeting Time</label>
-                  <input
-                    type="text"
-                    className="form-control form-control-light"
-                    onChange={(e) => setMeetingTime(e.target.value)}
-                  />
-                </div>
-                <div className="col-12 d-flex justify-content-end">
-                  <CustomButton
-                    color={"danger"}
-                    label={"Create an Appointment"}
-                    onClick={() => {
-                      const updatedData = {
-                        userId: selectedApplicant._id,
-                        jobId: applicantsApplication.job?._id,
-                        meetingLink: meetingLink,
-                        meetingTime: meetingTime,
-                      };
-                      handleUserAppointment(updatedData);
-                    }}
-                  />
-                </div>
-              </div>
-            )}
+              ))}
 
             <div className="d-flex justify-content-end gap-2">
               {applicantsApplication?.applicationStatus === 1 && (

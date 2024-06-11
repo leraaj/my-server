@@ -25,6 +25,8 @@ const JobApplicationModal = ({ show, onHide, refresh }) => {
         id: app?._id,
         user: app?.user?.fullName,
         job: app?.job?.title,
+        appointmentStatus: app?.appointmentStatus,
+        statusLabel: app?.appointmentStatus === 2 ? "Completed" : "Pending",
         userDetails: app?.user,
         appointmentDetails: app,
         jobDetails: app?.job,
@@ -40,6 +42,10 @@ const JobApplicationModal = ({ show, onHide, refresh }) => {
       {
         accessorKey: "job", // Since the full name is directly accessible
         header: "Applied to",
+      },
+      {
+        accessorKey: "statusLabel", // Since the full name is directly accessible
+        header: "Status",
       },
     ],
     [appointments]
@@ -120,26 +126,6 @@ const JobApplicationModal = ({ show, onHide, refresh }) => {
         title="Job Appointments"
         size="fullscreen"
         isStatic>
-        {/* {appointmentLoading
-            ? "loading..."
-            : appointments?.map((app) => {
-                return (
-                  <div>
-                    <CustomButton
-                      size="sm"
-                      color="dark"
-                      label="View Application"
-                      onClick={() => {
-                        showApplicantAppModal();
-                        setSelectedApplicant(app?.user);
-                        setAppointmentsApplication(app);
-                      }}
-                    />
-                    {`   ${app?.job.title} - ${app?.user?.fullName}`}
-                  </div>
-                );
-              })} */}
-
         <CustomTable
           data={data}
           columns={columns}
@@ -176,41 +162,6 @@ const JobApplicationModal = ({ show, onHide, refresh }) => {
               <strong>Applied for job: </strong>
               {applicantAppointments?.job?.title}
             </p>
-            {applicantAppointments?.appointmentStatus === 2 && (
-              <div className="row mx-0 g-3">
-                <div className="col-12 input-container">
-                  <label className="form-label">Meeting Link</label>
-                  <input
-                    type="text"
-                    className="form-control form-control-light"
-                    onChange={(e) => setMeetingLink(e.target.value)}
-                  />
-                </div>
-                <div className="col-12 input-container">
-                  <label className="form-label">Meeting Time</label>
-                  <input
-                    type="text"
-                    className="form-control form-control-light"
-                    onChange={(e) => setMeetingTime(e.target.value)}
-                  />
-                </div>
-                <div className="col-12 d-flex justify-content-end">
-                  <CustomButton
-                    color={"danger"}
-                    label={"Create an Appointment"}
-                    onClick={() => {
-                      const updatedData = {
-                        userId: selectedApplicant._id,
-                        jobId: applicantAppointments.job?._id,
-                        meetingLink: meetingLink,
-                        meetingTime: meetingTime,
-                      };
-                      handleUserAppointment(updatedData);
-                    }}
-                  />
-                </div>
-              </div>
-            )}
 
             <div className="d-flex justify-content-end gap-2">
               {applicantAppointments?.appointmentStatus === 1 && (
