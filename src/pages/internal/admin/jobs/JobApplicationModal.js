@@ -8,36 +8,60 @@ import useFetch from "../../../../hooks/useFetch";
 import { getValue } from "@testing-library/user-event/dist/utils";
 import CustomButton from "../../../../components/button/CustomButton";
 import CustomTable from "../../../../components/table/CustomTable";
+import ViewApplicationModal from "./ViewApplicationModal";
+import dateTimeFormatter from "../../../../hooks/dateTimeFormatter";
 
-const JobApplicationModal = ({ show, onHide, refresh }) => {
-  const {
-    data: appointments,
-    loading: appointmentLoading,
-    refresh: appointmentRefresh,
-  } = useFetch(`${process.env.REACT_APP_API_URL}/api/appointments`);
+const JobApplicationModal = ({ show, onHide }) => {
   const {
     data: applications,
     loading: applicationLoading,
     refresh: applicationRefresh,
   } = useFetch(`${process.env.REACT_APP_API_URL}/api/applications`);
-  const [selectedApplicant, setSelectedApplicant] = useState({});
-  const [applicantsApplication, setAppointmentsApplication] = useState({});
+  // Handle row select
+  const handleRowSelect = (appDetails) => {
+    setApplicantsApplication({
+      ...appDetails.appDetails,
+      statusLabel: appDetails.statusLabel,
+    });
+  };
   // Table Data
+  const formatDate = (timestamp) => {
+    const { date, formattedTime } = dateTimeFormatter(timestamp);
+    return { date, formattedTime };
+  };
   const data = useMemo(() => {
     if (!applications) return []; // Return empty array if jobs or categories data is not available
-    return applications.map((app) => {
-      return {
+    return applications
+      .map((app) => ({
         id: app?._id,
         user: app?.user?.fullName,
         job: app?.job?.title,
-        applicationStatus: app?.applicationStatus,
-        statusLabel: app?.applicationStatus === 2 ? "Completed" : "Pending",
+        status: app?.applicationStatus,
+        statusLabel:
+          app?.applicationStatus === 2 && app?.disabled
+            ? "Finalized"
+            : app?.applicationStatus === 2
+            ? "Appointment Scheduling in Progress"
+            : app?.applicationStatus === 1
+            ? "Application Under Review"
+            : "",
+        appDetails: app,
         userDetails: app?.user,
-        applicationDetails: app,
         jobDetails: app?.job,
-      };
-    });
+        createdAt: `${formatDate(app?.createdAt).date} - ${
+          formatDate(app?.createdAt).formattedTime
+        }`, // Example Format: 2024-06-10T12:14:33.675Z
+      }))
+      .sort((a, b) => {
+        // Sort by status, placing "Completed" (status 2) below "Pending" (other statuses)
+        if (a.status !== b.status) {
+          return a.status === 2 ? 1 : -1;
+        }
+        // If status is the same, sort by createdAt
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      });
   }, [applications]);
+
   const columns = useMemo(
     () => [
       {
@@ -52,10 +76,14 @@ const JobApplicationModal = ({ show, onHide, refresh }) => {
         accessorKey: "statusLabel", // Since the full name is directly accessible
         header: "Status",
       },
+      {
+        accessorKey: "createdAt", // Since the full name is directly accessible
+        header: "Created at",
+      },
     ],
     [applications]
   );
-  // Modal Varaiables
+  // View applicants Application Modal DATA
   const [applicantAppModal, setApplicantAppModal] = useState(null);
   const showApplicantAppModal = () => {
     setApplicantAppModal(true);
@@ -63,67 +91,11 @@ const JobApplicationModal = ({ show, onHide, refresh }) => {
   const hideApplicantAppModal = () => {
     setApplicantAppModal(false);
   };
-
-  // Handle Application Status
-  const handleUserApplication = async (updatedData) => {
-    try {
-      console.log("Data: " + JSON.stringify(updatedData));
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/application/${applicantsApplication?._id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(updatedData),
-        }
-      );
-      const fnResponse = await response.json();
-      if (response.ok) {
-        toast.success(
-          "Success: The request for application was successfully handled."
-        );
-        hideApplicantAppModal();
-        applicationRefresh();
-        appointmentRefresh();
-        console.log("Response: " + JSON.stringify(fnResponse));
-      } else {
-        toast.success("Error: The request for application was un-successful.");
-      }
-    } catch (error) {
-      toast.error(error);
-    }
-  };
-  // Create Appointment Variables
-  const [meetingLink, setMeetingLink] = useState({});
-  const [meetingTime, setMeetingTime] = useState({});
-  // Handle Application Status
-  const handleUserAppointment = async (updatedData) => {
-    try {
-      console.log("Data: " + JSON.stringify(updatedData));
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/appointment`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(updatedData),
-        }
-      );
-      const fnResponse = await response.json();
-      if (response.ok) {
-        toast.success(
-          "Success: The request for appointment was successfully created"
-        );
-        hideApplicantAppModal();
-        applicationRefresh();
-        console.log("Response: " + JSON.stringify(fnResponse));
-      } else {
-        toast.success("Error: The request for application was un-successful.");
-      }
-    } catch (error) {
-      toast.error(error);
-    }
-  };
+  useEffect(() => {
+    applicationRefresh();
+  }, [show]);
+  const [selectedApplicant, setSelectedApplicant] = useState({});
+  const [applicantsApplication, setApplicantsApplication] = useState({});
   return (
     <>
       <Modal
@@ -143,110 +115,23 @@ const JobApplicationModal = ({ show, onHide, refresh }) => {
                 color="dark"
                 label="View Application"
                 onClick={() => {
-                  const applicationDetails = row.original;
+                  const appDetails = row.original;
                   showApplicantAppModal();
-                  setSelectedApplicant(applicationDetails?.userDetails);
-                  setAppointmentsApplication(
-                    applicationDetails?.applicationDetails
-                  );
+                  setSelectedApplicant(appDetails?.userDetails);
+                  handleRowSelect(row.original);
                 }}
               />
             </div>
           )}
         />
       </Modal>
-      <Modal
+      <ViewApplicationModal
         show={applicantAppModal}
         onHide={hideApplicantAppModal}
-        title={`${selectedApplicant.fullName} - Appointment Form`}
-        size="sm">
-        <div className="row mx-0 g-3">
-          <div className="col-12 input-container">
-            <p>
-              <strong>Name: </strong>
-              {selectedApplicant.fullName}
-            </p>
-            <p>
-              <strong>Applied for job: </strong>
-              {applicantsApplication?.job?.title}
-            </p>
-            {applicantsApplication?.applicationStatus === 2 &&
-              (applicantsApplication.disabled ? (
-                "You've already created an appointment for this application"
-              ) : (
-                <div className="row mx-0 g-3">
-                  <div className="col-12 input-container">
-                    <label className="form-label">Meeting Link</label>
-                    <input
-                      type="text"
-                      onClick={() => console.log(applicantsApplication)}
-                      className="form-control form-control-light"
-                      onChange={(e) => setMeetingLink(e.target.value)}
-                    />
-                  </div>
-                  <div className="col-12 input-container">
-                    <label className="form-label">Meeting Time</label>
-                    <input
-                      type="text"
-                      className="form-control form-control-light"
-                      onClick={() => console.log(applicantsApplication)}
-                      onChange={(e) => setMeetingTime(e.target.value)}
-                    />
-                  </div>
-                  <div className="col-12 d-flex justify-content-end">
-                    <CustomButton
-                      color={"danger"}
-                      label={"Create an Appointment"}
-                      disabled={applicantsApplication.disabled}
-                      onClick={() => {
-                        const updatedData = {
-                          userId: selectedApplicant._id,
-                          jobId: applicantsApplication.job?._id,
-                          meetingLink: meetingLink,
-                          meetingTime: meetingTime,
-                        };
-                        handleUserAppointment(updatedData);
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
-
-            <div className="d-flex justify-content-end gap-2">
-              {applicantsApplication?.applicationStatus === 1 && (
-                <>
-                  <CustomButton
-                    color={"success"}
-                    label={"Accept"}
-                    onClick={() => {
-                      handleUserApplication();
-                      const updatedData = {
-                        userId: selectedApplicant._id,
-                        jobId: applicantsApplication.job?._id,
-                        applicationStatus: 2,
-                      };
-                      handleUserApplication(updatedData);
-                    }}
-                  />
-                  <CustomButton
-                    color={"danger"}
-                    label={"Decline"}
-                    onClick={() => {
-                      handleUserApplication();
-                      const updatedData = {
-                        userId: selectedApplicant._id,
-                        jobId: applicantsApplication.job?._id,
-                        applicationStatus: 0,
-                      };
-                      handleUserApplication(updatedData);
-                    }}
-                  />
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </Modal>
+        refresh={applicationRefresh}
+        user={selectedApplicant}
+        application={applicantsApplication}
+      />
     </>
   );
 };

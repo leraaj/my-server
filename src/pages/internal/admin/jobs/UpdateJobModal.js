@@ -93,7 +93,6 @@ const UpdateModal = ({ show, onHide, refresh, selectedJob }) => {
         },
       });
     }
-    console.table(selectedJob);
   }, [selectedJob, reset]);
   const onSubmit = async (data) => {
     try {

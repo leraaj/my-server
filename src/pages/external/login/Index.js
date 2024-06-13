@@ -44,7 +44,7 @@ const Login = () => {
           noValidate>
           <div className="col row mx-0 g-3">
             <div className="col-12 col-md input-container">
-              <span className="form-label ">Username</span>
+              <span className="form-label-light ">Username</span>
               <input
                 type="text"
                 className={`form-control form-control-light ${
@@ -56,7 +56,7 @@ const Login = () => {
               <div className="invalid-feedback">{errors.username?.message}</div>
             </div>
             <div className="col-12 col-md input-container">
-              <span className="form-label ">Password</span>
+              <span className="form-label-light ">Password</span>
               <input
                 type="password"
                 className={`form-control form-control-light ${

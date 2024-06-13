@@ -11,6 +11,7 @@ const Modal = ({
   size,
   isStatic,
   isLoading,
+  footer,
 }) => {
   const closeModal = () => {
     onHide();
@@ -53,13 +54,11 @@ const Modal = ({
             <div id="md-body">{children}</div>
             <div id="md-footer">
               <span>
-                <button
-                  type="button"
-                  className="btn btn-outline-dark"
-                  onClick={closeModal}>
+                <button type="button" className="btn " onClick={closeModal}>
                   Cancel
                 </button>
               </span>
+              {footer}
               {onSubmit && (
                 <span>
                   <button type="submit" className="btn btn-dark">

@@ -109,123 +109,138 @@ const UpdateModal = ({ show, onHide, refresh, selectedUser }) => {
       title="Update user"
       onSubmit={handleSubmit(onSubmit)}
       reset={reset}
-      isLoading={isLoading}>
-      <div className="row mx-0 g-2">
-        <div className="col-12 col-lg-8">
-          <label className="form-label">Full name</label>
-          <input
-            type="text"
-            className={`form-control form-control-light ${
-              errors?.fullName && "is-invalid"
-            }`}
-            placeholder={`Enter your full name`}
-            name="fullName"
-            {...register("fullName")}
-            required
-          />
-          {errors?.fullName && (
-            <span className="invalid-feedback">{errors.fullName.message}</span>
-          )}
+      isLoading={isLoading}
+      size="lg">
+      <div className="d-flex gap-2">
+        <div className="col-12 col-sm">
+          <div className="col-12  mb-2">
+            <label className="form-label">Full name</label>
+            <input
+              type="text"
+              className={`form-control form-control-light ${
+                errors?.fullName && "is-invalid"
+              }`}
+              placeholder={`Enter your full name`}
+              name="fullName"
+              {...register("fullName")}
+              required
+            />
+            {errors?.fullName && (
+              <span className="invalid-feedback">
+                {errors.fullName.message}
+              </span>
+            )}
+          </div>
+          <div className="col-12  mb-2">
+            <label className="form-label">Position</label>
+            <select
+              className={`form-control form-control-light ${
+                errors?.position && "is-invalid"
+              }`}
+              name="position"
+              {...register("position")}
+              required>
+              <option value="">Select position</option>
+              <option value="1">Admin</option>
+              <option value="2">Client</option>
+              <option value="3">Applicant</option>
+            </select>
+            {errors?.position && (
+              <span className="invalid-feedback">
+                {errors.position.message}
+              </span>
+            )}
+          </div>
+          <div className="col-12 mb-2">
+            <label className="form-label">Email</label>
+            <input
+              type="email"
+              className={`form-control  form-control-light ${
+                errors?.email && "is-invalid"
+              }`}
+              placeholder="Enter your email"
+              name="email"
+              {...register("email")}
+              required
+            />{" "}
+            {errors?.email && (
+              <span className="invalid-feedback">{errors.email.message}</span>
+            )}
+          </div>
+          <div className="col-12 mb-2">
+            <label className="form-label">Contact Number</label>
+            <input
+              type="text"
+              className={`form-control  form-control-light ${
+                errors?.contact && "is-invalid"
+              }`}
+              placeholder="Enter your contact number"
+              name="contact"
+              {...register("contact")}
+              required
+            />
+            {errors?.contact && (
+              <span className="invalid-feedback">{errors.contact.message}</span>
+            )}
+          </div>
         </div>
-        <div className="col-12 col-lg-4">
-          <label className="form-label">Position</label>
-          <select
-            className={`form-control form-control-light ${
-              errors?.position && "is-invalid"
-            }`}
-            name="position"
-            {...register("position")}
-            required>
-            <option value="">Select position</option>
-            <option value="1">Admin</option>
-            <option value="2">Client</option>
-            <option value="3">Applicant</option>
-          </select>
-          {errors?.position && (
-            <span className="invalid-feedback">{errors.position.message}</span>
-          )}
-        </div>
-        <div className="col-12 col-lg-6">
-          <label className="form-label">Email</label>
-          <input
-            type="email"
-            className={`form-control  form-control-light ${
-              errors?.email && "is-invalid"
-            }`}
-            placeholder="Enter your email"
-            name="email"
-            {...register("email")}
-            required
-          />{" "}
-          {errors?.email && (
-            <span className="invalid-feedback">{errors.email.message}</span>
-          )}
-        </div>
-        <div className="col-12 col-lg-6">
-          <label className="form-label">Contact Number</label>
-          <input
-            type="text"
-            className={`form-control  form-control-light ${
-              errors?.contact && "is-invalid"
-            }`}
-            placeholder="Enter your contact number"
-            name="contact"
-            {...register("contact")}
-            required
-          />
-          {errors?.contact && (
-            <span className="invalid-feedback">{errors.contact.message}</span>
-          )}
-        </div>
-        <div className="col-12 col-lg-6">
-          <label className="form-label">Username</label>
-          <input
-            type="text"
-            className={`form-control  form-control-light ${
-              errors?.username && "is-invalid"
-            }`}
-            placeholder="Enter your username"
-            name="username"
-            {...register("username")}
-            required
-          />{" "}
-          {errors?.username && (
-            <span className="invalid-feedback">{errors.username.message}</span>
-          )}
-        </div>
-        <div className="col-12 col-lg-6">
-          <label className="form-label">Password</label>
-          <input
-            type="password"
-            className={`form-control  form-control-light ${
-              errors?.password && "is-invalid"
-            }`}
-            placeholder={`Enter your password`}
-            name="password"
-            {...register("password")}
-            required
-          />
-          {errors?.password && (
-            <span className="invalid-feedback">{errors.password.message}</span>
-          )}
-        </div>
-        <div className="col-12 col-lg-4">
-          <label className="form-label">Application Status</label>
-          <select
-            className={`form-control form-control-light ${
-              errors?.position && "is-invalid"
-            }`}
-            name="position"
-            {...register("applicationStatus")}
-            required>
-            <option value="">Select Application Status</option>
-            <option value="2">Pending</option>
-            <option value="3">Accepted</option>
-            <option value="4">Declined</option>
-          </select>
-          {errors?.position && (
-            <span className="invalid-feedback">{errors.position.message}</span>
-          )}
+        <div className="col-12 col-sm">
+          <div className="col-12 mb-2">
+            <label className="form-label">Username</label>
+            <input
+              type="text"
+              className={`form-control  form-control-light ${
+                errors?.username && "is-invalid"
+              }`}
+              placeholder="Enter your username"
+              name="username"
+              {...register("username")}
+              required
+            />{" "}
+            {errors?.username && (
+              <span className="invalid-feedback">
+                {errors.username.message}
+              </span>
+            )}
+          </div>
+          <div className="col-12 mb-2">
+            <label className="form-label">Password</label>
+            <input
+              type="password"
+              className={`form-control  form-control-light ${
+                errors?.password && "is-invalid"
+              }`}
+              placeholder={`Enter your password`}
+              name="password"
+              {...register("password")}
+              required
+            />
+            {errors?.password && (
+              <span className="invalid-feedback">
+                {errors.password.message}
+              </span>
+            )}
+          </div>
+          <div className="col-12  mb-2">
+            <label className="form-label">Application Status</label>
+            <select
+              className={`form-control form-control-light ${
+                errors?.position && "is-invalid"
+              }`}
+              name="position"
+              {...register("applicationStatus")}
+              required>
+              <option value="">Select Application Status</option>
+              <option value="2">Pending</option>
+              <option value="3">Accepted</option>
+              <option value="4">Declined</option>
+            </select>
+            {errors?.position && (
+              <span className="invalid-feedback">
+                {errors.position.message}
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </Modal>

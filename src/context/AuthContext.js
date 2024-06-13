@@ -63,7 +63,7 @@ export const AuthContextProvider = ({ children }) => {
 
   useLayoutEffect(() => {
     refreshUser();
-  }, []);
+  }, [URL]);
 
   return (
     <AuthContext.Provider

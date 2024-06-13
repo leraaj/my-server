@@ -1,6 +1,6 @@
 import React from "react";
 
-const useDateTimeFormatter = (timestamp) => {
+const dateTimeFormatter = (timestamp) => {
   const dateObj = new Date(timestamp);
   const date = dateObj.toISOString().split("T")[0]; // Extracts date
   const time = dateObj.toISOString().split("T")[1].split("Z")[0]; // Extracts time
@@ -10,4 +10,4 @@ const useDateTimeFormatter = (timestamp) => {
   return { date, time, formattedTime };
 };
 
-export default useDateTimeFormatter;
+export default dateTimeFormatter;

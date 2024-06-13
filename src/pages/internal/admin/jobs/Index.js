@@ -14,6 +14,16 @@ const Jobs = () => {
     loading: jobsLoading,
     refresh: jobsRefresh,
   } = useFetch(`${API}jobs`);
+  const {
+    data: application,
+    loading: applicationLoading,
+    refresh: applicationRefresh,
+  } = useFetch(`${API}applications`);
+  const {
+    data: appointment,
+    loading: appointmentLoading,
+    refresh: appointmentRefresh,
+  } = useFetch(`${API}appointments`);
   const data = useMemo(() => {
     if (!jobs) return []; // Return empty array if jobs or categories data is not available
     return jobs.map((job) => {
@@ -121,7 +131,7 @@ const Jobs = () => {
               label="Applications"
               onClick={() => {
                 showApplicationModal();
-                jobsRefresh();
+                applicationRefresh();
               }}
             />
             <CustomButton
@@ -130,7 +140,7 @@ const Jobs = () => {
               label="Appointments"
               onClick={() => {
                 showAppointmentModal();
-                jobsRefresh();
+                appointmentRefresh();
               }}
             />
           </div>
@@ -150,12 +160,12 @@ const Jobs = () => {
       <JobApplicationModal
         show={applicationModal}
         onHide={hideApplicationModal}
-        refresh={jobsRefresh}
+        refresh={applicationRefresh}
       />
       <JobAppointmentModal
         show={appointmentModal}
         onHide={hideAppointmentModal}
-        refresh={jobsRefresh}
+        refresh={appointmentRefresh}
       />
     </>
   );
