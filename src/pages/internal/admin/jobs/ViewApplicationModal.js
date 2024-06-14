@@ -166,13 +166,9 @@ const ViewApplicationModal = ({ show, onHide, refresh, user, application }) => {
                 </div>
                 <div className="input-container col-12">
                   <label className="form-label">Portfolio</label>
-                  <input
-                    type="number"
-                    className="form-control form-control-light"
-                    value={user?.contact}
-                    disabled
-                    readOnly
-                  />
+                  <div className="col-auto">
+                    <CustomButton color="dark" label="View portfolio" />
+                  </div>
                 </div>
               </div>
             ) : (

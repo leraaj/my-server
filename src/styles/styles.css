@@ -328,7 +328,7 @@ textarea:focus {
   border-top: none !important;
   border-left: none !important;
   border-right: none !important;
-  border-bottom-color: rgb(120, 107, 255);
+  border-bottom-color: #786bff;
   border-bottom-width: 1.5px;
   border-style: inset;
 }
