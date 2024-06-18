@@ -84,17 +84,20 @@ const ApplicationsModal = ({ show, onHide, isLoading, refresh, user }) => {
   const modalClose = () => {
     setFilter("Pending");
     refresh();
+    refreshApplications();
+    refreshCountPending();
+    refreshCountUnfinishedProgress();
     onHide();
   };
 
-  const [appViewModal, setAppViewModal] = useState(false);
+  const [appViewModal, setAppViewModal] = useState(null);
 
   const showAppViewModal = () => {
     setAppViewModal(true);
   };
 
   const hideAppViewModal = () => {
-    setAppViewModal(false);
+    setAppViewModal(null);
   };
 
   useEffect(() => {

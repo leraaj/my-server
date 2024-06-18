@@ -24,8 +24,11 @@ const ViewApplicationModal = ({ show, onHide, id, refresh }) => {
   const hasPendingAppointment = status === 2 && !application?.disabled;
   const appointmentCreated = status === 2 && application?.disabled;
 
-  const { refresh: appointmentRefresh } = useFetch(
+  const { refresh: applicationsRefresh } = useFetch(
     `${process.env.REACT_APP_API_URL}/api/applications`
+  );
+  const { refresh: appointmentsRefresh } = useFetch(
+    `${process.env.REACT_APP_API_URL}/api/appointments`
   );
 
   const handleMeetingLink = (e) => {
@@ -112,7 +115,8 @@ const ViewApplicationModal = ({ show, onHide, id, refresh }) => {
 
   const refreshData = () => {
     applicationRefresh();
-    appointmentRefresh();
+    applicationsRefresh();
+    appointmentsRefresh();
     refresh();
   };
 

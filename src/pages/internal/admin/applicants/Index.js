@@ -47,7 +47,7 @@ const Applicants = () => {
   };
 
   const hideApplicationModal = () => {
-    setApplicationModal(false);
+    setApplicationModal(null);
   };
 
   // Appointment Modal Variables
@@ -57,7 +57,7 @@ const Applicants = () => {
   };
 
   const hideAppointmentModal = () => {
-    setAppointmentModal(false);
+    setAppointmentModal(null);
   };
   // Profile Modal Variables
   const [profileModal, setProfileModal] = useState(null);
@@ -66,7 +66,7 @@ const Applicants = () => {
   };
 
   const hideProfileModal = () => {
-    setProfileModal(false);
+    setProfileModal(null);
   };
   return (
     <>
