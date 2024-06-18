@@ -2,10 +2,9 @@ import React, { useMemo, useState } from "react";
 import useFetch from "../../../../hooks/useFetch";
 import CustomTable from "../../../../components/table/CustomTable";
 import { toast } from "sonner"; // Assuming 'sonner' is your toast library
-import AppointmentsModal from "./AppointmentsModal";
 import ApplicationsModal from "./ApplicationsModal";
 import ViewProfileModal from "./ViewProfileModal";
-
+import AppointmentsModal from "./AppointmentsModal";
 const Applicants = () => {
   const API = process.env.REACT_APP_API_URL || ""; // Ensure API URL is correctly loaded from environment
   const {
@@ -88,27 +87,27 @@ const Applicants = () => {
                 View profile
               </button>
               <button
-                className="btn btn-sm btn-dark text-nowrap position-relative"
+                className="btn btn-sm btn-dark text-nowrap"
                 onClick={() => {
                   setUser(user);
                   showApplicationModal();
                 }}>
-                Application
+                Application{" "}
                 {user?.applicationTasks > 0 && (
-                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  <span class="badge text-bg-danger">
                     {user?.applicationTasks}
                   </span>
                 )}
               </button>
               <button
-                className="btn btn-sm btn-dark text-nowrap position-relative"
+                className="btn btn-sm btn-dark text-nowrap"
                 onClick={() => {
                   setUser(user);
                   showAppointmentModal();
                 }}>
-                Appointment
+                Appointment{" "}
                 {user?.appointmentTasks > 0 && (
-                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  <span class="badge text-bg-danger">
                     {user?.appointmentTasks}
                   </span>
                 )}
@@ -126,6 +125,7 @@ const Applicants = () => {
       <AppointmentsModal
         show={appointmentModal}
         onHide={hideAppointmentModal}
+        refresh={userRefresh}
         user={user}
       />
       <ViewProfileModal

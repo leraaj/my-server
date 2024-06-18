@@ -119,11 +119,11 @@ const ApplicationsModal = ({ show, onHide, isLoading, refresh, user }) => {
                 type="button"
                 className={`btn btn-sm btn-${
                   filter == "Pending" ? "dark" : "outline-dark"
-                } position-relative`}
+                }  `}
                 onClick={() => setFilter("Pending")}>
-                Pending
+                <span>Pending</span>{" "}
                 {countPending?.count > 0 && (
-                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  <span class="badge text-bg-danger">
                     {countPending?.count}
                   </span>
                 )}
@@ -132,11 +132,11 @@ const ApplicationsModal = ({ show, onHide, isLoading, refresh, user }) => {
                 type="button"
                 className={`btn btn-sm btn-${
                   filter == "InProgress" ? "dark" : "outline-dark"
-                } position-relative`}
+                }  `}
                 onClick={() => setFilter("InProgress")}>
-                In Progress
+                <span>In Progress</span>{" "}
                 {countUnfinishedProgress?.count > 0 && (
-                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  <span class="badge text-bg-danger">
                     {countUnfinishedProgress?.count}
                   </span>
                 )}

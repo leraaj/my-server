@@ -4,8 +4,6 @@ import CustomTable from "../../../../components/table/CustomTable";
 import CustomButton from "../../../../components/button/CustomButton";
 import AddJobModal from "./AddJobModal";
 import ViewJobModal from "./UpdateJobModal";
-import JobAppointmentModal from "./JobAppointmentModal";
-import JobApplicationModal from "./JobApplicationModal";
 const Jobs = () => {
   const API = `${process.env.REACT_APP_API_URL}/api/`;
   const [selectedJob, setSelectedJob] = useState({});
@@ -14,16 +12,6 @@ const Jobs = () => {
     loading: jobsLoading,
     refresh: jobsRefresh,
   } = useFetch(`${API}jobs`);
-  const {
-    data: application,
-    loading: applicationLoading,
-    refresh: applicationRefresh,
-  } = useFetch(`${API}applications`);
-  const {
-    data: appointment,
-    loading: appointmentLoading,
-    refresh: appointmentRefresh,
-  } = useFetch(`${API}appointments`);
   const data = useMemo(() => {
     if (!jobs) return []; // Return empty array if jobs or categories data is not available
     return jobs.map((job) => {
@@ -81,21 +69,6 @@ const Jobs = () => {
   const hideJobModal = () => {
     setJobModal(false);
   };
-  // VIEW JOB APPOINTMENT MODAL VARIABLES
-  const [appointmentModal, setAppointmentModal] = useState(null);
-  const showAppointmentModal = () => {
-    setAppointmentModal(true);
-  };
-  const hideAppointmentModal = () => {
-    setAppointmentModal(false);
-  }; // VIEW JOB APPLICATION MODAL VARIABLES
-  const [applicationModal, setApplicationModal] = useState(null);
-  const showApplicationModal = () => {
-    setApplicationModal(true);
-  };
-  const hideApplicationModal = () => {
-    setApplicationModal(false);
-  };
   return (
     <>
       <CustomTable
@@ -125,24 +98,6 @@ const Jobs = () => {
               label="Add job"
               onClick={showAddJobModal}
             />
-            <CustomButton
-              size="sm"
-              color="dark"
-              label="Applications"
-              onClick={() => {
-                showApplicationModal();
-                applicationRefresh();
-              }}
-            />
-            <CustomButton
-              size="sm"
-              color="dark"
-              label="Appointments"
-              onClick={() => {
-                showAppointmentModal();
-                appointmentRefresh();
-              }}
-            />
           </div>
         )}
       />
@@ -156,16 +111,6 @@ const Jobs = () => {
         onHide={hideJobModal}
         refresh={jobsRefresh}
         selectedJob={selectedJob}
-      />
-      <JobApplicationModal
-        show={applicationModal}
-        onHide={hideApplicationModal}
-        refresh={applicationRefresh}
-      />
-      <JobAppointmentModal
-        show={appointmentModal}
-        onHide={hideAppointmentModal}
-        refresh={appointmentRefresh}
       />
     </>
   );

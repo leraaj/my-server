@@ -14,13 +14,19 @@ const ViewApplicationModal = ({ show, onHide, id, refresh }) => {
     path: "application",
     id: id,
   });
+  const [meetingLink, setMeetingLink] = useState("");
+  const [meetingTime, setMeetingTime] = useState("");
+
+  const user = application?.user;
+  const job = application?.job;
+  const status = application?.applicationStatus;
+  const hasPendingApplication = status === 1;
+  const hasPendingAppointment = status === 2 && !application?.disabled;
+  const appointmentCreated = status === 2 && application?.disabled;
 
   const { refresh: appointmentRefresh } = useFetch(
     `${process.env.REACT_APP_API_URL}/api/applications`
   );
-
-  const [meetingLink, setMeetingLink] = useState("");
-  const [meetingTime, setMeetingTime] = useState("");
 
   const handleMeetingLink = (e) => {
     setMeetingLink(e.target.value);
@@ -29,11 +35,6 @@ const ViewApplicationModal = ({ show, onHide, id, refresh }) => {
   const handleMeetingTime = (e) => {
     setMeetingTime(e.target.value);
   };
-
-  const user = application?.user;
-  const job = application?.job;
-  const status = application?.applicationStatus;
-  const isDisabled = application?.disabled;
 
   const handleUserApplication = async (data) => {
     try {
@@ -65,19 +66,7 @@ const ViewApplicationModal = ({ show, onHide, id, refresh }) => {
       jobId: jobId,
       meetingLink: meetingLink,
       meetingTime: meetingTime,
-      disabled: true,
     };
-    const response = await fetch(
-      `${process.env.REACT_APP_API_URL}/api/application/${application?._id}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          disabled: true,
-        }),
-      }
-    );
     try {
       const applicationResponse = await fetch(
         `${process.env.REACT_APP_API_URL}/api/application/${application?._id}`,
@@ -91,43 +80,45 @@ const ViewApplicationModal = ({ show, onHide, id, refresh }) => {
         }
       );
       if (applicationResponse.ok) {
-        const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/api/appointment`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify(appointmentData),
+        try {
+          const appointmentResponse = await fetch(
+            `${process.env.REACT_APP_API_URL}/api/appointment`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify(appointmentData),
+            }
+          );
+
+          const fnResponse = await appointmentResponse.json();
+          console.log(fnResponse); // Log the response from the API
+
+          if (appointmentResponse.ok) {
+            toast.success("Appointment created successfully.");
+            onHide();
+            refreshData();
+          } else {
+            toast.error("Failed to create appointment.");
           }
-        );
-
-        const fnResponse = await response.json();
-        console.log(fnResponse); // Log the response from the API
-
-        if (response.ok) {
-          toast.success("Appointment created successfully.");
-          onHide();
-          refreshData();
-        } else {
-          toast.error("Failed to create appointment.");
+        } catch (error) {
+          toast.error("An error occurred while creating appointment.");
         }
       }
     } catch (error) {
       toast.error("An error occurred while creating appointment.");
     }
   };
+
   const refreshData = () => {
     applicationRefresh();
     appointmentRefresh();
     refresh();
   };
-  const hasPendingApplication = status === 1;
-  const hasPendingAppointment = status === 2 && !application?.disabled;
-  const appointmentCreated = status === 2 && application?.disabled;
 
   return (
     <>
-      {hasPendingApplication ? (
+      {applicationLoading ? null : hasPendingApplication ? (
         <Modal
           show={show}
           onHide={onHide}
@@ -164,14 +155,12 @@ const ViewApplicationModal = ({ show, onHide, id, refresh }) => {
               label="Create an Appointment"
               disabled={!meetingLink || !meetingTime}
               onClick={() => {
-                handleUserAppointment(user?._id, job?._id);
+                handleUserAppointment(user?._id, job?._id, false);
               }}
             />
           }>
           <div className="row mx-0 g-3">
             <div className="input-container">
-              <p>Status: {status}</p>
-              <p>Disabled: {JSON.stringify(application?.disabled)}</p>
               <label className="form-label">Meeting Link</label>
               <input
                 type="text"

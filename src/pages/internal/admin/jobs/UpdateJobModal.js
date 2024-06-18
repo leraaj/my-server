@@ -147,55 +147,51 @@ const UpdateModal = ({ show, onHide, refresh, selectedJob }) => {
       onHide={onClose}
       title="View Job Information"
       size="fullscreen"
-      onSubmit={handleSubmit(onSubmit)}
+      // onSubmit={handleSubmit(onSubmit)}
       isStatic>
       <div className="row mx-0 g-2 col">
-        {/* <div class="input-group mb-2">
-          <span class="input-group-text" id="basic-addon1">
-            Title
-          </span>
-          <input
-            className={`form-control ${errors.title && "is-invalid"}`}
-            placeholder="Enter title"
-            disabled
-            {...register("title")}
-          />
-          {errors.title && (
-            <span className="invalid-feedback">{errors.title.message}</span>
-          )}
-        </div> */}
-        {/* <div class="input-group mb-2">
-          <span class="input-group-text" id="basic-addon1">
-            Category
-          </span>
-          <select
-            className={`form-select ${errors.category && "is-invalid"}`}
-            disabled
-            {...register("category")}>
-            <option value="">Select a category</option>
-            {categoryData?.map((cat) => (
-              <option key={cat._id} value={cat._id}>
-                {cat.title}
-              </option>
-            ))}
-          </select>
-          {errors.category && (
-            <span className="invalid-feedback">{errors.category.message}</span>
-          )}
-        </div> */}
         <div class="col">
-          <span class="form-label fw-bold">
+          <p class="form-label fw-bold">
             {`Why become a  ${getValues("title") || "..."}? (${
               selectedJob?.categoryTitle
             })  `}
-          </span>
+          </p>
           <p>{getValues("details.why")}</p>
         </div>
         <div class="col">
-          <span class="form-label fw-bold">
-            {`What does the role require?`}
-          </span>
+          <p class="form-label fw-bold">{`What does the role require?`}</p>
           <p>{getValues("details.what")}</p>
+        </div>
+        {/* LISTS */}
+        <div className="d-flex gap-2 m-0 p-0 my-3 ">
+          <div className={`card p-2`}>
+            <div className="card-header">
+              <label className="col form-label">Responsibilities</label>
+            </div>
+            <div className="card-body">
+              <ol className=" ">
+                {responsibilityFields.map((field, index) => (
+                  <li key={field.id} className=" pb-2">
+                    {getValues(`details.responsibilities.${index}`)}
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+          <div className={`card p-2`}>
+            <div className="card-header">
+              <label className="col form-label">Responsibilities</label>
+            </div>
+            <div className="card-body">
+              <ol className=" ">
+                {requirementFields.map((field, index) => (
+                  <li key={field.id} className=" pb-2">
+                    {getValues(`details.requirements.${index}`)}
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
         </div>
         {/* BENEFITS */}
         <div className="col-12">
@@ -235,37 +231,6 @@ const UpdateModal = ({ show, onHide, refresh, selectedJob }) => {
                   {errors.details.benefits.schedule.message}
                 </div>
               )}
-            </div>
-          </div>
-        </div>
-        {/* LISTS */}
-        <div className="d-flex gap-2 m-0 p-0 my-3 ">
-          <div className={`card p-2`}>
-            <div className="card-header">
-              <label className="col form-label">Responsibilities</label>
-            </div>
-            <div className="card-body">
-              <ol className=" ">
-                {responsibilityFields.map((field, index) => (
-                  <li key={field.id} className=" pb-2">
-                    {getValues(`details.responsibilities.${index}`)}
-                  </li>
-                ))}
-              </ol>
-            </div>
-          </div>
-          <div className={`card p-2`}>
-            <div className="card-header">
-              <label className="col form-label">Responsibilities</label>
-            </div>
-            <div className="card-body">
-              <ol className=" ">
-                {requirementFields.map((field, index) => (
-                  <li key={field.id} className=" pb-2">
-                    {getValues(`details.requirements.${index}`)}
-                  </li>
-                ))}
-              </ol>
             </div>
           </div>
         </div>
