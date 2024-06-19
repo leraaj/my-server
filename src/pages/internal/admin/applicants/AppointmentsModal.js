@@ -4,6 +4,7 @@ import useFetchById from "../../../../hooks/useFetchById";
 import dateTimeFormatter from "../../../../hooks/dateTimeFormatter";
 import CustomTable from "../../../../components/table/CustomTable";
 import CustomButton from "../../../../components/button/CustomButton";
+import ViewAppointmentsModal from "./ViewAppointmentsModal";
 
 const AppointmentsModal = ({ show, onHide, isLoading, refresh, user }) => {
   const {
@@ -15,13 +16,14 @@ const AppointmentsModal = ({ show, onHide, isLoading, refresh, user }) => {
     id: user?.id,
   });
 
+  const [appointmentId, setAppointmentId] = useState(null);
   const [filter, setFilter] = useState("Awaiting user response");
 
   const statusLabels = {
     awaitingUserResponse: "Awaiting user response",
     undergoingScreening: "Undergoing screening",
     settingUpFinalInterview: "Setting up final interview",
-    teamIntroduction: "Team introduction",
+    teamIntroduction: "Client Interview",
     processComplete: "Process complete",
     failedAppointments: "Failed appointments",
   };
@@ -38,11 +40,11 @@ const AppointmentsModal = ({ show, onHide, isLoading, refresh, user }) => {
       "Awaiting user response": (app) =>
         app?.appointmentStatus === 1 && app?.phase === 0,
       "Undergoing screening": (app) =>
-        app?.appointmentStatus === 1 && app?.phase === 1,
+        app?.appointmentStatus === 2 && app?.phase === 1,
       "Setting up final interview": (app) =>
-        app?.appointmentStatus === 1 && app?.phase === 2,
-      "Team introduction": (app) =>
-        app?.appointmentStatus === 1 && app?.phase === 3,
+        app?.appointmentStatus === 2 && app?.phase === 2,
+      "Client Interview": (app) =>
+        app?.appointmentStatus === 2 && app?.phase === 3,
       "Process complete": (app) =>
         app?.appointmentStatus === 2 && app?.phase === 3,
       "Failed appointments": (app) => app?.appointmentStatus === -1,
@@ -63,12 +65,12 @@ const AppointmentsModal = ({ show, onHide, isLoading, refresh, user }) => {
         statusLabel:
           app?.appointmentStatus === 1 && app?.phase === 0
             ? "Awaiting user response"
-            : app?.appointmentStatus === 1 && app?.phase === 1
+            : app?.appointmentStatus === 2 && app?.phase === 1
             ? "Undergoing screening"
-            : app?.appointmentStatus === 1 && app?.phase === 2
+            : app?.appointmentStatus === 2 && app?.phase === 2
             ? "Setting up final interview"
-            : app?.appointmentStatus === 1 && app?.phase === 3
-            ? "Team introduction"
+            : app?.appointmentStatus === 2 && app?.phase === 3
+            ? "Client Interview"
             : app?.appointmentStatus === 2 && app?.phase === 3
             ? "Process complete"
             : app?.appointmentStatus === -1
@@ -97,85 +99,101 @@ const AppointmentsModal = ({ show, onHide, isLoading, refresh, user }) => {
     refresh();
     onHide();
   };
-
+  const [appmViewModal, setAppmViewModal] = useState(null);
+  const showAppmViewModal = () => {
+    setAppmViewModal(true);
+  };
+  const hideAppmViewModal = () => {
+    setAppmViewModal(null);
+  };
   return (
-    <Modal
-      show={show}
-      onHide={modalClose}
-      title={`${user?.fullName} - Appointment`}
-      size="fullscreen">
-      <CustomTable
-        data={filteredData}
-        columns={columns}
-        enableLoading={appointmentLoading}
-        renderTopToolbarCustomActions={() => (
-          <div className={"d-flex gap-2"}>
-            <button
-              type="button"
-              className={`btn btn-sm btn-${
-                filter === "Awaiting user response" ? "dark" : "outline-dark"
-              }`}
-              onClick={() => setFilter("Awaiting user response")}>
-              <span>Awaiting user response</span>
-            </button>
-            <button
-              type="button"
-              className={`btn btn-sm btn-${
-                filter === "Undergoing screening" ? "dark" : "outline-dark"
-              }`}
-              onClick={() => setFilter("Undergoing screening")}>
-              <span>Initial Screening</span>
-            </button>
-            <button
-              type="button"
-              className={`btn btn-sm btn-${
-                filter === "Setting up final interview"
-                  ? "dark"
-                  : "outline-dark"
-              }`}
-              onClick={() => setFilter("Setting up final interview")}>
-              <span>Final Interview</span>
-            </button>
-            <button
-              type="button"
-              className={`btn btn-sm btn-${
-                filter === "Team introduction" ? "dark" : "outline-dark"
-              }`}
-              onClick={() => setFilter("Team introduction")}>
-              <span>Team Introduction</span>
-            </button>
-            <button
-              type="button"
-              className={`btn btn-sm btn-${
-                filter === "Process complete" ? "dark" : "outline-dark"
-              }`}
-              onClick={() => setFilter("Process complete")}>
-              <span>Done</span>
-            </button>
-            <button
-              type="button"
-              className={`btn btn-sm btn-${
-                filter === "Failed appointments" ? "dark" : "outline-dark"
-              }`}
-              onClick={() => setFilter("Failed appointments")}>
-              <span>Failed appointments</span>
-            </button>
-          </div>
-        )}
-        renderRowActions={({ row }) => (
-          <div className={"d-flex gap-1"}>
-            <CustomButton
-              size="sm"
-              color="dark"
-              label="View"
-              onClick={() => {
-                console.log(row.original.statusLabel);
-              }}
-            />
-          </div>
-        )}
+    <>
+      <Modal
+        show={show}
+        onHide={modalClose}
+        title={`${user?.fullName} - Appointment`}
+        size="fullscreen">
+        <CustomTable
+          data={filteredData}
+          columns={columns}
+          enableLoading={appointmentLoading}
+          renderTopToolbarCustomActions={() => (
+            <div className={"d-flex gap-2"}>
+              <button
+                type="button"
+                className={`btn btn-sm btn-${
+                  filter === "Awaiting user response" ? "dark" : "outline-dark"
+                }`}
+                onClick={() => setFilter("Awaiting user response")}>
+                <span>Awaiting user response</span>
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm btn-${
+                  filter === "Undergoing screening" ? "dark" : "outline-dark"
+                }`}
+                onClick={() => setFilter("Undergoing screening")}>
+                <span>Initial Screening</span>
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm btn-${
+                  filter === "Setting up final interview"
+                    ? "dark"
+                    : "outline-dark"
+                }`}
+                onClick={() => setFilter("Setting up final interview")}>
+                <span>Final Interview</span>
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm btn-${
+                  filter === "Client Interview" ? "dark" : "outline-dark"
+                }`}
+                onClick={() => setFilter("Client Interview")}>
+                <span>Client Interview</span>
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm btn-${
+                  filter === "Process complete" ? "dark" : "outline-dark"
+                }`}
+                onClick={() => setFilter("Process complete")}>
+                <span>Done</span>
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm btn-${
+                  filter === "Failed appointments" ? "dark" : "outline-dark"
+                }`}
+                onClick={() => setFilter("Failed appointments")}>
+                <span>Failed appointments</span>
+              </button>
+            </div>
+          )}
+          renderRowActions={({ row }) => (
+            <div className={"d-flex gap-1"}>
+              <CustomButton
+                size="sm"
+                color="dark"
+                label="View"
+                onClick={() => {
+                  setAppointmentId(row.original.id);
+                  showAppmViewModal();
+                  console.log(row.original.statusLabel);
+                }}
+              />
+            </div>
+          )}
+        />
+      </Modal>
+      <ViewAppointmentsModal
+        show={appmViewModal}
+        onHide={hideAppmViewModal}
+        id={appointmentId}
+        refresh={refreshAppointments}
       />
-    </Modal>
+    </>
   );
 };
 

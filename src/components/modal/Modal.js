@@ -12,6 +12,7 @@ const Modal = ({
   isStatic,
   isLoading,
   footer,
+  submitMessage,
 }) => {
   const closeModal = () => {
     onHide();
@@ -65,7 +66,7 @@ const Modal = ({
                     {isLoading ? (
                       <span className="spinner-border spinner-border-sm " />
                     ) : (
-                      "Save Changes"
+                      submitMessage || "Save Changes"
                     )}
                   </button>
                 </span>
