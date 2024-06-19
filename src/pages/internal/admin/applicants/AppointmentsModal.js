@@ -23,6 +23,7 @@ const AppointmentsModal = ({ show, onHide, isLoading, refresh, user }) => {
     settingUpFinalInterview: "Setting up final interview",
     teamIntroduction: "Team introduction",
     processComplete: "Process complete",
+    failedAppointments: "Failed appointments",
   };
 
   const filteredData = useMemo(() => {
@@ -35,7 +36,7 @@ const AppointmentsModal = ({ show, onHide, isLoading, refresh, user }) => {
 
     const filterCriteria = {
       "Awaiting user response": (app) =>
-        app?.appointmentStatus === 1 && app?.phase === -1,
+        app?.appointmentStatus === 1 && app?.phase === 0,
       "Undergoing screening": (app) =>
         app?.appointmentStatus === 1 && app?.phase === 1,
       "Setting up final interview": (app) =>
@@ -43,8 +44,8 @@ const AppointmentsModal = ({ show, onHide, isLoading, refresh, user }) => {
       "Team introduction": (app) =>
         app?.appointmentStatus === 1 && app?.phase === 3,
       "Process complete": (app) =>
-        (app?.appointmentStatus === 2 && app?.phase === 3) ||
-        (app?.appointmentStatus === 1 && app?.phase === 0),
+        app?.appointmentStatus === 2 && app?.phase === 3,
+      "Failed appointments": (app) => app?.appointmentStatus === -1,
     };
 
     return appointment
@@ -60,7 +61,7 @@ const AppointmentsModal = ({ show, onHide, isLoading, refresh, user }) => {
         jobTitle: app?.job?.title,
         status: app?.appointmentStatus,
         statusLabel:
-          app?.appointmentStatus === 1 && app?.phase === -1
+          app?.appointmentStatus === 1 && app?.phase === 0
             ? "Awaiting user response"
             : app?.appointmentStatus === 1 && app?.phase === 1
             ? "Undergoing screening"
@@ -68,10 +69,11 @@ const AppointmentsModal = ({ show, onHide, isLoading, refresh, user }) => {
             ? "Setting up final interview"
             : app?.appointmentStatus === 1 && app?.phase === 3
             ? "Team introduction"
-            : (app?.appointmentStatus === 2 && app?.phase === 3) ||
-              (app?.appointmentStatus === 1 && app?.phase === 0)
+            : app?.appointmentStatus === 2 && app?.phase === 3
             ? "Process complete"
-            : "",
+            : app?.appointmentStatus === -1
+            ? "Failed appointments"
+            : null,
         appDetails: app,
         userDetails: app?.user,
         jobDetails: app?.job,
@@ -149,6 +151,14 @@ const AppointmentsModal = ({ show, onHide, isLoading, refresh, user }) => {
               }`}
               onClick={() => setFilter("Process complete")}>
               <span>Done</span>
+            </button>
+            <button
+              type="button"
+              className={`btn btn-sm btn-${
+                filter === "Failed appointments" ? "dark" : "outline-dark"
+              }`}
+              onClick={() => setFilter("Failed appointments")}>
+              <span>Failed appointments</span>
             </button>
           </div>
         )}
