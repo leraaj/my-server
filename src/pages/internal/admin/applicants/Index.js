@@ -40,6 +40,9 @@ const Applicants = () => {
     ],
     []
   );
+  const { refresh: refreshApplicants } = useFetch(
+    `${process.env.REACT_APP_API_URL}/api/applicants`
+  );
   // Application Modal Variables
   const [applicationModal, setApplicationModal] = useState(null);
   const showApplicationModal = () => {
@@ -49,7 +52,9 @@ const Applicants = () => {
   const hideApplicationModal = () => {
     setApplicationModal(null);
   };
-
+  const { refresh: refreshAppointments } = useFetch(
+    `${process.env.REACT_APP_API_URL}/api/appointments`
+  );
   // Appointment Modal Variables
   const [appointmentModal, setAppointmentModal] = useState(null);
   const showAppointmentModal = () => {
@@ -119,13 +124,13 @@ const Applicants = () => {
       <ApplicationsModal
         show={applicationModal}
         onHide={hideApplicationModal}
-        refresh={userRefresh}
+        refresh={refreshApplicants}
         user={user}
       />
       <AppointmentsModal
         show={appointmentModal}
         onHide={hideAppointmentModal}
-        refresh={userRefresh}
+        refresh={refreshAppointments}
         user={user}
       />
       <ViewProfileModal

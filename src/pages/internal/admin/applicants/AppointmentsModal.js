@@ -5,17 +5,17 @@ import dateTimeFormatter from "../../../../hooks/dateTimeFormatter";
 import CustomTable from "../../../../components/table/CustomTable";
 import CustomButton from "../../../../components/button/CustomButton";
 import ViewAppointmentsModal from "./ViewAppointmentsModal";
+import useFetch from "../../../../hooks/useFetch";
 
 const AppointmentsModal = ({ show, onHide, isLoading, refresh, user }) => {
   const {
-    data: appointment,
-    loading: appointmentLoading,
+    data: appointments,
+    loading: appointmentsLoading,
     refresh: refreshAppointments,
   } = useFetchById({
     path: "view-appointments",
     id: user?.id,
   });
-
   const [appointmentId, setAppointmentId] = useState(null);
   const [filter, setFilter] = useState("Awaiting user response");
 
@@ -23,36 +23,32 @@ const AppointmentsModal = ({ show, onHide, isLoading, refresh, user }) => {
     awaitingUserResponse: "Awaiting user response",
     undergoingScreening: "Undergoing screening",
     settingUpFinalInterview: "Setting up final interview",
-    teamIntroduction: "Client Interview",
+    teamIntroduction: "Team Briefing",
     processComplete: "Process complete",
     failedAppointments: "Failed appointments",
   };
 
   const filteredData = useMemo(() => {
-    if (!appointment || !Array.isArray(appointment)) return [];
-
+    if (!appointments || !Array.isArray(appointments)) return [];
     const formatDate = (timestamp) => {
       const { date, formattedTime } = dateTimeFormatter(timestamp);
       return { date, formattedTime };
     };
-
     const filterCriteria = {
       "Awaiting user response": (app) =>
-        app?.appointmentStatus === 1 && app?.phase === 0,
+        app?.appointmentStatus === 1 && app?.complete === 0,
       "Undergoing screening": (app) =>
-        app?.appointmentStatus === 2 && app?.phase === 1,
+        app?.appointmentStatus === 2 && app?.phase === 1 && app?.complete === 0,
       "Setting up final interview": (app) =>
-        app?.appointmentStatus === 2 && app?.phase === 2,
-      "Client Interview": (app) =>
-        app?.appointmentStatus === 2 && app?.phase === 3,
+        app?.appointmentStatus === 2 && app?.phase === 2 && app?.complete === 0,
+      "Team Briefing": (app) =>
+        app?.appointmentStatus === 2 && app?.phase === 3 && app?.complete === 0,
       "Process complete": (app) =>
-        app?.appointmentStatus === 2 && app?.phase === 3,
+        app?.appointmentStatus === 2 && app?.phase === 3 && app?.complete === 1,
       "Failed appointments": (app) => app?.appointmentStatus === -1,
     };
-
-    return appointment
+    return appointments
       .filter((app) => {
-        console.log(`Filtering ${app.details} with filter ${filter}`);
         if (filter in filterCriteria) {
           return filterCriteria[filter](app);
         }
@@ -63,16 +59,32 @@ const AppointmentsModal = ({ show, onHide, isLoading, refresh, user }) => {
         jobTitle: app?.job?.title,
         status: app?.appointmentStatus,
         statusLabel:
-          app?.appointmentStatus === 1 && app?.phase === 0
+          (app?.appointmentStatus === 1 &&
+            app?.phase === 1 &&
+            app?.complete === 0) ||
+          (app?.appointmentStatus === 1 &&
+            app?.phase === 2 &&
+            app?.complete === 0) ||
+          (app?.appointmentStatus === 1 &&
+            app?.phase === 3 &&
+            app?.complete === 0)
             ? "Awaiting user response"
-            : app?.appointmentStatus === 2 && app?.phase === 1
+            : app?.appointmentStatus === 2 &&
+              app?.phase === 1 &&
+              app?.complete === 0
             ? "Undergoing screening"
-            : app?.appointmentStatus === 2 && app?.phase === 2
-            ? "Setting up final interview"
-            : app?.appointmentStatus === 2 && app?.phase === 3
-            ? "Client Interview"
-            : app?.appointmentStatus === 2 && app?.phase === 3
-            ? "Process complete"
+            : app?.appointmentStatus === 2 &&
+              app?.phase === 2 &&
+              app?.complete === 0
+            ? `Setting up final interview`
+            : app?.appointmentStatus === 2 &&
+              app?.phase === 3 &&
+              app?.complete === 0
+            ? `Hiring Decision`
+            : app?.appointmentStatus === 2 &&
+              app?.phase === 3 &&
+              app?.complete === 1
+            ? "Hired"
             : app?.appointmentStatus === -1
             ? "Failed appointments"
             : null,
@@ -83,7 +95,7 @@ const AppointmentsModal = ({ show, onHide, isLoading, refresh, user }) => {
           formatDate(app?.createdAt).formattedTime
         }`,
       }));
-  }, [appointment, filter]);
+  }, [appointments, filter]);
 
   const columns = useMemo(
     () => [
@@ -91,12 +103,19 @@ const AppointmentsModal = ({ show, onHide, isLoading, refresh, user }) => {
       { accessorKey: "statusLabel", header: "Status" },
       { accessorKey: "createdAt", header: "Date Created" },
     ],
-    [appointment, filter]
+    [appointments, filter]
   );
-
+  const refreshData = () => {
+    refreshAppointments();
+    // Refresh Counters
+    refreshCountAwaiting();
+    refreshInitial();
+    refreshFinal();
+    refreshBriefing();
+    refresh();
+  };
   const modalClose = () => {
     setFilter("Awaiting user response");
-    refresh();
     onHide();
   };
   const [appmViewModal, setAppmViewModal] = useState(null);
@@ -106,6 +125,23 @@ const AppointmentsModal = ({ show, onHide, isLoading, refresh, user }) => {
   const hideAppmViewModal = () => {
     setAppmViewModal(null);
   };
+
+  const { data: countAwaiting, refresh: refreshCountAwaiting } = useFetchById({
+    path: "countWaiting",
+    id: user?.id,
+  });
+  const { data: countInitial, refresh: refreshInitial } = useFetchById({
+    path: "countInitial",
+    id: user?.id,
+  });
+  const { data: countFinal, refresh: refreshFinal } = useFetchById({
+    path: "countFinal",
+    id: user?.id,
+  });
+  const { data: countBriefing, refresh: refreshBriefing } = useFetchById({
+    path: "countBriefing",
+    id: user?.id,
+  });
   return (
     <>
       <Modal
@@ -116,7 +152,7 @@ const AppointmentsModal = ({ show, onHide, isLoading, refresh, user }) => {
         <CustomTable
           data={filteredData}
           columns={columns}
-          enableLoading={appointmentLoading}
+          enableLoading={appointmentsLoading}
           renderTopToolbarCustomActions={() => (
             <div className={"d-flex gap-2"}>
               <button
@@ -124,16 +160,32 @@ const AppointmentsModal = ({ show, onHide, isLoading, refresh, user }) => {
                 className={`btn btn-sm btn-${
                   filter === "Awaiting user response" ? "dark" : "outline-dark"
                 }`}
-                onClick={() => setFilter("Awaiting user response")}>
-                <span>Awaiting user response</span>
+                onClick={() => {
+                  setFilter("Awaiting user response");
+                  refreshData();
+                }}>
+                <span>Awaiting user response</span>{" "}
+                {countAwaiting?.count > 0 && (
+                  <span class="badge text-bg-danger">
+                    {countAwaiting?.count}
+                  </span>
+                )}
               </button>
               <button
                 type="button"
                 className={`btn btn-sm btn-${
                   filter === "Undergoing screening" ? "dark" : "outline-dark"
                 }`}
-                onClick={() => setFilter("Undergoing screening")}>
-                <span>Initial Screening</span>
+                onClick={() => {
+                  setFilter("Undergoing screening");
+                  refreshAppointments();
+                }}>
+                <span>Initial Screening</span>{" "}
+                {countInitial?.count > 0 && (
+                  <span class="badge text-bg-danger">
+                    {countInitial?.count}
+                  </span>
+                )}
               </button>
               <button
                 type="button"
@@ -142,31 +194,51 @@ const AppointmentsModal = ({ show, onHide, isLoading, refresh, user }) => {
                     ? "dark"
                     : "outline-dark"
                 }`}
-                onClick={() => setFilter("Setting up final interview")}>
-                <span>Final Interview</span>
+                onClick={() => {
+                  setFilter("Setting up final interview");
+                  refreshAppointments();
+                }}>
+                <span>Final Interview</span>{" "}
+                {countFinal?.count > 0 && (
+                  <span class="badge text-bg-danger">{countFinal?.count}</span>
+                )}
               </button>
               <button
                 type="button"
                 className={`btn btn-sm btn-${
-                  filter === "Client Interview" ? "dark" : "outline-dark"
+                  filter === "Team Briefing" ? "dark" : "outline-dark"
                 }`}
-                onClick={() => setFilter("Client Interview")}>
-                <span>Client Interview</span>
+                onClick={() => {
+                  setFilter("Team Briefing");
+                  refreshData();
+                }}>
+                <span>Team Briefing</span>{" "}
+                {countBriefing?.count > 0 && (
+                  <span class="badge text-bg-danger">
+                    {countBriefing?.count}
+                  </span>
+                )}
               </button>
               <button
                 type="button"
                 className={`btn btn-sm btn-${
                   filter === "Process complete" ? "dark" : "outline-dark"
                 }`}
-                onClick={() => setFilter("Process complete")}>
-                <span>Done</span>
+                onClick={() => {
+                  setFilter("Process complete");
+                  refreshData();
+                }}>
+                <span>Hired</span>
               </button>
               <button
                 type="button"
                 className={`btn btn-sm btn-${
                   filter === "Failed appointments" ? "dark" : "outline-dark"
                 }`}
-                onClick={() => setFilter("Failed appointments")}>
+                onClick={() => {
+                  setFilter("Failed appointments");
+                  refreshData();
+                }}>
                 <span>Failed appointments</span>
               </button>
             </div>
@@ -180,7 +252,7 @@ const AppointmentsModal = ({ show, onHide, isLoading, refresh, user }) => {
                 onClick={() => {
                   setAppointmentId(row.original.id);
                   showAppmViewModal();
-                  console.log(row.original.statusLabel);
+                  console.log(row.original);
                 }}
               />
             </div>
@@ -191,7 +263,7 @@ const AppointmentsModal = ({ show, onHide, isLoading, refresh, user }) => {
         show={appmViewModal}
         onHide={hideAppmViewModal}
         id={appointmentId}
-        refresh={refreshAppointments}
+        refresh={refreshData}
       />
     </>
   );

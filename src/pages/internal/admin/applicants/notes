@@ -1,0 +1,26 @@
+//   EVENTS
+// const initialInterview =
+//   appointment?.appointmentStatus === 2 &&
+//   appointment?.phase === 1 &&
+//   complete === 0;
+// const finalInterview =
+//   appointment?.appointmentStatus === 2 &&
+//   appointment?.phase === 2 &&
+//   complete === 0;
+// const teamBriefing =
+//   appointment?.appointmentStatus === 2 &&
+//   appointment?.phase === 3 &&
+//   complete === 0;
+// Pending Messages
+// const awaitingInitial =
+//   appointment?.appointmentStatus === 1 &&
+//   appointment?.phase === 1 &&
+//   complete === 0;
+// const awaitingFinal =
+//   appointment?.appointmentStatus === 1 &&
+//   appointment?.phase === 2 &&
+//   complete === 0;
+// const awaitingBriefing =
+//   appointment?.appointmentStatus === 1 &&
+//   appointment?.phase === 3 &&
+//   complete === 0;

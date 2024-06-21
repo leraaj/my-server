@@ -31,23 +31,30 @@ const ApplicationsModal = ({ show, onHide, isLoading, refresh, user }) => {
 
   const filteredData = useMemo(() => {
     if (!application || !Array.isArray(application)) return [];
-
-    // Consider logging specific app objects if needed for debugging
-    // console.log("applications:", application);
-
     const formatDate = (timestamp) => {
       const { date, formattedTime } = dateTimeFormatter(timestamp);
       return { date, formattedTime };
     };
-
     return application
       .filter((app) => {
-        if (filter === "Pending") {
-          return app?.applicationStatus === 1 && !app?.disabled;
+        if (filter === `Pending`) {
+          return (
+            app?.phase === 1 &&
+            app?.applicationStatus === 1 &&
+            app?.complete === 0
+          );
         } else if (filter === "InProgress") {
-          return app?.applicationStatus === 2 && !app?.disabled;
+          return (
+            app?.phase === 1 &&
+            app?.applicationStatus === 2 &&
+            app?.complete === 0
+          );
         } else if (filter === "Done") {
-          return app?.applicationStatus === 2 && app?.disabled;
+          return (
+            app?.phase === 1 &&
+            app?.applicationStatus === 2 &&
+            app?.complete === 1
+          );
         }
         return true;
       })
@@ -56,13 +63,19 @@ const ApplicationsModal = ({ show, onHide, isLoading, refresh, user }) => {
         jobTitle: app?.job?.title,
         status: app?.applicationStatus,
         statusLabel:
-          app?.applicationStatus === 2 && !app?.disabled
-            ? "Appointment Scheduling in Progress"
-            : app?.applicationStatus === 2 || app?.disabled
-            ? "Finalized"
-            : app?.applicationStatus === 1 && !app?.disabled
-            ? "Application Under Review"
-            : "", // Handle other statuses if necessary
+          app?.phase === 1 &&
+          app?.applicationStatus === 2 &&
+          app?.complete === 1
+            ? `Finalized`
+            : app?.phase === 1 &&
+              app?.applicationStatus === 1 &&
+              app?.complete === 0
+            ? `Application Under Review `
+            : app?.phase === 1 &&
+              app?.applicationStatus === 2 &&
+              app?.complete === 0
+            ? `Appointment Scheduling in Progress`
+            : `Null`, // Handle other statuses if necessary
         appDetails: app,
         userDetails: app?.user,
         jobDetails: app?.job,
@@ -83,10 +96,6 @@ const ApplicationsModal = ({ show, onHide, isLoading, refresh, user }) => {
 
   const modalClose = () => {
     setFilter("Pending");
-    refresh();
-    refreshApplications();
-    refreshCountPending();
-    refreshCountUnfinishedProgress();
     onHide();
   };
 
@@ -100,12 +109,15 @@ const ApplicationsModal = ({ show, onHide, isLoading, refresh, user }) => {
     setAppViewModal(null);
   };
 
-  useEffect(() => {
+  const refreshData = () => {
+    refresh();
+    refreshApplications();
     refreshCountPending();
     refreshCountUnfinishedProgress();
-  }, [applicationLoading]);
-
-  return (
+    // Refresh Counters
+    refresh();
+  };
+  return isLoading ? null : (
     <>
       <Modal
         show={show}
@@ -123,7 +135,10 @@ const ApplicationsModal = ({ show, onHide, isLoading, refresh, user }) => {
                 className={`btn btn-sm btn-${
                   filter == "Pending" ? "dark" : "outline-dark"
                 }  `}
-                onClick={() => setFilter("Pending")}>
+                onClick={() => {
+                  refresh();
+                  setFilter("Pending");
+                }}>
                 <span>Pending</span>{" "}
                 {countPending?.count > 0 && (
                   <span class="badge text-bg-danger">
@@ -136,7 +151,10 @@ const ApplicationsModal = ({ show, onHide, isLoading, refresh, user }) => {
                 className={`btn btn-sm btn-${
                   filter == "InProgress" ? "dark" : "outline-dark"
                 }  `}
-                onClick={() => setFilter("InProgress")}>
+                onClick={() => {
+                  refresh();
+                  setFilter("InProgress");
+                }}>
                 <span>In Progress</span>{" "}
                 {countUnfinishedProgress?.count > 0 && (
                   <span class="badge text-bg-danger">
@@ -171,7 +189,7 @@ const ApplicationsModal = ({ show, onHide, isLoading, refresh, user }) => {
         show={appViewModal}
         onHide={hideAppViewModal}
         id={applicationId}
-        refresh={refreshApplications}
+        refresh={refreshData}
       />
     </>
   );

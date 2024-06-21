@@ -2,7 +2,6 @@
 import Accounts from "./pages/internal/admin/accounts/Index";
 import Applicants from "./pages/internal/admin/applicants/Index";
 import Clients from "./pages/internal/admin/clients/Index";
-import Posts from "./pages/internal/admin/posts/Index";
 import Jobs from "./pages/internal/admin/jobs/Index";
 import Chats from "./pages/internal/admin/chats/Index";
 // Employee Routes
@@ -34,11 +33,6 @@ export const adminRoutes = [
     isPrivate: true,
     path: "/jobs",
     element: <Jobs />,
-  },
-  {
-    isPrivate: true,
-    path: "/posts",
-    element: <Posts />,
   },
   {
     isPrivate: true,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "../../../../components/modal/Modal";
 import useFetchById from "../../../../hooks/useFetchById";
 import CustomButton from "../../../../components/button/CustomButton";
@@ -20,9 +20,21 @@ const ViewApplicationModal = ({ show, onHide, id, refresh }) => {
   const user = application?.user;
   const job = application?.job;
   const status = application?.applicationStatus;
-  const hasPendingApplication = status === 1;
-  const hasPendingAppointment = status === 2 && !application?.disabled;
-  const appointmentCreated = status === 2 && application?.disabled;
+  const phase = application?.phase;
+  const complete = application?.complete;
+
+  const hasPendingApplication =
+    application?.phase === 1 &&
+    application?.applicationStatus === 1 &&
+    application?.complete === 0;
+  const hasPendingAppointment =
+    application?.phase === 1 &&
+    application?.applicationStatus === 2 &&
+    application?.complete === 0;
+  const appointmentCreated =
+    application?.phase === 1 &&
+    application?.applicationStatus === 2 &&
+    application?.complete === 1;
 
   const { refresh: applicationsRefresh } = useFetch(
     `${process.env.REACT_APP_API_URL}/api/applications`
@@ -30,7 +42,6 @@ const ViewApplicationModal = ({ show, onHide, id, refresh }) => {
   const { refresh: appointmentsRefresh } = useFetch(
     `${process.env.REACT_APP_API_URL}/api/appointments`
   );
-
   const handleMeetingLink = (e) => {
     setMeetingLink(e.target.value);
   };
@@ -38,8 +49,7 @@ const ViewApplicationModal = ({ show, onHide, id, refresh }) => {
   const handleMeetingTime = (e) => {
     setMeetingTime(e.target.value);
   };
-
-  const handleUserApplication = async (data) => {
+  const handleApplicationInProgress = async () => {
     try {
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/api/application/${application?._id}`,
@@ -47,7 +57,11 @@ const ViewApplicationModal = ({ show, onHide, id, refresh }) => {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify(data),
+          body: JSON.stringify({
+            phase: 1,
+            applicationStatus: 2,
+            complete: 0,
+          }),
         }
       );
       const fnResponse = await response.json();
@@ -62,70 +76,112 @@ const ViewApplicationModal = ({ show, onHide, id, refresh }) => {
       toast.error("An error occurred while handling application request.");
     }
   };
-
-  const handleUserAppointment = async (userId, jobId) => {
-    const appointmentData = {
-      userId: userId,
-      jobId: jobId,
+  const handleApplicationDone = async () => {
+    const applicationData = {
+      phase: 1,
+      applicationStatus: 2,
+      complete: 1,
       meetingLink: meetingLink,
       meetingTime: meetingTime,
     };
     try {
-      const applicationResponse = await fetch(
+      const response = await fetch(
         `${process.env.REACT_APP_API_URL}/api/application/${application?._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({
-            disabled: true,
-          }),
+          body: JSON.stringify(applicationData),
         }
       );
-      if (applicationResponse.ok) {
-        try {
-          const appointmentResponse = await fetch(
-            `${process.env.REACT_APP_API_URL}/api/appointment`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              credentials: "include",
-              body: JSON.stringify(appointmentData),
-            }
-          );
-
-          const fnResponse = await appointmentResponse.json();
-          console.log(fnResponse); // Log the response from the API
-
-          if (appointmentResponse.ok) {
-            toast.success("Appointment created successfully.");
-            onHide();
-            refreshData();
-          } else {
-            toast.error("Failed to create appointment.");
-          }
-        } catch (error) {
-          toast.error("An error occurred while creating appointment.");
-        }
+      const fnResponse = await response.json();
+      if (response.ok) {
+        toast.success("Application request handled successfully.");
+        refreshData();
+        onHide();
+      } else {
+        toast.error("Failed to handle application request.");
       }
     } catch (error) {
-      toast.error("An error occurred while creating appointment.");
+      toast.error("An error occurred while handling application request.");
     }
   };
-
+  const handleCreateAppointment = async () => {
+    const data = {
+      userId: user?._id,
+      jobId: job?._id,
+      meetingLink: meetingLink,
+      meetingTime: meetingTime,
+    };
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/appointment `,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(data),
+        }
+      );
+      const fnResponse = await response.json();
+      if (response.ok) {
+        console.log(fnResponse);
+        handleApplicationDone();
+        appointmentsRefresh();
+        refreshData();
+        onHide();
+      } else {
+        toast.error("Failed to handle appointment request.");
+      }
+    } catch (error) {
+      toast.error("An error occurred while handling appointment request.");
+    }
+  };
+  const rejectApplication = async () => {
+    const data = {
+      phase: 1,
+      applicationStatus: -1,
+      complete: 0,
+    };
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/application/${application?._id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(data),
+        }
+      );
+      const fnResponse = await response.json();
+      if (response.ok) {
+        console.log(fnResponse);
+        toast.success("Application request handled successfully.");
+        refreshData();
+        onHide();
+      } else {
+        toast.error("Failed to handle application request.");
+      }
+    } catch (error) {
+      toast.error("An error occurred while handling application request.");
+    }
+  };
   const refreshData = () => {
     applicationRefresh();
     applicationsRefresh();
     appointmentsRefresh();
     refresh();
   };
-
+  const modalClose = () => {
+    onHide();
+    refreshData();
+  };
   return (
     <>
       {applicationLoading ? null : hasPendingApplication ? (
         <Modal
           show={show}
-          onHide={onHide}
+          onHide={modalClose}
           title={`Application: ${user?.fullName} for ${job?.title}`}
           size="md"
           footer={
@@ -133,12 +189,18 @@ const ViewApplicationModal = ({ show, onHide, id, refresh }) => {
               <CustomButton
                 color="outline-danger"
                 label="Decline"
-                onClick={() => handleUserApplication({ applicationStatus: 0 })}
+                onClick={() => {
+                  rejectApplication();
+                  refresh();
+                }}
               />
               <CustomButton
                 color="success"
                 label="Accept"
-                onClick={() => handleUserApplication({ applicationStatus: 2 })}
+                onClick={() => {
+                  handleApplicationInProgress();
+                  refresh();
+                }}
               />
             </>
           }>
@@ -155,11 +217,12 @@ const ViewApplicationModal = ({ show, onHide, id, refresh }) => {
           size="md"
           footer={
             <CustomButton
-              color="danger"
+              color="success"
               label="Create an Appointment"
               disabled={!meetingLink || !meetingTime}
               onClick={() => {
-                handleUserAppointment(user?._id, job?._id, false);
+                handleCreateAppointment();
+                refresh();
               }}
             />
           }>
@@ -189,6 +252,14 @@ const ViewApplicationModal = ({ show, onHide, id, refresh }) => {
           title={`Application: ${user?.fullName} for ${job?.title}`}
           size="md">
           <p>{user?.fullName} already has an appointment.</p>
+        </Modal>
+      ) : application?.appplicationStatus === -1 ? (
+        <Modal
+          show={show}
+          onHide={onHide}
+          title={`Application: ${user?.fullName} for ${job?.title}`}
+          size="md">
+          <p>{user?.fullName} cancelled the application.</p>
         </Modal>
       ) : (
         ""

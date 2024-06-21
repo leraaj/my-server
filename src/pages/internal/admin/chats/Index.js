@@ -22,30 +22,16 @@ const Chats = () => {
   const [loading, setLoading] = useState(false);
   const scrollToBottom = () => {
     if (scrollContainer.current) {
-      // Scroll to the bottom of the scroll container
       scrollContainer.current.scrollTop = scrollContainer.current.scrollHeight;
     }
   };
   useEffect(() => {
     setVisibleMessages(dummyMessages.slice(-messageCount));
-    // Scroll to bottom after messages are loaded
-  }, [visibleMessages]);
+  }, []);
   scrollToBottom();
-  const loadMoreMessages = useCallback(() => {
-    if (!loading) {
-      setLoading(true);
-      setTimeout(() => {
-        setMessageCount((prevCount) => prevCount + 3);
-        setLoading(false);
-      }, 3000);
-    }
-  }, [loading]);
-
   function hasName(type, name) {
     return type === 1 ? "" : name;
   }
-
-  // Determine if last message has been reached
   const lastMessageReached = messageCount >= dummyMessages.length;
 
   return (
@@ -68,9 +54,7 @@ const Chats = () => {
                 You've reached the top of the conversation
               </span>
             ) : (
-              <button
-                className="btn btn-sm btn-light top-list-message rounded-pill p-2"
-                onClick={loadMoreMessages}>
+              <button className="btn btn-sm btn-light top-list-message rounded-pill p-2">
                 <img src={loadingIcon} height={20} />
               </button>
             )}
@@ -85,7 +69,6 @@ const Chats = () => {
             />
           ))}
           {/* Empty li element to ensure scroll to bottom */}
-          <li></li>
         </ul>
         <div className="footer">
           <div className="col">

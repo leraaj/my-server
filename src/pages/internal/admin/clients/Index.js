@@ -2,10 +2,12 @@ import React, { useMemo, useState } from "react";
 import useFetch from "../../../../hooks/useFetch";
 import CustomTable from "../../../../components/table/CustomTable";
 import CustomButton from "../../../../components/button/CustomButton";
+import ViewProfileModal from "./ViewProfileModal";
 
 const Clients = () => {
   const API = `${process.env.REACT_APP_API_URL}`;
   const { data: users, loading, refresh, error } = useFetch(`${API}/api/users`);
+  const [user, setUser] = useState({});
   const data = useMemo(() => {
     if (!users) return []; // Return empty array if users data is not available
 
@@ -44,7 +46,14 @@ const Clients = () => {
     ],
     [users]
   );
-
+  // Profile Modal Variables
+  const [profileModal, setProfileModal] = useState(null);
+  const showProfileModal = () => {
+    setProfileModal(true);
+  };
+  const hideProfileModal = () => {
+    setProfileModal(null);
+  };
   return (
     <>
       <CustomTable
@@ -53,8 +62,13 @@ const Clients = () => {
         enableLoading={loading}
         renderRowActions={({ row }) => (
           <div className="d-flex gap-1">
-            <button className="btn btn-sm btn-dark text-nowrap">
-              Job history
+            <button
+              className="btn btn-sm btn-dark text-nowrap"
+              onClick={() => {
+                setUser(row.original);
+                showProfileModal();
+              }}>
+              Profile
             </button>
           </div>
         )}
@@ -63,6 +77,11 @@ const Clients = () => {
             <span className="col" />
           </>
         )}
+      />
+      <ViewProfileModal
+        show={profileModal}
+        onHide={hideProfileModal}
+        user={user}
       />
     </>
   );

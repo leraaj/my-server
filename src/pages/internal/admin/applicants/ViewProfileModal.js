@@ -51,16 +51,13 @@ const ViewProfileModal = ({ show, onHide, user }) => {
           <div className="input-container">
             <label className="form-label">Skills</label>
             <div className="row mx-0 gap-2 flex-wrap">
-              <span className="btn btn-dark col-auto">1 skill</span>
-              <span className="btn btn-dark col-auto">2 skill</span>
-              <span className="btn btn-dark col-auto">3 skill</span>
-              <span className="btn btn-dark col-auto">4 skill</span>
-              <span className="btn btn-dark col-auto">5 skill</span>
-              <span className="btn btn-dark col-auto">6 skill</span>
-              <span className="btn btn-dark col-auto">7 skill</span>
-              <span className="btn btn-dark col-auto">8 skill</span>
-              <span className="btn btn-dark col-auto">9 skill</span>
-              <span className="btn btn-dark col-auto">10 skill</span>
+              <span className="btn btn-dark col-auto">Graphic designer</span>
+              <span className="btn btn-dark col-auto">Logo Designer</span>
+              <span className="btn btn-dark col-auto">
+                Video Post Editing Specialists
+              </span>
+              <span className="btn btn-dark col-auto">Sound Editors</span>
+              <span className="btn btn-dark col-auto">Video Producers</span>
             </div>
           </div>
         </div>
