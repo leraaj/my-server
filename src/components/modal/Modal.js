@@ -17,6 +17,14 @@ const Modal = ({
   const closeModal = () => {
     onHide();
   };
+
+  const handleSubmit = (event) => {
+    event.preventDefault(); // Prevent default form submission
+    if (onSubmit) {
+      onSubmit(); // Call the provided onSubmit function
+    }
+  };
+
   const modalVisibility =
     show === null ? "d-none" : show ? "md-show" : "md-hide";
   const isTitleEmpty = title || "No Title";
@@ -32,50 +40,48 @@ const Modal = ({
       : size == "sm"
       ? "s-sm"
       : "";
+
   return (
-    <>
-      <form
-        className={`md-form needs-validation`}
-        noValidate
-        onSubmit={onSubmit || null}>
+    <form
+      className={`md-form needs-validation`}
+      noValidate
+      onSubmit={handleSubmit} // Handle form submission
+    >
+      <div
+        id="md-container"
+        className={`${modalVisibility}`}
+        onClick={!isStatic ? closeModal : null}>
         <div
-          id="md-container"
-          className={`${modalVisibility}`}
-          onClick={!isStatic ? closeModal : null}>
-          <div
-            id="md"
-            className={`${modalSize}`}
-            onClick={(e) => e.stopPropagation()}>
-            <div id="md-header">
-              <span className={`${!title && "text-danger"}`}>
-                {isTitleEmpty}
-              </span>
-              <span class="btn-close" aria-label="Close" onClick={closeModal} />
-            </div>
-            <div id="md-body">{children}</div>
-            <div id="md-footer">
+          id="md"
+          className={`${modalSize}`}
+          onClick={(e) => e.stopPropagation()}>
+          <div id="md-header">
+            <span className={`${!title && "text-danger"}`}>{isTitleEmpty}</span>
+            <span class="btn-close" aria-label="Close" onClick={closeModal} />
+          </div>
+          <div id="md-body">{children}</div>
+          <div id="md-footer">
+            <span>
+              <button type="button" className="btn " onClick={closeModal}>
+                Cancel
+              </button>
+            </span>
+            {footer}
+            {onSubmit && (
               <span>
-                <button type="button" className="btn " onClick={closeModal}>
-                  Cancel
+                <button type="submit" className="btn btn-dark">
+                  {isLoading ? (
+                    <span className="spinner-border spinner-border-sm " />
+                  ) : (
+                    submitMessage || "Save Changes"
+                  )}
                 </button>
               </span>
-              {footer}
-              {onSubmit && (
-                <span>
-                  <button type="submit" className="btn btn-dark">
-                    {isLoading ? (
-                      <span className="spinner-border spinner-border-sm " />
-                    ) : (
-                      submitMessage || "Save Changes"
-                    )}
-                  </button>
-                </span>
-              )}
-            </div>
+            )}
           </div>
         </div>
-      </form>
-    </>
+      </div>
+    </form>
   );
 };
 

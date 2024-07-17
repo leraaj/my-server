@@ -5,7 +5,14 @@ const useFetchById = ({ path, id }) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   const fetchData = async () => {
+    if (!id) {
+      // setError(new Error("Invalid ID"));
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const response = await fetch(
@@ -16,6 +23,11 @@ const useFetchById = ({ path, id }) => {
           credentials: "include",
         }
       );
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+      }
+
       const result = await response.json();
       setData(result);
     } catch (error) {
@@ -25,6 +37,7 @@ const useFetchById = ({ path, id }) => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     if (id) {
       fetchData();

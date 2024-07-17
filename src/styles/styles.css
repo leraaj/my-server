@@ -332,14 +332,14 @@ textarea:focus {
   border-bottom-width: 1.5px;
   border-style: inset;
 }
-.form-control.is-invalid,
+/* .form-control.is-invalid,
 select.form-control.is-invalid {
-  /* box-shadow: 0px 1px 3px 0.5px var(--bs-danger); */
+  box-shadow: 0px 1px 3px 0.5px var(--bs-danger);
 }
 .form-control.is-valid,
 select.form-control.is-valid {
-  /* box-shadow: 0px 1px 3px 0.5px var(--bs-success); */
-}
+  box-shadow: 0px 1px 3px 0.5px var(--bs-success);
+} */
 .invalid-feedback {
   color: var(--bs-danger) !important;
 }
@@ -360,4 +360,44 @@ select.form-control option {
 select.form-control option:hover {
   background-color: var(--bg-light-80) !important;
   border-radius: 0 !important;
+}
+.display-selected {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  height: 100px;
+  width: auto;
+  overflow: auto;
+  padding: 1rem 0.5rem;
+}
+.selected-pill {
+  display: flex;
+  align-items: start;
+}
+.pill {
+  border-radius: 1.5rem;
+  padding: 0.5rem 1rem;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+.pill-label {
+  text-wrap: nowrap;
+}
+.pill-btn {
+  height: 25px;
+  width: 25px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.pill-btn.success {
+  background-color: var(--color-success);
+}
+
+.pill-btn.danger {
+  background-color: var(--color-danger);
 }
