@@ -4,8 +4,9 @@ import useToggle from "../../hooks/useToggle";
 import Brand from "../../assets/images/brand/darkshot-logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import { Link as ScrollLink } from "react-scroll";
+import { useAuthContext } from "../../hooks/context/useAuthContext";
 const Navbar = () => {
-  const { toggle, toggler } = useToggle();
+  const { toggle, toggler } = useAuthContext();
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState(null);
   const landingLinks = [
@@ -81,11 +82,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-{
-  /* 
-  <Link className="navbar-brand border" to={"/"}>
-    <img src={Brand} alt="Darkshot Production" height="30" />
-  </Link> 
-*/
-}

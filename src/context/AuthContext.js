@@ -4,14 +4,13 @@ import {
   useLayoutEffect,
   useReducer,
   useState,
-  useNavigate,
 } from "react";
 import useToggle from "../hooks/useToggle";
 
 export const AuthContext = createContext();
 const URL = `${process.env.REACT_APP_API_URL}/api/user/current-user`;
 
-export const authReducer = (state, action) => {
+const authReducer = (state, action) => {
   switch (action.type) {
     case "LOGIN":
       return { user: action.payload };
@@ -22,19 +21,19 @@ export const authReducer = (state, action) => {
       return state;
   }
 };
+
 export const AuthContextProvider = ({ children }) => {
-  // const sidebarLS = localStorage.getItem("toggleSidebar") === false;
-  const sidebarLS = localStorage.getItem("server_toggleSidebar") === false;
-  console.log(`Local Storage: ${localStorage.getItem("toggleSidebar")}`);
-  console.log(`Default Storage: ${false}`);
-  const { toggle, toggler } = useToggle(sidebarLS);
-  const [state, dispatch] = useReducer(authReducer, {});
+  const { toggle, toggler } = useToggle();
+  const [state, dispatch] = useReducer(authReducer, { user: undefined });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [screenDimension, setScreenDimension] = useState(0);
+  // Responsive View
+  const screenCondition = screenDimension < 600;
+  const [smallScreen, setSmallScreen] = useState(screenCondition);
   useEffect(() => {
-    // localStorage.setItem("toggleSidebar", toggle);
-    localStorage.setItem("server_toggleSidebar", toggle);
-  }, [toggle]);
+    setSmallScreen(screenCondition);
+  }, [screenDimension]);
   const refreshUser = async () => {
     setIsLoading(true);
     try {
@@ -46,15 +45,13 @@ export const AuthContextProvider = ({ children }) => {
       });
       const data = await response.json();
       if (response.ok) {
-        setIsLoading(false);
         dispatch({ type: "LOGIN", payload: data.user });
       } else {
-        console.log("message: ", data.message);
         setError(data.message);
-        dispatch({ type: "LOGOUT", payload: undefined });
+        dispatch({ type: "LOGOUT" });
       }
     } catch (error) {
-      setError(error);
+      setError(error.message);
       console.error("Error refreshing user:", error);
     } finally {
       setIsLoading(false);
@@ -63,11 +60,21 @@ export const AuthContextProvider = ({ children }) => {
 
   useLayoutEffect(() => {
     refreshUser();
-  }, [URL]);
+  }, []);
 
   return (
     <AuthContext.Provider
-      value={{ ...state, dispatch, toggle, toggler, isLoading, error }}>
+      value={{
+        ...state,
+        dispatch,
+        toggle,
+        toggler,
+        isLoading,
+        error,
+        screenDimension,
+        setScreenDimension,
+        smallScreen,
+      }}>
       {children}
     </AuthContext.Provider>
   );

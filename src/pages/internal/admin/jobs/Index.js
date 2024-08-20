@@ -13,7 +13,7 @@ const Jobs = () => {
     refresh: jobsRefresh,
   } = useFetch(`${API}jobs`);
   const data = useMemo(() => {
-    if (!jobs) return []; // Return empty array if jobs or categories data is not available
+    if (!jobs) return [];
     return jobs.map((job) => {
       return {
         id: job?._id,
@@ -37,11 +37,11 @@ const Jobs = () => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "title", // Since the full name is directly accessible
+        accessorKey: "title",
         header: "Job Title",
       },
       {
-        accessorKey: "categoryTitle", // Since the full name is directly accessible
+        accessorKey: "categoryTitle",
         header: "Category",
         filterVariant: "multi-select",
         filterSelectOptions: uniqueCategories,
@@ -49,6 +49,8 @@ const Jobs = () => {
       {
         accessorKey: "benefitsPay",
         header: "Pay",
+        size: 50,
+        grow: false,
       },
     ],
     [uniqueCategories]

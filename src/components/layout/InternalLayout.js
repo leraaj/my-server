@@ -15,7 +15,7 @@ const InternalLayout = () => {
   const [hasErrors, setHasErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { user, dispatch, toggler, toggle } = useAuthContext();
+  const { user, dispatch, toggler, toggle, screenDimension } = useAuthContext();
   const location = useLocation();
   const links =
     sidebarLinks.find((link) => link.position === user?.position)?.links || [];
@@ -57,6 +57,7 @@ const InternalLayout = () => {
               }}>
               {toggle ? <MenuIcon /> : <MenuOpenIcon />}
             </span>
+            <span>{screenDimension}</span>
             <button
               className="nav-link"
               onClick={handleLogout}
