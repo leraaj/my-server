@@ -1,10 +1,4 @@
-import {
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { useAuthContext } from "./hooks/context/useAuthContext";
 import Home from "./pages/external/landing/Index";
 import Login from "./pages/external/login/Index";
@@ -18,17 +12,11 @@ import Jobs from "./pages/internal/admin/jobs/Index";
 import Chats from "./pages/internal/admin/chats/Index";
 // Employee Routes
 import Profile from "./pages/internal/employees/profile/Index";
-import Orders from "./pages/internal/employees/orders/Index";
-import MediaFiles from "./pages/internal/employees/mediaFiles/Index";
 // TEST
 import Test from "./pages/internal/test/Index";
-import { useEffect, useState } from "react";
 import Register from "./pages/external/register/Register";
 function App() {
   const { user, isLoading } = useAuthContext();
-  const position = user?.position;
-  const location = useLocation();
-  const navigate = useNavigate();
 
   const defaultRoutes = [
     {
@@ -80,7 +68,7 @@ function App() {
         ),
     },
     {
-      isPrivate: false,
+      isPrivate: true,
       path: "/test",
       element: <Test />,
     },
@@ -112,7 +100,6 @@ function App() {
       element: <Chats />,
     },
   ];
-
   // Routes for applicants/clients users
   const employeeRoutes = [
     {
@@ -144,8 +131,8 @@ function App() {
     <Routes>
       {routes.map((route, index) =>
         route.isPrivate ? (
-          <Route element={<InternalLayout />}>
-            <Route key={index} {...route} />
+          <Route key={index} element={<InternalLayout />}>
+            <Route {...route} />
           </Route>
         ) : (
           <Route key={index} {...route} />

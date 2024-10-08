@@ -13,15 +13,15 @@ const useChatLayout = (selectedGroupId) => {
     return "col-3";
   }, [screenDimension]);
 
-  const shouldRenderChatList =
+  const renderChatlist =
     !smallScreen || !selectedGroupId || (smallScreen && !selectedGroupId);
-  const shouldRenderChatConversation =
+  const renderChatconversation =
     !smallScreen || (smallScreen && selectedGroupId);
 
   return {
     chatListSize,
-    shouldRenderChatList,
-    shouldRenderChatConversation,
+    renderChatlist,
+    renderChatconversation,
   };
 };
 

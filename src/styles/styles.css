@@ -310,6 +310,13 @@ input.form-control-light {
   border-left: transparent none !important;
   border-radius: 0 !important;
 }
+select.form-select {
+  background-color: transparent !important;
+  border-top: transparent none !important;
+  border-right: transparent none !important;
+  border-left: transparent none !important;
+  border-radius: 0 !important;
+}
 textarea.form-control-light {
   background-color: transparent !important;
   border-radius: 0 !important;

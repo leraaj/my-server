@@ -17,12 +17,21 @@ const MessageContainer = ({ msg }) => {
           </span>
         </small>
         {!person && <br />}
-        <span className="fw-normal">
+        <span
+          className="fw-normal"
+          style={{
+            fontSize: "0.85rem",
+          }}>
           {msg?.message
             ?.flatMap((m) => m.details.map((detail) => detail.content))
             .join(" ")}
         </span>
-        <span className={`col-12 d-flex  justify-content-end`}>
+        <span
+          className={`col-12 d-flex  justify-content-end`}
+          style={{
+            fontSize: "0.75rem",
+            userSelect: "none",
+          }}>
           {`${formattedTime}  `}
         </span>
       </section>

@@ -28,6 +28,13 @@ export const AuthContextProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [screenDimension, setScreenDimension] = useState(0);
+  const [popup, setPopup] = useState("");
+  const popupFunction = (id, msgId) => {
+    const value = (id === msgId && "appear") || "vanish";
+    setPopup(value);
+    return value;
+  };
+
   // Responsive View
   const screenCondition = screenDimension < 600;
   const [smallScreen, setSmallScreen] = useState(screenCondition);
@@ -58,9 +65,9 @@ export const AuthContextProvider = ({ children }) => {
     }
   };
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     refreshUser();
-  }, []);
+  }, [URL]);
 
   return (
     <AuthContext.Provider
@@ -74,6 +81,8 @@ export const AuthContextProvider = ({ children }) => {
         screenDimension,
         setScreenDimension,
         smallScreen,
+        popupFunction,
+        popup,
       }}>
       {children}
     </AuthContext.Provider>

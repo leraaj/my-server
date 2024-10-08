@@ -60,6 +60,7 @@ const Sidebar = () => {
           {links.map((link, index) => {
             return (
               <li
+                key={index}
                 onClick={() => localStorage.setItem("url", location.pathname)}>
                 <Link className="btn btn-light d-flex" to={`${link.url}`}>
                   <span className="col-auto">{link.icon}</span>

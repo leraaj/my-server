@@ -1,9 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../hooks/context/useAuthContext";
 import { toast } from "sonner";
-import Logo from "../../assets/images/brand/darkshot-logo.png";
-import LogoCollapsed from "../../assets/images/brand/darkshot-logo-collapsed.png";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import { sidebarLinks } from "../layout/links";
@@ -57,7 +55,6 @@ const InternalLayout = () => {
               }}>
               {toggle ? <MenuIcon /> : <MenuOpenIcon />}
             </span>
-            <span>{screenDimension}</span>
             <button
               className="nav-link"
               onClick={handleLogout}

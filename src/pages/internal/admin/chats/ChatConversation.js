@@ -1,21 +1,38 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useAuthContext } from "../../../../hooks/context/useAuthContext";
 import MessageContainer from "./MessageContainer";
 
-const ChatConversation = ({ collaboratorId, back }) => {
-  // ================== VARIABLES ================== //
+const ChatConversation = ({ roomId, roomName, back }) => {
+  const CONVERSATION_API = `${process.env.REACT_APP_API_URL}/api/chats/collaborator/${roomId}`;
+  const SEND_MESSAGE_API = `${process.env.REACT_APP_API_URL}/api/chat`;
   const { smallScreen, user } = useAuthContext();
-  const [message, setMessage] = useState({});
+  const [currentMessage, setCurrentMessage] = useState("");
+  const [messageLoading, setMessageLoading] = useState(false);
+  const [messageError, setMessageError] = useState(null);
   const [conversation, setConversation] = useState([]);
+  const [displayedMessages, setDisplayedMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const fileInputRef = useRef(null); // Ref to the file input element
-  const CONVERSATION_API = `${process.env.REACT_APP_API_URL}/api/chats/collaborator/${collaboratorId}`;
-  const SEND_MESSAGE_API = `${process.env.REACT_APP_API_URL}/api/chat`;
-  // ================== FETCH FUNCTIONS ================== //
-  // => FETCH CONVERSATION
+  const fileInputRef = useRef(null);
+  const containerRef = useRef(null);
+
+  const itemsPerPage = 10;
+  const [displayedCount, setDisplayedCount] = useState(itemsPerPage);
+  const [moreLoading, setMoreLoading] = useState(false);
+
+  // Function to scroll to the bottom of the container
+  const scrollToBottom = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollTo({
+        top: containerRef.current.scrollHeight,
+        behavior: "instant",
+      });
+    }
+  };
+
+  // Fetch conversation messages
   const loadConversation = async () => {
-    if (!collaboratorId || collaboratorId === "") return; // Don't fetch if collaboratorId is not set
+    if (!roomId) return;
     setLoading(true);
     setError(null);
     try {
@@ -26,7 +43,8 @@ const ChatConversation = ({ collaboratorId, back }) => {
       });
       if (response.ok) {
         const data = await response.json();
-        setConversation(data); // Save data to state
+        setConversation(data);
+        setDisplayedMessages(data.slice(-displayedCount));
       } else {
         throw new Error("Failed to fetch conversation");
       }
@@ -37,16 +55,46 @@ const ChatConversation = ({ collaboratorId, back }) => {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    loadConversation();
-  }, [collaboratorId]);
-  // => FETCH CONVERSATION
-  // => POST MESSAGE
-  const resetMessageDetails = () => {
-    setMessage({});
+
+  // Load more messages incrementally
+  const loadMoreConversations = () => {
+    if (conversation.length <= displayedCount) return;
+    const newDisplayedCount = displayedCount + itemsPerPage;
+    setDisplayedCount(newDisplayedCount);
+    setDisplayedMessages(conversation.slice(-newDisplayedCount));
   };
-  const sendMessage = async () => {
+
+  // Reset message count when roomId changes
+  useEffect(() => {
+    setDisplayedCount(itemsPerPage);
+    loadConversation();
+  }, [roomId]);
+
+  useEffect(() => {
+    if (conversation.length > 0) {
+      setMoreLoading(false);
+      setDisplayedMessages(conversation.slice(-displayedCount));
+    }
+  }, [conversation, displayedCount]);
+
+  const createMessage = () => {
+    if (currentMessage.trim() !== "") {
+      const message = {
+        senderId: user?._id,
+        collaboratorId: roomId,
+        type: "text",
+        content: currentMessage,
+      };
+      sendMessage(message);
+    } else {
+      alert("No content");
+    }
+  };
+
+  const sendMessage = async (message) => {
     try {
+      setMessageLoading(true);
+      setMessageError(null);
       const response = await fetch(SEND_MESSAGE_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -55,82 +103,84 @@ const ChatConversation = ({ collaboratorId, back }) => {
       });
       if (response.ok) {
         const data = await response.json();
-        loadConversation();
-        resetMessageDetails();
+        loadConversation(); // Reload conversation after sending a message
+        setCurrentMessage(""); // Clear message input on success
       } else {
-        throw new Error("Failed to fetch conversation");
+        throw new Error("Failed to send message");
       }
     } catch (error) {
-      console.error("Failed to fetch conversation:", error);
-      setError("Failed to load conversation.");
+      console.error("Failed to send message:", error);
+      setMessageError("Failed to send message.");
     } finally {
-      setLoading(false);
-    }
-  };
-  const handleUploadClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click(); // Trigger file input click
+      setMessageLoading(false);
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  const handleUploadClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
 
   return (
     <div id="chat-conversation" className="col col-sm col-md col-lg">
-      <header>
-        {collaboratorId && smallScreen && (
-          <button className="btn btn-sm btn-dark" onClick={back}>
-            Back
-          </button>
+      <div className="header gap-3">
+        {roomId && smallScreen ? (
+          <>
+            <button className="btn btn-sm btn-dark" onClick={back}>
+              Back
+            </button>
+            <span className="text-start col-12">{roomName}</span>
+          </>
+        ) : (
+          <span className="text-start col-12">{roomName}</span>
         )}
-      </header>
-      <section className="overflow-auto">
-        <div className="vstack">
-          {!collaboratorId ? (
-            "Select a group first"
-          ) : conversation.length === 0 ? (
-            <p>No messages to display.</p>
-          ) : (
-            conversation.map((msg, index) => (
-              <MessageContainer key={index} msg={msg} />
-            ))
-          )}
-        </div>
-      </section>
-      <footer className="btn-group">
-        <button
-          type="button"
-          className="btn btn-sm btn-success"
-          onClick={handleUploadClick} // Trigger file input click
-        >
-          Upload
-        </button>
-        <textarea
-          className="form-control rounded-0"
-          rows="2"
-          defaultValue={""}
-          onChange={(e) =>
-            setMessage({
-              senderId: user?._id,
-              collaboratorId: collaboratorId,
-              type: "text",
-              content: e.target.value,
-            })
-          }
-        />
-        <input
-          type="file"
-          ref={fileInputRef}
-          className="d-none" // Hide the file input
-        />
-        <button
-          type="button"
-          className="btn btn-sm btn-success"
-          onClick={sendMessage}>
-          Send
-        </button>
-      </footer>
+      </div>
+      {roomId && (
+        <>
+          <div className="body">
+            <div className="vstack">
+              {loading ? (
+                <p className="text-center">Loading...</p>
+              ) : displayedMessages.length === 0 ? (
+                <p>No messages to display.</p>
+              ) : (
+                <>
+                  {displayedMessages.map((msg, index) => (
+                    <MessageContainer key={index} msg={msg} />
+                  ))}
+                </>
+              )}
+            </div>
+          </div>
+          <div className="footer btn-group">
+            <button
+              type="button"
+              className="btn btn-sm btn-success"
+              onClick={handleUploadClick}>
+              Upload
+            </button>
+            <input
+              type="text"
+              className="form-control rounded-0"
+              value={currentMessage}
+              onChange={(e) => setCurrentMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  createMessage();
+                }
+              }}
+            />
+            <input type="file" ref={fileInputRef} className="d-none" />
+            <button
+              type="button"
+              className="btn btn-sm btn-success"
+              onClick={createMessage}>
+              {messageLoading ? `Loading` : `Send`}
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };

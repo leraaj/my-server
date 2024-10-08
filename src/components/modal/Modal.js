@@ -15,6 +15,7 @@ const Modal = ({
   submitMessage,
 }) => {
   const closeModal = () => {
+    handleReset();
     onHide();
   };
 
@@ -40,10 +41,16 @@ const Modal = ({
       : size == "sm"
       ? "s-sm"
       : "";
-
+  const formRef = useRef(null);
+  const handleReset = () => {
+    if (formRef.current) {
+      formRef.current.reset();
+    }
+  };
   return (
     <form
       className={`md-form needs-validation`}
+      ref={formRef}
       noValidate
       onSubmit={handleSubmit} // Handle form submission
     >

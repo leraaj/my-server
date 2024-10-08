@@ -3,17 +3,16 @@ import ChatContainer from "./ChatContainer";
 import ChatConversation from "./ChatConversation";
 import ChatList from "./ChatList";
 import useChatLayout from "../../../../hooks/useChatLayout";
-import UseFetchById from "../../../../hooks/useFetchById"; // Adjust import path to function
 import { useAuthContext } from "../../../../hooks/context/useAuthContext";
 
 const Index = () => {
   const { user } = useAuthContext();
   const [chatId, setChatId] = useState(user?._id);
-  const [selectedChatGroup, setSelectedChatGroup] = useState(null);
+  const [selectedRoom, setSelectedRoom] = useState(null);
   const [chatGroups, setChatGroups] = useState([]);
   const Collaborators_API = `${process.env.REACT_APP_API_URL}/api/collaborators/${chatId}`;
   const { chatListSize, shouldRenderChatList, shouldRenderChatConversation } =
-    useChatLayout(selectedChatGroup);
+    useChatLayout(selectedRoom);
   useEffect(() => {
     const loadChatGroups = async () => {
       if (chatId === null) return; // Don't fetch if chatId is not set
@@ -27,7 +26,6 @@ const Index = () => {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Chat Groups" + data);
           setChatGroups(data); // Save data to state
         }
       } catch (error) {
@@ -38,7 +36,7 @@ const Index = () => {
     loadChatGroups();
   }, [chatId, chatGroups, setChatGroups]);
   const goBack = () => {
-    setSelectedChatGroup(null);
+    setSelectedRoom(null);
   };
   return (
     <ChatContainer>
@@ -46,12 +44,16 @@ const Index = () => {
         <ChatList
           size={chatListSize}
           list={chatGroups}
-          setCollaboratorId={setSelectedChatGroup}
-          collaboratorId={selectedChatGroup}
+          setRoomId={setSelectedRoom}
+          roomId={selectedRoom}
         />
       )}
       {shouldRenderChatConversation && (
-        <ChatConversation collaboratorId={selectedChatGroup} back={goBack} />
+        <ChatConversation
+          roomId={selectedRoom?._id}
+          roomName={selectedRoom?.title}
+          back={goBack}
+        />
       )}
     </ChatContainer>
   );
