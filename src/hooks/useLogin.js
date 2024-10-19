@@ -12,7 +12,7 @@ const useLogin = () => {
     try {
       setIsLoading(true);
       const response = await fetch(
-        `http://darkshots-server.onrender.com/api/user/login`,
+        `https://darkshots-server.onrender.com/api/user/login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
