@@ -11,7 +11,7 @@ import io from "socket.io-client";
 const API = `${process.env.REACT_APP_API_URL}/api`;
 
 const Index = () => {
-  const socket = io("http://localhost:3001");
+  const socket = io(`${process.env.REACT_APP_API_URL}`);
   const [rooms, setRooms] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState([]);
   const [roomsLoading, setRoomsLoading] = useState(false);
