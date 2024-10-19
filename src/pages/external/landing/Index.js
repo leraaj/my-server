@@ -10,7 +10,7 @@ import Footer from "../../../components/shared/Footer";
 import { useEffect } from "react";
 const Landing = () => {
   const fetchTest = () => {
-    fetch(`${process.env.REACT_APP_API_URL}users`, {
+    fetch(`${process.env.REACT_APP_API_URL}/users`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
