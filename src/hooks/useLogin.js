@@ -55,7 +55,12 @@ const useLogin = () => {
         toast.error(`Error: ${data.message}`);
       }
     } catch (error) {
-      console.error("Error: \n" + error + "Inputs: \n" + data);
+      console.error(
+        "Error: \n" +
+          JSON.stringify(error, null, 2) +
+          "\nInputs: \n" +
+          JSON.stringify(data, null, 2)
+      );
       setError("An error occurred while logging in."); // set error state
       toast.error("An error occurred while logging in");
       setIsLoading(false);
