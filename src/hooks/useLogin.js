@@ -12,7 +12,7 @@ const useLogin = () => {
     try {
       setIsLoading(true);
       const response = await fetch(
-        `https://darkshots-server.onrender.com/api/user/login`,
+        `http://darkshots-server.onrender.com/api/user/login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -20,7 +20,9 @@ const useLogin = () => {
           body: JSON.stringify(data),
         }
       );
-
+      if (!response) {
+        console.log(`\n\nResponse:\n${response}`);
+      }
       if (response.ok) {
         const data = await response.json();
         toast.success(`Welcome, ${data.user?.fullName}`, { duration: 5000 });
