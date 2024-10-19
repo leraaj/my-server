@@ -42,6 +42,7 @@ export const AuthContextProvider = ({ children }) => {
     setSmallScreen(screenCondition);
   }, [screenDimension]);
   const refreshUser = async () => {
+    console.log(state);
     if (state.user) return; // Prevent fetching if user is already set
     setIsLoading(true);
     try {
@@ -58,6 +59,7 @@ export const AuthContextProvider = ({ children }) => {
         setError(data?.message);
         dispatch({ type: "LOGOUT" });
       }
+      console.log(data);
     } catch (error) {
       setError(error.message);
       console.error("Error refreshing user:", error);
