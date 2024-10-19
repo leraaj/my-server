@@ -8,7 +8,7 @@ import useDimensions from "../../../hooks/useDimensions";
 import AddCollabModal from "./AddCollabModal.js";
 // SOCKET.IO
 import io from "socket.io-client";
-const socket = io.connect("http://localhost:3001");
+const socket = io.connect(`https://darkshots-server.onrender.com`);
 const API = `${process.env.REACT_APP_API_URL}/api`;
 
 const Index = () => {
