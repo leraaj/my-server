@@ -41,7 +41,6 @@ const ChatList = ({
               const { date, formattedTime } = dateTimeFormatter(
                 room?.latestChat?.timestamp || room?.createdAt
               );
-              console.log(room?.lastChat?.message[0]?.content);
               return (
                 <div
                   key={index}

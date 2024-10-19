@@ -11,12 +11,13 @@ const useLogin = () => {
   const login = async (data, setError) => {
     try {
       setIsLoading(true);
+      console.log(`${process.env.REACT_APP_API_URL}/api/user/login`);
       const response = await fetch(
-        `https://darkshots-server.onrender.com/api/user/login`,
+        `${process.env.REACT_APP_API_URL}/api/user/login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
+          credentials: "include", // Include credentials in the request
           body: JSON.stringify(data),
         }
       );

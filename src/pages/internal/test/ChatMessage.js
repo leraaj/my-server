@@ -72,11 +72,16 @@ const ChatMessage = ({ selectedRoom, back, socket }) => {
       });
 
       if (response.ok) {
-        socket.emit("send_message", {
+        await socket.emit("send_message", {
           room: selectedRoom?._id,
           title: selectedRoom?.title,
+          message: message,
         });
         fetchMessages();
+        if (chatContainerRef.current) {
+          chatContainerRef.current.scrollTop =
+            chatContainerRef.current.scrollHeight; // Scroll to bottom on messages update
+        }
         setMessage(""); // Reset the input field
       } else {
         throw new Error("Failed to send message");
@@ -131,20 +136,9 @@ const ChatMessage = ({ selectedRoom, back, socket }) => {
     setSelectedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
   useEffect(() => {
-    if (socket) {
-      socket.on("receive_message", () => {
-        fetchMessages();
-        if (chatContainerRef.current) {
-          chatContainerRef.current.scrollTop =
-            chatContainerRef.current.scrollHeight; // Scroll to the bottom on new message
-        }
-      });
-    }
-    return () => {
-      if (socket) {
-        socket.off("receive_message");
-      }
-    };
+    socket.on("receive_message", () => {
+      fetchMessages();
+    });
   }, [socket, selectedRoom]);
 
   useEffect(() => {
@@ -152,7 +146,7 @@ const ChatMessage = ({ selectedRoom, back, socket }) => {
       chatContainerRef.current.scrollTop =
         chatContainerRef.current.scrollHeight; // Scroll to bottom on messages update
     }
-  }, [messages]);
+  }, [cloneMessages]);
 
   return (
     <div className={`chatMessage col col-sm col-md col-lg ${selectedRoom}`}>

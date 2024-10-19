@@ -46,11 +46,11 @@ export const AuthContextProvider = ({ children }) => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `https://darkshots-server.onrender.com/api/user/current-user`,
+        `${process.env.REACT_APP_API_URL}/api/user/current-user`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
+          credentials: "include", // Include credentials in the request
         }
       );
       const data = await response.json();
