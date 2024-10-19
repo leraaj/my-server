@@ -46,12 +46,15 @@ export const AuthContextProvider = ({ children }) => {
     if (state.user) return; // Prevent fetching if user is already set
     setIsLoading(true);
     try {
-      const response = await fetch(FETCHUSER_API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        sameSite: "None",
-      });
+      const response = await fetch(
+        `https://darkshots-server.onrender.com/api/user/current-user`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          sameSite: "None",
+        }
+      );
       const data = await response.json();
       if (response.ok) {
         dispatch({ type: "LOGIN", payload: data?.user });
