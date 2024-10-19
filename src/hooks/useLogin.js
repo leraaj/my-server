@@ -56,7 +56,12 @@ const useLogin = () => {
       }
     } catch (error) {
       console.error(
-        "Error: \n" + error + "\nInputs: \n" + JSON.stringify(data, null, 2)
+        "Error: \n" +
+          error +
+          "\nInputs: \n" +
+          JSON.stringify(data, null, 2) +
+          "\nAPI: " +
+          process.env.REACT_APP_API_URL
       );
       setError("An error occurred while logging in."); // set error state
       toast.error("An error occurred while logging in");
