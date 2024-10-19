@@ -55,6 +55,7 @@ const InternalLayout = () => {
               }}>
               {toggle ? <MenuIcon /> : <MenuOpenIcon />}
             </span>
+            <span>{screenDimension}</span>
             <button
               className="nav-link"
               onClick={handleLogout}
@@ -62,6 +63,7 @@ const InternalLayout = () => {
               Logout
             </button>
           </nav>
+
           <div id="content">
             <Outlet />
           </div>

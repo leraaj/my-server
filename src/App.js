@@ -67,11 +67,11 @@ function App() {
           <Register />
         ),
     },
-    {
-      isPrivate: true,
-      path: "/test",
-      element: <Test />,
-    },
+    // {
+    //   isPrivate: true,
+    //   path: "/test",
+    //   element: <Test />,
+    // },
   ]; // Routes for admin
   const adminRoutes = [
     {
@@ -97,7 +97,7 @@ function App() {
     {
       isPrivate: true,
       path: "/chats",
-      element: <Chats />,
+      element: <Test />,
     },
   ];
   // Routes for applicants/clients users
@@ -110,7 +110,7 @@ function App() {
     {
       isPrivate: true,
       path: "/chats",
-      element: <Chats />,
+      element: <Test />,
     },
   ];
 

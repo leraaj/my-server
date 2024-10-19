@@ -10,7 +10,7 @@ const useFetchMessages = (selectedRoom) => {
     try {
       setLoading(true);
       const response = await fetch(
-        `${API}/chats/collaborator/${selectedRoom._id}`,
+        `${API}/chats/collaborator/${selectedRoom?._id}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -30,9 +30,8 @@ const useFetchMessages = (selectedRoom) => {
     }
   };
   useEffect(() => {
-    if (!selectedRoom || !selectedRoom._id) return;
-
-    fetchMessages();
+    if (!selectedRoom || !selectedRoom?._id) return;
+    fetchMessages(selectedRoom?._id);
   }, [selectedRoom]); // Dependency array includes 'selectedRoom'
 
   return { loading, error, messages, refresh: fetchMessages };

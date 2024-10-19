@@ -7,17 +7,52 @@ import Message from "./Message";
 import useFetchMessages from "./useFetchMessages";
 import dateTimeFormatter from "../../../hooks/dateTimeFormatter";
 import { useAuthContext } from "../../../hooks/context/useAuthContext";
+import Loader from "../../../components/loader/Loader";
 
 const SEND_MESSAGE_API = `${process.env.REACT_APP_API_URL}/api/chat`;
+const FETCH_MESSAGES_API = `${process.env.REACT_APP_API_URL}/api/chats/collaborator/`;
 
-const ChatMessage = ({ selectedRoom, back }) => {
+const ChatMessage = ({ selectedRoom, back, socket }) => {
   const { smallScreen, user } = useAuthContext();
-  const { loading, error, messages, refresh } = useFetchMessages(
-    selectedRoom || {}
-  );
+
+  const [messages, setMessages] = useState([]);
+  const [messagesError, setMessagesError] = useState({});
+  const [messagesLoading, setMessagesLoading] = useState(false);
+
+  //
+  const fetchMessages = async () => {
+    try {
+      setMessagesLoading(true);
+      const response = await fetch(
+        `${FETCH_MESSAGES_API}${selectedRoom?._id}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
+      const data = await response.json();
+      if (response.ok) {
+        setMessages(data);
+      } else {
+        setMessagesError({ error: data });
+      }
+    } catch (error) {
+      setMessagesError({ error });
+    } finally {
+      setMessagesLoading(false);
+    }
+  };
+  useEffect(() => {
+    if (selectedRoom && selectedRoom?._id) {
+      fetchMessages();
+    }
+  }, [selectedRoom?._id]);
+  //
+
   const [cloneMessages, setCloneMessages] = useState([]);
   const [popoverId, setPopoverid] = useState(null);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(30);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const fileInputRef = useRef(null);
   const [message, setMessage] = useState("");
@@ -37,8 +72,11 @@ const ChatMessage = ({ selectedRoom, back }) => {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        refresh();
+        socket.emit("send_message", {
+          room: selectedRoom?._id,
+          title: selectedRoom?.title,
+        });
+        fetchMessages();
         setMessage(""); // Reset the input field
       } else {
         throw new Error("Failed to send message");
@@ -53,11 +91,17 @@ const ChatMessage = ({ selectedRoom, back }) => {
   const handleFileChange = (event) => {
     const files = Array.from(event.target.files);
     if (files.length > 0) {
-      setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
+      // Create object URLs for image files
+      const filePaths = files.map((file) => ({
+        file, // Store the original file object
+        src: URL.createObjectURL(file), // Create object URL
+      }));
+
+      // Update selectedFiles with the new files and their corresponding object URLs
+      setSelectedFiles((prevFiles) => [...filePaths, ...prevFiles]);
     }
     event.target.value = ""; // Clear input field after selection
   };
-
   useEffect(() => {
     if (messages) {
       const sortedMessages = [...messages].sort(
@@ -68,12 +112,15 @@ const ChatMessage = ({ selectedRoom, back }) => {
   }, [messages, limit]);
   useEffect(() => {}, [selectedFiles]);
   const canDisplayMore = messages.length > cloneMessages.length;
+  const chatContainerRef = useRef();
   const loadMoreMessages = () => {
     if (canDisplayMore) {
       setLimit((prevLimit) => prevLimit + 5);
+      if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTop = 0; // Scroll to the top
+      }
     }
   };
-
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       event.preventDefault(); // Prevent the default behavior (e.g., form submission)
@@ -83,9 +130,32 @@ const ChatMessage = ({ selectedRoom, back }) => {
   const handleDeleteFile = (index) => {
     setSelectedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
+  useEffect(() => {
+    if (socket) {
+      socket.on("receive_message", () => {
+        fetchMessages();
+        if (chatContainerRef.current) {
+          chatContainerRef.current.scrollTop =
+            chatContainerRef.current.scrollHeight; // Scroll to the bottom on new message
+        }
+      });
+    }
+    return () => {
+      if (socket) {
+        socket.off("receive_message");
+      }
+    };
+  }, [socket, selectedRoom]);
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight; // Scroll to bottom on messages update
+    }
+  }, [messages]);
 
   return (
-    <div className="chatMessage col col-sm col-md col-lg">
+    <div className={`chatMessage col col-sm col-md col-lg ${selectedRoom}`}>
       {!selectedRoom?._id ? (
         <p
           style={{
@@ -115,13 +185,15 @@ const ChatMessage = ({ selectedRoom, back }) => {
               )}
             </div>
           </div>
-          <div className="body">
+
+          {/* This line is where my overflow-auto starts */}
+
+          <div className="body" ref={chatContainerRef}>
             {canDisplayMore && (
               <button className="btn-send" onClick={loadMoreMessages}>
                 Load More
               </button>
             )}
-            {error && <div className="error">Error loading messages</div>}
             {cloneMessages.map((msg, index) => {
               const content = msg?.message?.[0]?.content; // Adjusted for correct access
               const { formattedTime, date, dayOfWeek, isTodayThisWeek } =
@@ -136,11 +208,11 @@ const ChatMessage = ({ selectedRoom, back }) => {
 
               return (
                 <div key={index} className="col-12">
-                  {cloneMessages.length === cloneMessages.length - index && (
+                  {/* {cloneMessages.length === cloneMessages.length - index && (
                     <div className="d-flex justify-content-center mb-2">
                       <span className="text-secondary">{`${selectedRoom?.title}: ${date}`}</span>
                     </div>
-                  )}
+                  )} */}
                   {index === 0 || prevformattedTime !== formattedTime ? (
                     <div className="d-flex justify-content-center mb-2">
                       <span className="text-light">
@@ -161,6 +233,7 @@ const ChatMessage = ({ selectedRoom, back }) => {
               );
             })}
           </div>
+
           <footer className="footer">
             <div className="forms-container row m-0 col-12">
               {selectedFiles.length > 0 && (
@@ -169,29 +242,32 @@ const ChatMessage = ({ selectedRoom, back }) => {
                   style={{ width: "100%", padding: "0.5rem" }} // Added padding for spacing
                 >
                   <button
-                    className="btn-secondary-send text-secondary"
+                    className="btn btn-outline-secondary btn-sm text-secondary"
                     onClick={handleFilesUploadClick}>
-                    <img src={Plus} className="icon" alt="Attach File" />
+                    <img src={Plus} className="icon" height={15} />
                   </button>
-                  {selectedFiles.map((file, index) => (
+                  {console.log(selectedFiles)}
+                  {selectedFiles.map((item, index) => (
                     <span
                       key={index}
-                      className="border border-secondary rounded-3 px-3 py-2 position-relative" // Added padding for better appearance
-                      style={{
-                        whiteSpace: "nowrap",
-                        display: "inline-block", // Allow width to be respected
-                      }}>
+                      className={`selected-files-container border border-secondary rounded-3 ${
+                        item.file.type.startsWith("image/") || "px-3 py-0"
+                      }   position-relative`}>
                       <button
-                        className="btn btn-sm btn-danger position-absolute top-0 start-100 translate-middle"
-                        style={{
-                          borderRadius: "50%",
-                          paddingInline: "0.5rem",
-                          paddingBlock: "0.2rem",
-                        }}
+                        className="btn btn-sm btn-danger position-absolute top-0 start-100 translate-middle x-button"
                         onClick={() => handleDeleteFile(index)}>
                         <img src={Close} className="icon" height={15} />
                       </button>
-                      {file.name}
+
+                      {item.file.type.startsWith("image/") ? (
+                        <img
+                          src={item.src}
+                          alt={item.file.name}
+                          className="file-img rounded-3"
+                        />
+                      ) : (
+                        <div className="file-name">{item.file.name}</div>
+                      )}
                     </span>
                   ))}
                 </div>
@@ -199,29 +275,34 @@ const ChatMessage = ({ selectedRoom, back }) => {
 
               <div className="col-12 d-flex justify-content-evenly">
                 <div className="col">
-                  <input
+                  <textarea
                     type="text"
-                    className="form-control input-text-message"
+                    className="form-control input-text-message rounded-0"
                     placeholder="Aa"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyDown={handleKeyDown}
+                    rows={1}
                   />
                 </div>
                 <div className="col-auto d-flex gap-3">
                   <button
                     className="btn-secondary-send"
-                    onClick={handleFilesUploadClick}>
+                    onClick={handleFilesUploadClick}
+                    disabled={messagesLoading}>
                     <img src={AttachFile} className="icon" alt="Attach File" />
                   </button>
-                  <button className="btn-send" onClick={handleSendMessage}>
+                  <button
+                    className="btn-send"
+                    onClick={handleSendMessage}
+                    disabled={messagesLoading}>
                     <img src={SendIcon} className="icon" alt="Send" />
                   </button>
                   <input
                     type="file"
                     ref={fileInputRef}
                     style={{ display: "none" }}
-                    accept=".doc,.docx,.xls,.xlsx,.pdf,.txt,.ppt,.pptx,image/*"
+                    accept=".doc,.docx,.xls,.xlsx,.pdf,.txt,.ppt,.pptx,image/*,video/*"
                     multiple
                     onChange={handleFileChange}
                   />

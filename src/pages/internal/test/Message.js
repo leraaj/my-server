@@ -13,25 +13,34 @@ const Message = ({ msg, index, popoverId, setPopoverid }) => {
   const content = msg?.message?.[0]?.content || ""; // Default to empty string if content is undefined
 
   return (
-    <div key={index} className="message-container">
+    <div key={index} className="message-container  ">
+      {!isSender(msg.sender._id) && (
+        <div
+          className="msg-name text-secondary pb-1"
+          style={{ fontSize: "0.8rem" }}>
+          {msg.sender.fullName}
+        </div> // Display sender name if not the current user
+      )}
       <div
         id={msg._id}
         className={`${
           isSender(msg.sender._id) ? "msg-receiver" : "msg-sender"
-        }`}
+        } position-relative`}
         onMouseEnter={() => setPopoverid(msg._id)}
         onMouseLeave={() => setPopoverid("")}>
-        {!isSender(msg.sender._id) && (
-          <div className="msg-name">{msg.sender.fullName}</div> // Display sender name if not the current user
-        )}
-        <div className="msg-content text-break">{content}</div>
-        {/* Display the message content */}
-        <div className="popover-container position-relative">
+        <div className="msg-content text-break" style={{ fontSize: "1rem" }}>
+          {content}
+        </div>
+        <div
+          className={`popover-container position-absolute mx-1 ${
+            isSender(msg.sender._id)
+              ? `bottom-0 end-100 `
+              : `bottom-0 start-100 `
+          }`}>
           <div
-            className={`msg-date-time position-absolute top-50 start-0 translate-middle ${popupFunction(
-              popoverId,
-              msg._id
-            )}`}>
+            className={`msg-date-time 
+          
+            ${popupFunction(popoverId, msg._id)}`}>
             <span>{date}</span>
             <span>{formattedTime}</span>
           </div>

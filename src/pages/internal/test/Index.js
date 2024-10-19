@@ -6,22 +6,39 @@ import { useAuthContext } from "../../../hooks/context/useAuthContext";
 import useChatLayout from "../../../hooks/useChatLayout";
 import useDimensions from "../../../hooks/useDimensions";
 import AddCollabModal from "./AddCollabModal.js";
+// SOCKET.IO
+import io from "socket.io-client";
+const socket = io.connect("http://localhost:3001");
 const API = `${process.env.REACT_APP_API_URL}/api`;
 
 const Index = () => {
   const [rooms, setRooms] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [roomsLoading, setRoomsLoading] = useState(false);
   const [error, setError] = useState(null);
   const { user } = useAuthContext();
   const { chatListSize, renderChatlist, renderChatconversation } =
     useChatLayout(selectedRoom);
   const [dimensions, chatContainerRef] = useDimensions();
-
+  // SOCKET
+  const dynamicJoinRoom = (data) => {
+    if (selectedRoom !== "" || selectedRoom !== null || data !== null) {
+      setSelectedRoom(data);
+      socket.emit("join_room", selectedRoom);
+    }
+  };
   const fetchRooms = async () => {
+    setRoomsLoading(true);
+    if (
+      user == null ||
+      user == "" ||
+      user == undefined ||
+      (user && user.length == 0)
+    ) {
+      return console.log("No user: " + user);
+    }
     try {
-      setLoading(true);
-      const response = await fetch(`${API}/collaborators/${user._id}`, {
+      const response = await fetch(`${API}/collaborators/${user?._id}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -29,18 +46,20 @@ const Index = () => {
       if (response.ok) {
         const data = await response.json();
         setRooms(data);
-        data.length > 0 && setSelectedRoom(data[0]);
+        data.length > 0 && dynamicJoinRoom(data[0]);
       }
     } catch (error) {
       setError(error);
     } finally {
-      setLoading(false);
+      setRoomsLoading(false);
     }
   };
-
   useEffect(() => {
-    fetchRooms();
-  }, []); // No dependencies
+    if (user && user._id) {
+      // Ensure user exists and has an ID
+      fetchRooms();
+    }
+  }, [user?._id]); // Depend only on user ID
 
   const goBack = () => {
     setSelectedRoom(null);
@@ -53,6 +72,7 @@ const Index = () => {
   const hideAddCollabModal = () => {
     setAddCollabModal(false);
   };
+
   return (
     <>
       <div ref={chatContainerRef} id="chatContainer">
@@ -60,19 +80,24 @@ const Index = () => {
           <ChatList
             size={chatListSize}
             rooms={rooms}
-            loading={loading}
+            loading={roomsLoading}
             selectedRoom={selectedRoom}
             setSelectedRoom={setSelectedRoom}
             showAddCollabModal={showAddCollabModal}
+            socket={socket}
           />
         )}
         {renderChatconversation && (
-          <ChatMessage selectedRoom={selectedRoom} back={goBack} />
+          <ChatMessage
+            selectedRoom={selectedRoom}
+            back={goBack}
+            socket={socket}
+          />
         )}
         <AddCollabModal
           show={addCollabModal}
           onHide={hideAddCollabModal}
-          refresh={null}
+          refresh={fetchRooms}
         />
       </div>
     </>

@@ -12,11 +12,19 @@ const useChatLayout = (selectedGroupId) => {
     if (screenDimension > 900) return "col-3";
     return "col-3";
   }, [screenDimension]);
-
-  const renderChatlist =
-    !smallScreen || !selectedGroupId || (smallScreen && !selectedGroupId);
+  const roomId = selectedGroupId?._id;
+  const chatListLG = !roomId || screenDimension >= 900;
+  const chatListMD = !roomId || screenDimension > 800;
+  const chatListSM = !roomId || screenDimension > 600;
+  const renderChatlist = chatListLG || chatListMD || chatListSM;
+  // !smallScreen || !selectedGroupId || (smallScreen && !selectedGroupId);
+  const chatConvoXL = (roomId || !roomId) && screenDimension >= 900;
+  const chatConvoLG = (roomId || !roomId) && screenDimension > 800;
+  const chatConvoMD = (roomId || !roomId) && screenDimension > 600;
+  const chatConvSM = roomId && smallScreen;
   const renderChatconversation =
-    !smallScreen || (smallScreen && selectedGroupId);
+    chatConvoXL || chatConvoLG || chatConvoMD || chatConvSM;
+  // !smallScreen || (smallScreen && !selectedGroupId);
 
   return {
     chatListSize,
