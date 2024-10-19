@@ -42,6 +42,7 @@ export const AuthContextProvider = ({ children }) => {
     setSmallScreen(screenCondition);
   }, [screenDimension]);
   const refreshUser = async () => {
+    if (state.user) return; // Prevent fetching if user is already set
     setIsLoading(true);
     try {
       const response = await fetch(FETCHUSER_API, {
@@ -67,7 +68,7 @@ export const AuthContextProvider = ({ children }) => {
 
   useEffect(() => {
     refreshUser();
-  }, [state?.user]);
+  }, []);
 
   return (
     <AuthContext.Provider
