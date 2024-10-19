@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "./context/useAuthContext";
 const useLogin = () => {
-  const LOGIN_API = `${process.env.REACT_APP_API_URL}/api/user/login`;
+  const LOGIN_API = `https://darkshots-server.onrender.com/api/user/login`;
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);

@@ -8,7 +8,7 @@ import {
 import useToggle from "../hooks/useToggle";
 
 export const AuthContext = createContext();
-const FETCHUSER_API = `${process.env.REACT_APP_API_URL}/api/user/current-user`;
+const FETCHUSER_API = `https://darkshots-server.onrender.com/api/user/current-user`;
 
 const authReducer = (state, action) => {
   switch (action.type) {
