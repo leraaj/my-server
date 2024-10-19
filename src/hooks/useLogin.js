@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "./context/useAuthContext";
 const useLogin = () => {
-  const api_url = `${process.env.REACT_APP_API_URL}/api/user/login`;
+  const LOGIN_API = `${process.env.REACT_APP_API_URL}/api/user/login`;
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -11,7 +11,7 @@ const useLogin = () => {
   const login = async (data, setError) => {
     try {
       setIsLoading(true);
-      const response = await fetch(api_url, {
+      const response = await fetch(LOGIN_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -55,10 +55,11 @@ const useLogin = () => {
         toast.error(`Error: ${data.message}`);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error: \n" + error + "Inputs: \n" + data);
       setError("An error occurred while logging in."); // set error state
       toast.error("An error occurred while logging in");
       setIsLoading(false);
+      console.error("Error refreshing user:", error); // Log the error message
     }
   };
 

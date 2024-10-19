@@ -8,7 +8,7 @@ import {
 import useToggle from "../hooks/useToggle";
 
 export const AuthContext = createContext();
-const URL = `${process.env.REACT_APP_API_URL}/api/user/current-user`;
+const FETCHUSER_API = `${process.env.REACT_APP_API_URL}/api/user/current-user`;
 
 const authReducer = (state, action) => {
   switch (action.type) {
@@ -44,7 +44,7 @@ export const AuthContextProvider = ({ children }) => {
   const refreshUser = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(URL, {
+      const response = await fetch(FETCHUSER_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -52,9 +52,9 @@ export const AuthContextProvider = ({ children }) => {
       });
       const data = await response.json();
       if (response.ok) {
-        dispatch({ type: "LOGIN", payload: data.user });
+        dispatch({ type: "LOGIN", payload: data?.user });
       } else {
-        setError(data.message);
+        setError(data?.message);
         dispatch({ type: "LOGOUT" });
       }
     } catch (error) {
@@ -67,7 +67,7 @@ export const AuthContextProvider = ({ children }) => {
 
   useEffect(() => {
     refreshUser();
-  }, [URL]);
+  }, [FETCHUSER_API]);
 
   return (
     <AuthContext.Provider
