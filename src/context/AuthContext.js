@@ -67,7 +67,7 @@ export const AuthContextProvider = ({ children }) => {
 
   useEffect(() => {
     refreshUser();
-  }, [FETCHUSER_API]);
+  }, [state?.user]);
 
   return (
     <AuthContext.Provider
