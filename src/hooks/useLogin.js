@@ -66,7 +66,6 @@ const useLogin = () => {
       setError("An error occurred while logging in."); // set error state
       toast.error("An error occurred while logging in");
       setIsLoading(false);
-      console.error("Error refreshing user:", error); // Log the error message
     }
   };
 
