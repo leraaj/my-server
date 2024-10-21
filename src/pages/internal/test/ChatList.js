@@ -11,15 +11,13 @@ const ChatList = ({
   setSelectedRoom,
   selectedRoom,
   showAddCollabModal,
-  socket,
+  // socket,
 }) => {
   const { user } = useAuthContext();
   const joinRoom = (data) => {
     setSelectedRoom(data);
-    if (data !== null) {
-      socket.emit("join_room", data?._id);
-    }
   };
+
   return (
     <>
       <div className={`chatList  ${size} ${selectedRoom}`}>

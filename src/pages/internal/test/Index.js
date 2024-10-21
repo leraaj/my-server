@@ -6,27 +6,35 @@ import { useAuthContext } from "../../../hooks/context/useAuthContext";
 import useChatLayout from "../../../hooks/useChatLayout";
 import useDimensions from "../../../hooks/useDimensions";
 import AddCollabModal from "./AddCollabModal.js";
-// SOCKET.IO
 import io from "socket.io-client";
 const API = `${process.env.REACT_APP_API_URL}/api`;
 
 const Index = () => {
-  const socket = io(`${process.env.REACT_APP_API_URL}`);
+  const { user } = useAuthContext();
+  const socket = io("https://darkshots-server.onrender.com");
+
   const [rooms, setRooms] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState([]);
   const [roomsLoading, setRoomsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { user } = useAuthContext();
   const { chatListSize, renderChatlist, renderChatconversation } =
     useChatLayout(selectedRoom);
   const [dimensions, chatContainerRef] = useDimensions();
   // SOCKET
   const dynamicJoinRoom = (data) => {
-    if (selectedRoom !== "" || selectedRoom !== null || data !== null) {
-      setSelectedRoom(data);
-      socket.emit("join_room", selectedRoom);
+    if (data) {
+      // Check if data (the room) is valid
+      setSelectedRoom(data); // This triggers the useEffect below
     }
   };
+
+  // This useEffect listens for changes to selectedRoom
+  useEffect(() => {
+    if (selectedRoom) {
+      socket.emit("join_room", selectedRoom._id); // Emit using the new room ID
+    }
+  }, [selectedRoom]);
+
   const fetchRooms = async () => {
     setRoomsLoading(true);
     if (
@@ -54,11 +62,6 @@ const Index = () => {
       setRoomsLoading(false);
     }
   };
-  useEffect(() => {
-    socket.on("join_room", () => {
-      alert("I Joined");
-    });
-  }, []);
 
   useEffect(() => {
     if (user && user._id) {
@@ -89,7 +92,7 @@ const Index = () => {
             selectedRoom={selectedRoom}
             setSelectedRoom={setSelectedRoom}
             showAddCollabModal={showAddCollabModal}
-            socket={socket}
+            // socket={socket}
           />
         )}
         {renderChatconversation && (

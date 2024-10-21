@@ -136,10 +136,15 @@ const ChatMessage = ({ selectedRoom, back, socket }) => {
     setSelectedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
   useEffect(() => {
-    socket.on("receive_message", () => {
-      fetchMessages();
+    socket.on("receive_message", (data) => {
+      console.log("Message received:", data); // Add logging to verify
+      fetchMessages(); // Update messages after receiving
     });
-  }, [socket, selectedRoom]);
+
+    return () => {
+      socket.off("receive_message"); // Clean up the listener when the component unmounts
+    };
+  }, []);
 
   useEffect(() => {
     if (chatContainerRef.current) {
