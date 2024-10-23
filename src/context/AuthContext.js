@@ -6,9 +6,18 @@ import {
   useState,
 } from "react";
 import useToggle from "../hooks/useToggle";
-
+// Get environment variables
+const NODE_ENVIRONMENT = process.env.REACT_APP_NODE_ENV;
+const SERVER_LINK_LOCAL = process.env.REACT_APP_LOCAL_SERVER;
+const SERVER_LINK_HOSTING = process.env.REACT_APP_RENDER_SERVER;
+const API_URL =
+  NODE_ENVIRONMENT === "development"
+    ? SERVER_LINK_LOCAL
+    : NODE_ENVIRONMENT === "production"
+    ? SERVER_LINK_HOSTING
+    : "http://localhost:3000"; // Add a fallback URL or log an error
+console.log(`NODE_ENVIRONMENT: ${NODE_ENVIRONMENT} `);
 export const AuthContext = createContext();
-const FETCHUSER_API = `https://darkshots-server.onrender.com/api/user/current-user`;
 
 const authReducer = (state, action) => {
   switch (action.type) {
@@ -45,14 +54,11 @@ export const AuthContextProvider = ({ children }) => {
     if (state.user) return; // Prevent fetching if user is already set
     setIsLoading(true);
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/user/current-user`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include", // Include credentials in the request
-        }
-      );
+      const response = await fetch(`${API_URL}/api/user/current-user`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include", // Include credentials in the request
+      });
       const data = await response.json();
       if (response.ok) {
         dispatch({ type: "LOGIN", payload: data?.user });
@@ -86,6 +92,7 @@ export const AuthContextProvider = ({ children }) => {
         smallScreen,
         popupFunction,
         popup,
+        API_URL,
       }}>
       {children}
     </AuthContext.Provider>

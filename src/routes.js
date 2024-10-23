@@ -6,8 +6,8 @@ import Jobs from "./pages/internal/admin/jobs/Index";
 import Chats from "./pages/internal/admin/chats/Index";
 // Employee Routes
 import Profile from "./pages/internal/employees/profile/Index";
-import Orders from "./pages/internal/employees/orders/Index";
-import MediaFiles from "./pages/internal/employees/mediaFiles/Index";
+// import Orders from "./pages/internal/employees/orders/Index";
+// import MediaFiles from "./pages/internal/employees/mediaFiles/Index";
 // TEST
 import Test from "./pages/internal/test/Index";
 import { Navigate } from "react-router-dom";

@@ -11,13 +11,22 @@ const ChatList = ({
   setSelectedRoom,
   selectedRoom,
   showAddCollabModal,
-  // socket,
+  fetchRooms,
+  socket,
 }) => {
   const { user } = useAuthContext();
   const joinRoom = (data) => {
     setSelectedRoom(data);
   };
+  useEffect(() => {
+    socket.on("receive_message", (data) => {
+      fetchRooms(); // Update messages after receiving
+    });
 
+    return () => {
+      socket.off("receive_message"); // Clean up the listener when the component unmounts
+    };
+  }, []);
   return (
     <>
       <div className={`chatList  ${size} ${selectedRoom}`}>
@@ -32,33 +41,29 @@ const ChatList = ({
           </span>
         </div>
         <div className="body">
-          {loading ? (
-            <Loader />
-          ) : (
-            rooms?.map((room, index) => {
-              const { date, formattedTime } = dateTimeFormatter(
-                room?.latestChat?.timestamp || room?.createdAt
-              );
-              return (
-                <div
-                  key={index}
-                  className={`room ${
-                    selectedRoom?.title == room?.title && "room-selected"
-                  }`}
-                  onClick={() => joinRoom(room)}>
-                  <span className="room-title">{room?.title}</span>
-                  <span className="room-latest-message ">
-                    {user?._id === room?.lastChat?.sender?._id
-                      ? `You: ${room?.lastChat?.message[0]?.content}`
-                      : `${room?.lastChat?.sender?.fullName}: ${room?.lastChat?.message[0]?.content}`}
-                  </span>
-                  <span className="room-latest-time">
-                    {`${date} - ${formattedTime}`}
-                  </span>
-                </div>
-              );
-            })
-          )}
+          {rooms?.map((room, index) => {
+            const { date, formattedTime } = dateTimeFormatter(
+              room?.latestChat?.timestamp || room?.createdAt
+            );
+            return (
+              <div
+                key={index}
+                className={`room ${
+                  selectedRoom?.title == room?.title && "room-selected"
+                }`}
+                onClick={() => joinRoom(room)}>
+                <span className="room-title">{room?.title}</span>
+                <span className="room-latest-message ">
+                  {user?._id === room?.lastChat?.sender?._id
+                    ? `You: ${room?.lastChat?.message[0]?.content}`
+                    : `${room?.lastChat?.sender?.fullName}: ${room?.lastChat?.message[0]?.content}`}
+                </span>
+                <span className="room-latest-time">
+                  {`${date} - ${formattedTime}`}
+                </span>
+              </div>
+            );
+          })}
         </div>
         <div className="footer"></div>
       </div>

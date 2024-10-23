@@ -7,11 +7,11 @@ import useChatLayout from "../../../hooks/useChatLayout";
 import useDimensions from "../../../hooks/useDimensions";
 import AddCollabModal from "./AddCollabModal.js";
 import io from "socket.io-client";
-const API = `${process.env.REACT_APP_API_URL}/api`;
 
 const Index = () => {
-  const { user } = useAuthContext();
-  const socket = io("https://darkshots-server.onrender.com");
+  const { user, API_URL } = useAuthContext();
+  const API = `${API_URL}/api`;
+  const socket = io(API_URL);
 
   const [rooms, setRooms] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState([]);
@@ -23,8 +23,7 @@ const Index = () => {
   // SOCKET
   const dynamicJoinRoom = (data) => {
     if (data) {
-      // Check if data (the room) is valid
-      setSelectedRoom(data); // This triggers the useEffect below
+      setSelectedRoom(data);
     }
   };
 
@@ -54,7 +53,7 @@ const Index = () => {
       if (response.ok) {
         const data = await response.json();
         setRooms(data);
-        data.length > 0 && dynamicJoinRoom(data[0]);
+        // data.length > 0 && dynamicJoinRoom(data[0]);
       }
     } catch (error) {
       setError(error);
@@ -92,7 +91,8 @@ const Index = () => {
             selectedRoom={selectedRoom}
             setSelectedRoom={setSelectedRoom}
             showAddCollabModal={showAddCollabModal}
-            // socket={socket}
+            socket={socket}
+            fetchRooms={fetchRooms}
           />
         )}
         {renderChatconversation && (
@@ -100,6 +100,7 @@ const Index = () => {
             selectedRoom={selectedRoom}
             back={goBack}
             socket={socket}
+            fetchRooms={fetchRooms}
           />
         )}
         <AddCollabModal

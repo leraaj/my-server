@@ -4,21 +4,21 @@ import AttachFile from "../../../assets/icons/file-attachment.svg";
 import Close from "../../../assets/icons/close.svg";
 import Plus from "../../../assets/icons/plus.svg";
 import Message from "./Message";
-import useFetchMessages from "./useFetchMessages";
 import dateTimeFormatter from "../../../hooks/dateTimeFormatter";
 import { useAuthContext } from "../../../hooks/context/useAuthContext";
 import Loader from "../../../components/loader/Loader";
 
-const SEND_MESSAGE_API = `${process.env.REACT_APP_API_URL}/api/chat`;
-const FETCH_MESSAGES_API = `${process.env.REACT_APP_API_URL}/api/chats/collaborator/`;
+const ChatMessage = ({ selectedRoom, back, socket, fetchRooms }) => {
+  const { smallScreen, user, API_URL } = useAuthContext();
 
-const ChatMessage = ({ selectedRoom, back, socket }) => {
-  const { smallScreen, user } = useAuthContext();
-
+  const SEND_MESSAGE_API = `${API_URL}/api/chat`;
+  const FETCH_MESSAGES_API = `${API_URL}/api/chats/collaborator/`;
   const [messages, setMessages] = useState([]);
   const [messagesError, setMessagesError] = useState({});
   const [messagesLoading, setMessagesLoading] = useState(false);
-
+  const handleKeyboardTyping = (event) => {
+    setMessage(event.target.value);
+  };
   //
   const fetchMessages = async () => {
     try {
@@ -137,7 +137,8 @@ const ChatMessage = ({ selectedRoom, back, socket }) => {
   };
   useEffect(() => {
     socket.on("receive_message", (data) => {
-      console.log("Message received:", data); // Add logging to verify
+      console.log("Someone sent a message");
+      fetchRooms();
       fetchMessages(); // Update messages after receiving
     });
 
@@ -279,7 +280,7 @@ const ChatMessage = ({ selectedRoom, back, socket }) => {
                     className="form-control input-text-message rounded-0"
                     placeholder="Aa"
                     value={message}
-                    onChange={(e) => setMessage(e.target.value)}
+                    onChange={handleKeyboardTyping}
                     onKeyDown={handleKeyDown}
                     rows={1}
                   />

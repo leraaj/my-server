@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "./context/useAuthContext";
 const useLogin = () => {
-  const LOGIN_API = `https://darkshots-server.onrender.com/api/user/login`;
+  const { API_URL } = useAuthContext();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -11,16 +11,13 @@ const useLogin = () => {
   const login = async (data, setError) => {
     try {
       setIsLoading(true);
-      console.log(`${process.env.REACT_APP_API_URL}/api/user/login`);
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/user/login`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include", // Include credentials in the request
-          body: JSON.stringify(data),
-        }
-      );
+      console.log(`${API_URL}/api/user/login`);
+      const response = await fetch(`${API_URL}/api/user/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include", // Include credentials in the request
+        body: JSON.stringify(data),
+      });
       if (!response) {
         console.log(`\n\nResponse:\n${response}`);
       }

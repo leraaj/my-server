@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import Modal from "../../../components/modal/Modal";
 import { useAuthContext } from "../../../hooks/context/useAuthContext";
 import useFetch from "../../../hooks/useFetch";
-const COLLABORATION_API = `${process.env.REACT_APP_API_URL}/api/collaborator`;
 
 const AddGroupModal = ({ show, onHide, refresh }) => {
-  const { user } = useAuthContext();
+  const { user, API_URL } = useAuthContext();
+  const COLLABORATION_API = `${API_URL}/api/collaborator`;
   const client = user?._id;
   const [title, setTitle] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -25,15 +25,9 @@ const AddGroupModal = ({ show, onHide, refresh }) => {
     setSelectedJob(e.target.value);
   };
 
-  const { data: categoryData } = useFetch(
-    `${process.env.REACT_APP_API_URL}/api/categories`
-  );
-  const { data: applicants } = useFetch(
-    `${process.env.REACT_APP_API_URL}/api/applicants`
-  );
-  const { data: jobData } = useFetch(
-    `${process.env.REACT_APP_API_URL}/api/jobs`
-  );
+  const { data: categoryData } = useFetch(`${API_URL}/api/categories`);
+  const { data: applicants } = useFetch(`${API_URL}/api/applicants`);
+  const { data: jobData } = useFetch(`${API_URL}/api/jobs`);
 
   // Create a count of applicants for each job
   const jobApplicantCounts = jobData?.map((job) => {

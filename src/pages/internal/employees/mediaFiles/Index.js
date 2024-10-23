@@ -1,7 +1,7 @@
 import React from "react";
 
-const MediaFiles = () => {
+const Index = () => {
   return <div>MediaFiles</div>;
 };
 
-export default MediaFiles;
+export default Index;
