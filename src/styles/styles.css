@@ -310,6 +310,36 @@ input.form-control-light {
   border-left: transparent none !important;
   border-radius: 0 !important;
 }
+input[type="file"].form-control,
+input[type="file"].form-control-light {
+  border-color: #786bff !important;
+  border-radius: 0px !important;
+}
+input[type="file"]::-webkit-file-upload-button {
+  background-color: transparent !important;
+  transition: background-color 0.3s ease;
+  border-top: transparent none !important;
+  border-right: transparent none !important;
+  border-left: transparent none !important;
+  border-bottom: transparent none !important;
+  border-radius: 0px !important;
+}
+input[type="file"]::file-selector-button {
+  border-color: #786bff !important;
+  color: #786bff;
+  border-width: 0 !important;
+  border-width: 1px !important;
+  border-radius: 0px !important;
+  border-bottom: transparent none !important;
+}
+
+input[type="file"].form-control:focus,
+input[type="file"].form-control-light:focus,
+input[type="file"].form-control:active,
+input[type="file"].form-control-light:active {
+  background-color: transparent !important;
+  border-radius: 0px !important;
+}
 select.form-select {
   background-color: transparent !important;
   border-top: transparent none !important;
@@ -317,7 +347,25 @@ select.form-select {
   border-left: transparent none !important;
   border-radius: 0 !important;
 }
-textarea.form-control-light {
+textarea {
+  background-color: transparent !important;
+  border-radius: 0 !important;
+  border-top-color: pink !important;
+  border-left-color: pink !important;
+  border-right-color: pink !important;
+  border-bottom-color: pink !important;
+  outline-color: pink !important;
+  box-shadow: none !important;
+}
+textarea:active,
+textarea:focus,
+textarea:hover {
+  box-shadow: none !important;
+  border-top-color: #fff !important;
+  border-left-color: #fff !important;
+  border-right-color: #fff !important;
+  border-bottom-color: #fff !important;
+  outline-color: pink !important;
   background-color: transparent !important;
   border-radius: 0 !important;
 }
@@ -328,8 +376,7 @@ textarea.form-control-light {
 .form-control:focus,
 select.form-control:focus,
 select:focus,
-input:focus,
-textarea:focus {
+input:focus {
   outline: none !important;
   box-shadow: none !important;
   border-top: none !important;
@@ -407,4 +454,43 @@ select.form-control option:hover {
 
 .pill-btn.danger {
   background-color: var(--color-danger);
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropbtn {
+  background-color: transparent;
+  padding: 1rem;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute; /* Position relative to the dropdown container */
+  background-color: #f9f9f9;
+  min-width: 100%;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block; /* Show dropdown on hover */
+  z-index: 1001 !important;
+}
+.dropdown-btn {
+  text-decoration: none;
+  background-color: transparent;
+  width: 100%;
+  padding: 1rem;
+  outline: none;
+  border: none;
+  text-align: start;
+}
+.dropdown-btn:hover {
+  background-color: var(--light-80);
 }

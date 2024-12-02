@@ -46,11 +46,11 @@ export const sidebarLinks = [
   {
     position: 2,
     links: [
-      {
-        url: "/profile",
-        icon: <AccountCircleIcon {...(size && { fontSize: size })} />,
-        label: "profile",
-      },
+      // {
+      //   url: "/profile",
+      //   icon: <AccountCircleIcon {...(size && { fontSize: size })} />,
+      //   label: "profile",
+      // },
       {
         url: "/chats",
         icon: <ChatBubbleIcon {...(size && { fontSize: size })} />,
@@ -61,11 +61,11 @@ export const sidebarLinks = [
   {
     position: 3,
     links: [
-      {
-        url: "/profile",
-        icon: <AccountCircleIcon {...(size && { fontSize: size })} />,
-        label: "profile",
-      },
+      // {
+      //   url: "/profile",
+      //   icon: <AccountCircleIcon {...(size && { fontSize: size })} />,
+      //   label: "profile",
+      // },
       {
         url: "/chats",
         icon: <ChatBubbleIcon {...(size && { fontSize: size })} />,

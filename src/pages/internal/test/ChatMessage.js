@@ -77,6 +77,7 @@ const ChatMessage = ({ selectedRoom, back, socket, fetchRooms }) => {
           title: selectedRoom?.title,
           message: message,
         });
+        fetchRooms();
         fetchMessages();
         if (chatContainerRef.current) {
           chatContainerRef.current.scrollTop =

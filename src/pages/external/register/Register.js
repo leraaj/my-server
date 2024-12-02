@@ -5,19 +5,26 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import useFetch from "../../../hooks/useFetch";
+import { useAuthContext } from "../../../hooks/context/useAuthContext";
 
 const Register = () => {
+  const { API_URL } = useAuthContext();
   const navigate = useNavigate();
   const { data: jobs } = useFetch(`${process.env.REACT_APP_API_URL}/api/jobs`);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedSkills, setSelectedSkills] = useState([]);
   const schema = yup.object().shape({
     fullName: yup.string().required("Full name is required"),
-    email: yup.string().email().required("Email is required"),
-    contact: yup.string().required("Contact number is required"),
-    username: yup.string().required("Username is required"),
-    password: yup.string().required("Password is required"),
-    position: yup.number().required("Position is required"),
+    email: yup.string().email().trim().required("Email is required"),
+    contact: yup
+      .string()
+      .trim()
+      .min(11, "Minimum of 11 digits") // Set minimum string length
+      .matches(/^[0-9]+$/, "Must be only digits")
+      .required("Contact number is required"),
+    username: yup.string().trim().required("Username is required"),
+    password: yup.string().trim().required("Password is required"),
+    position: yup.number().default(2),
     applicationStatus: yup.number().default(2),
     // skills: yup
     //   .array()
@@ -28,6 +35,7 @@ const Register = () => {
     register,
     setError,
     getValues,
+    reset,
     control,
     handleSubmit,
     formState: { errors },
@@ -37,20 +45,19 @@ const Register = () => {
   const onSubmit = async (data) => {
     try {
       setIsLoading(true);
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/user`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(data),
-        }
-      );
+      const response = await fetch(`${API_URL}/api/user`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
 
       const fnResponse = await response.json();
 
       if (response.ok) {
         toast.success("Success: The request was successful.");
+        navigate("/login");
+        reset();
         setIsLoading(false);
       } else {
         if (
@@ -95,19 +102,19 @@ const Register = () => {
   };
   return (
     <div className="landing-section d-flex justify-content-center ">
-      <div className="col">
+      <div className="col-11">
         <span className="bar-title" style={{ paddingBottom: "3rem" }}>
-          create
+          Welcome, Client!
           <br />
-          your account
+          Register Below
         </span>
         <form
           className="needs-validation row mx-0 g-3"
           onSubmit={handleSubmit(onSubmit)}
           noValidate>
           {/* Name */}
-          <div className="input-container col-12 col-md-6">
-            <span className="form-label">client name</span>
+          <div className="input-container col-12">
+            <span className="form-label-light">client name</span>
             <input
               type="text"
               className={`form-control form-control-light ${
@@ -124,8 +131,8 @@ const Register = () => {
           </div>
 
           {/* Position */}
-          <div className="input-container col-12 col-md-6">
-            <span className="form-label">position</span>
+          {/* <div className="input-container col-12">
+            <span className="form-label-light">position</span>
             <select
               className={`form-control form-control-light ${
                 errors.position && "is-invalid"
@@ -143,11 +150,11 @@ const Register = () => {
                 {errors.position.message}
               </span>
             )}
-          </div>
+          </div> */}
 
           {/* Email */}
-          <div className="input-container col-12 col-md-6">
-            <span className="form-label">email</span>
+          <div className="input-container col-12">
+            <span className="form-label-light">email</span>
             <input
               type="text"
               className={`form-control form-control-light ${
@@ -162,10 +169,10 @@ const Register = () => {
           </div>
 
           {/* Contact */}
-          <div className="input-container col-12 col-md-6">
-            <span className="form-label">contact</span>
+          <div className="input-container col-12">
+            <span className="form-label-light">contact</span>
             <input
-              type="text"
+              type="number"
               className={`form-control form-control-light ${
                 errors.contact && "is-invalid"
               } ${CheckFieldValue("contact")}`}
@@ -178,8 +185,8 @@ const Register = () => {
           </div>
 
           {/* Username */}
-          <div className="input-container col-12 col-md-6">
-            <span className="form-label">username</span>
+          <div className="input-container col-12">
+            <span className="form-label-light">username</span>
             <input
               type="text"
               className={`form-control form-control-light ${
@@ -196,8 +203,8 @@ const Register = () => {
           </div>
 
           {/* Password */}
-          <div className="input-container col-12 col-md-6">
-            <span className="form-label">password</span>
+          <div className="input-container col-12">
+            <span className="form-label-light">password</span>
             <input
               type="password"
               className={`form-control form-control-light ${

@@ -9,11 +9,11 @@ import Accounts from "./pages/internal/admin/accounts/Index";
 import Applicants from "./pages/internal/admin/applicants/Index";
 import Clients from "./pages/internal/admin/clients/Index";
 import Jobs from "./pages/internal/admin/jobs/Index";
-import Chats from "./pages/internal/admin/chats/Index";
 // Employee Routes
 import Profile from "./pages/internal/employees/profile/Index";
 // TEST
-import Test from "./pages/internal/test/Index";
+import Chats from "./pages/internal/test/Index";
+import QRcodePage from "./pages/external/landing/qrcodePage/Index";
 import Register from "./pages/external/register/Register";
 function App() {
   const { user, isLoading } = useAuthContext();
@@ -67,11 +67,22 @@ function App() {
           <Register />
         ),
     },
-    // {
-    //   isPrivate: true,
-    //   path: "/test",
-    //   element: <Test />,
-    // },
+    {
+      isPrivate: false,
+      path: "/mobile-redirect",
+      element:
+        user?.position == 1 ? (
+          <Navigate to={localStorage.getItem("url") || "/accounts"} replace />
+        ) : user?.position == 2 ? (
+          <Navigate to={localStorage.getItem("url") || "/profile"} replace />
+        ) : user?.position == 3 ? (
+          <Navigate to={localStorage.getItem("url") || "/profile"} replace />
+        ) : user?.position === undefined ? (
+          <QRcodePage />
+        ) : (
+          <QRcodePage />
+        ),
+    },
   ]; // Routes for admin
   const adminRoutes = [
     {
@@ -97,7 +108,12 @@ function App() {
     {
       isPrivate: true,
       path: "/chats",
-      element: <Test />,
+      element: <Chats />,
+    },
+    {
+      isPrivate: true,
+      path: "/profile",
+      element: <Profile />,
     },
   ];
   // Routes for applicants/clients users
@@ -110,7 +126,12 @@ function App() {
     {
       isPrivate: true,
       path: "/chats",
-      element: <Test />,
+      element: <Chats />,
+    },
+    {
+      isPrivate: true,
+      path: "/profile",
+      element: <Profile />,
     },
   ];
 

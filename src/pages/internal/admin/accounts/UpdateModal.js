@@ -5,9 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { useAuthContext } from "../../../../hooks/context/useAuthContext";
 
 const UpdateModal = ({ show, onHide, refresh, selectedUser }) => {
-  const UPDATE_API_URL = `${process.env.REACT_APP_API_URL}/api/user/${selectedUser?.id}`;
+  const { API_URL } = useAuthContext();
+  const UPDATE_API_URL = `${API_URL}/api/user/${selectedUser?.id}`;
   const [isLoading, setIsLoading] = useState(false);
   const schema = yup.object().shape(
     {

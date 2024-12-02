@@ -1,110 +1,143 @@
-import React from "react";
+import React, { useState } from "react";
 import { useAuthContext } from "../../../../hooks/context/useAuthContext";
 import placeholder from "../../../../assets/images/placeholder/img_blank.png";
+import ViewImageModal from "./ViewImageModal";
+import UpdateProfileModal from "./UpdateProfileModal";
+import "./style.css";
+import axios from "axios";
+import { toast } from "sonner";
+
 const Profile = () => {
-  const { user } = useAuthContext();
+  const { user, API_URL } = useAuthContext();
+  const API = `${API_URL}/api`;
+
+  // ADD MODAL VARIABLES
+  const [viewImageModal, setViewImageModal] = useState(null);
+  const showImageModal = () => setViewImageModal(true);
+  const hideImageModal = () => setViewImageModal(false);
+
+  // UPDATE PROFILE MODAL VARIABLES
+  const [updateProfileModal, setUpdateProfileModal] = useState(null);
+  const showUpdateProfileModal = () => setUpdateProfileModal(true);
+  const hideUpdateProfileModal = () => setUpdateProfileModal(false);
+
+  // Loading state for resume download
+  const [resumeLoad, setResumeLoad] = useState(false);
+
+  const handleCVDownload = async () => {
+    setResumeLoad(true); // Set loading state to true while downloading
+
+    try {
+      // Make a GET request to download the file as a blob
+      const response = await fetch(
+        `${API}/download-file/${user?.files?.resume?.id}`,
+        {
+          method: "GET",
+          credentials: "include", // Ensure credentials are sent
+        }
+      );
+
+      // Check if the response is successful
+      if (!response.ok) {
+        toast.error(`Error downloading file: ${response.message}`);
+        throw new Error("Failed to download file");
+      }
+
+      // Extract the filename from the Content-Disposition header
+      const filename = user?.files?.resume?.name;
+      const fileType = user?.files?.resume?.mimeType;
+      // Create a Blob from the response data
+      const blob = await response.blob();
+      // Create an object URL for the Blob and trigger a download
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${filename}.${fileType}`); // Set the filename for the download
+      document.body.appendChild(link);
+      link.click(); // Trigger the download
+      document.body.removeChild(link); // Clean up
+      toast.success("File downloaded successfully!");
+    } catch (error) {
+      console.error("Download error:", error);
+      toast.error(`Error downloading file: ${error.message}`);
+    } finally {
+      setResumeLoad(false); // Reset loading state after the download is complete
+    }
+  };
+
   return (
-    <div
-      className="overflow-auto"
-      style={{
-        backgroundColor: "var(--light-100)",
-        height: "calc(100dvh - 100px - 0.5rem)",
-        marginBlock: "0.5rem",
-        borderRadius: "0.5rem",
-      }}>
-      <div className="col row mx-0 px-3 g-3 ">
-        <div className="col-12 col-lg row mx-0 g-3">
-          <div className="input-container">
-            <label className="form-label">Full Name</label>
-            <input
-              type="text"
-              className="form-control form-control-light"
-              defaultValue={user?.fullName}
-              readOnly
-              disabled
+    <>
+      <div className="profile-container">
+        <div className="body overflow-auto">
+          <div className="col-auto photo-name-container mb-3">
+            <img
+              src={user?.profile ? placeholder : placeholder}
+              className="profile-picture"
             />
+            <span className="col-auto user-fullname">{user?.fullName}</span>
+            <span className="col" aria-label="gap-filler" />
+            <button className="btn btn-dark" onClick={showUpdateProfileModal}>
+              Update Profile
+            </button>
           </div>
-          <div className="input-container col">
-            <label className="form-label">Email</label>
-            <input
-              type="text"
-              className="form-control form-control-light"
-              defaultValue={user?.email}
-              readOnly
-              disabled
-            />
-          </div>
-          <div className="input-container col">
-            <label className="form-label">Contact</label>
-            <input
-              type="text"
-              className="form-control form-control-light"
-              defaultValue={user?.contact}
-              readOnly
-              disabled
-            />
-          </div>
-          <div className="input-container">
-            <label className="form-label">Resume/CV</label>
-            <div className="col-auto">
-              <button type="button" className="btn btn-dark ">
-                Download
-              </button>
+          <div className="col vstack">
+            <span className="form-label mb-3 fs-5">About</span>
+            <div className="pill-details">
+              <span className="pill-label">Email</span>
+              <span>{user?.email}</span>
             </div>
-          </div>
-          {user?.position === 3 && (
-            <div className="input-container">
-              <label className="form-label">Skills</label>
-              <div className="row mx-0 gap-2 flex-wrap">
-                <span className="btn btn-dark col-auto">1 skill</span>
-                <span className="btn btn-dark col-auto">2 skill</span>
-                <span className="btn btn-dark col-auto">3 skill</span>
-                <span className="btn btn-dark col-auto">4 skill</span>
-                <span className="btn btn-dark col-auto">5 skill</span>
-                <span className="btn btn-dark col-auto">6 skill</span>
-                <span className="btn btn-dark col-auto">7 skill</span>
-                <span className="btn btn-dark col-auto">8 skill</span>
-                <span className="btn btn-dark col-auto">9 skill</span>
-                <span className="btn btn-dark col-auto">10 skill</span>
+            <div className="pill-details">
+              <span className="pill-label">Contact Number</span>
+              <span>{user?.contact}</span>
+            </div>
+            <div className="pill-details">
+              <span className="pill-label col-auto">Resume/CV</span>
+              <span className="row align-items-center mx-0 p-0">
+                <span className="col-auto">
+                  {user?.files?.resume?.name || "Upload one?"}
+                </span>
+                <span className="col-auto">
+                  <button
+                    className="btn btn-dark"
+                    onClick={handleCVDownload}
+                    disabled={resumeLoad} // Disable the button while downloading
+                  >
+                    {resumeLoad ? "Downloading..." : "Download"}
+                  </button>
+                  {/* <a
+                    href={`https://www.googleapis.com/drive/v2/files/${user?.files?.resume?.id}`}>
+                    Download
+                  </a> */}
+                </span>
+              </span>
+            </div>
+            <div className="col-12 row mx-0 p-0 gap-3">
+              <div className="col-12 col-sm pill-details row m-0">
+                <span className="col-12 pill-label mb-2">Skills</span>
+                <span className="col-12 vstack pill-body">
+                  <span className="pill-skills">skill 1</span>
+                </span>
+              </div>
+              <div className="col-12 col-sm pill-details row m-0">
+                <span className="col-12 pill-label mb-2">Portfolio</span>
+                <span className="col-12 vstack pill-body">
+                  <img
+                    src={placeholder}
+                    className="pill-images"
+                    onClick={showImageModal}
+                  />
+                </span>
               </div>
             </div>
-          )}
+          </div>
         </div>
-        {user?.position === 3 && (
-          <div className="col-12 col-lg row mx-0 g-3">
-            <div className="input-container">
-              <label className="form-label">Portfolio</label>
-              <div className="col-12 row mx-0 g-2 overflow-auto">
-                <img
-                  src={placeholder}
-                  style={{
-                    height: "140px",
-                    width: "auto",
-                    objectFit: "contain",
-                  }}
-                />
-                <img
-                  src={placeholder}
-                  style={{
-                    height: "140px",
-                    width: "auto",
-                    objectFit: "contain",
-                  }}
-                />
-                <img
-                  src={placeholder}
-                  style={{
-                    height: "140px",
-                    width: "auto",
-                    objectFit: "contain",
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        )}
       </div>
-    </div>
+      <UpdateProfileModal
+        show={updateProfileModal}
+        onHide={hideUpdateProfileModal}
+      />
+      <ViewImageModal show={viewImageModal} onHide={hideImageModal} />
+    </>
   );
 };
 

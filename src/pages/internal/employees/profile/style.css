@@ -1,0 +1,65 @@
+:root {
+  --border-radius: 1rem;
+}
+
+.profile-container {
+  height: 100%;
+  width: 100%;
+  background-color: var(--light-100);
+  display: flex;
+  flex-direction: column;
+  border-radius: 1rem;
+}
+.profile-container .body {
+  flex-grow: 1;
+  padding: 1.5rem 2rem !important;
+  display: inline-block;
+}
+/*  */
+.photo-name-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.profile-picture {
+  height: 120px !important;
+  width: 120px !important;
+  object-fit: fill;
+  border-radius: 50% !important;
+}
+.user-fullname {
+  font-size: 1.25rem;
+}
+.pill-details {
+  padding: 1rem;
+  border: 1px var(--dark-50) solid;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-radius: 0.7rem;
+}
+.pill-label {
+  color: var(--dark-70);
+  font-weight: 600;
+}
+.pill-skills {
+  border-radius: 1.5rem;
+  min-width: 80px;
+  padding: 0.5rem 1rem;
+  text-align: start;
+}
+.pill-images {
+  height: 100px;
+  width: 130px;
+  object-fit: cover;
+  text-align: start;
+  cursor: pointer;
+}
+.pill-body {
+  height: 200px;
+  overflow: auto;
+  gap: 0.8rem;
+  padding-block: 0.5rem;
+}

@@ -3,8 +3,10 @@ import Modal from "../../../../components/modal/Modal";
 import useFetchById from "../../../../hooks/useFetchById";
 import CustomButton from "../../../../components/button/CustomButton";
 import { toast } from "sonner";
+import { useAuthContext } from "../../../../hooks/context/useAuthContext";
 
 const ViewAppointmentsModal = ({ show, onHide, id, refresh }) => {
+  const { API_URL } = useAuthContext();
   const {
     data: appointment,
     loading: appointmentLoading,
@@ -25,7 +27,7 @@ const ViewAppointmentsModal = ({ show, onHide, id, refresh }) => {
   const status = appointment?.appointmentStatus;
   const phase = appointment?.phase;
   const complete = appointment?.complete;
-  const UPDATE_APPOINTMENT_API = `${process.env.REACT_APP_API_URL}/api/appointment/${appointment?._id}`;
+  const UPDATE_APPOINTMENT_API = `${API_URL}/api/appointment/${appointment?._id}`;
   const makeApiCall = async (
     url,
     appointmentData,

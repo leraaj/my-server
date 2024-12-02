@@ -5,8 +5,10 @@ import useFetchById from "../../../../hooks/useFetchById";
 import dateTimeFormatter from "../../../../hooks/dateTimeFormatter";
 import CustomButton from "../../../../components/button/CustomButton";
 import ViewApplicationModal from "./ViewApplicationModal";
+import { useAuthContext } from "../../../../hooks/context/useAuthContext";
 
 const ApplicationsModal = ({ show, onHide, isLoading, refresh, user }) => {
+  const { API_URL } = useAuthContext();
   const {
     data: application,
     loading: applicationLoading,
@@ -110,7 +112,6 @@ const ApplicationsModal = ({ show, onHide, isLoading, refresh, user }) => {
   };
 
   const refreshData = () => {
-    refresh();
     refreshApplications();
     refreshCountPending();
     refreshCountUnfinishedProgress();

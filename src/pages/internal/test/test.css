@@ -1,4 +1,8 @@
 :root {
+  --admin-color: #3a3d43;
+  --client-color: #007bff;
+  --applicant-color: #b785f6;
+
   --bg-main: #20232b;
   --bg-secondary: #15171c;
   --bg-shadow: #15171c;
@@ -10,9 +14,9 @@
   --txt-color: #c5c6c8;
   --border-style: 1px red solid;
 
-  --header-height: 70px;
+  --header-height: 80px;
   --body-height: calc(100% - var(--total-height));
-  --footer-height: 92.5px;
+  --footer-height: 50px;
 
   --total-height: calc(var(--header-height) + var(--footer-height));
 }
@@ -49,7 +53,7 @@
 
 .chatList .header,
 .chatMessage .header {
-  height: var(--header-height);
+  min-height: var(--header-height);
   border-top-left-radius: 1rem;
   border-top-right-radius: 1rem;
   padding-inline: 1rem;
@@ -192,7 +196,7 @@
 .message-container .msg-receiver {
   display: inline-block;
   width: auto;
-  max-width: 50%;
+  max-width: 85%;
   box-sizing: border-box; /* Ensure padding and border are included in width */
 }
 

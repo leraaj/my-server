@@ -5,13 +5,14 @@ import { toast } from "sonner"; // Assuming 'sonner' is your toast library
 import ApplicationsModal from "./ApplicationsModal";
 import ViewProfileModal from "./ViewProfileModal";
 import AppointmentsModal from "./AppointmentsModal";
+import { useAuthContext } from "../../../../hooks/context/useAuthContext";
 const Applicants = () => {
-  const API = process.env.REACT_APP_API_URL || ""; // Ensure API URL is correctly loaded from environment
+  const { API_URL } = useAuthContext();
   const {
     data: users,
     loading: userLoading,
     refresh: userRefresh,
-  } = useFetch(`${API}/api/users`);
+  } = useFetch(`${API_URL}/api/users`);
 
   const [user, setUser] = useState({});
 

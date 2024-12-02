@@ -13,6 +13,7 @@ const Modal = ({
   isLoading,
   footer,
   submitMessage,
+  closeMessage,
 }) => {
   const closeModal = () => {
     handleReset();
@@ -47,10 +48,25 @@ const Modal = ({
       formRef.current.reset();
     }
   };
+  // Add Esc key listener
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape" && show && !isStatic) {
+        closeModal();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [show, isStatic]);
   return (
     <form
       className={`md-form needs-validation`}
       ref={formRef}
+      encType="multipart/form-data"
       noValidate
       onSubmit={handleSubmit} // Handle form submission
     >
@@ -70,7 +86,7 @@ const Modal = ({
           <div id="md-footer">
             <span>
               <button type="button" className="btn " onClick={closeModal}>
-                Cancel
+                {closeMessage || "Cancel"}
               </button>
             </span>
             {footer}

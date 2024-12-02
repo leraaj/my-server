@@ -9,7 +9,7 @@ import "./styles.css";
 import "./sidebar.css";
 import Sidebar from "./Sidebar";
 const InternalLayout = () => {
-  const API = `${process.env.REACT_APP_API_URL}/api/user/logout`;
+  const { API_URL } = useAuthContext();
   const [hasErrors, setHasErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const InternalLayout = () => {
     sidebarLinks.find((link) => link.position === user?.position)?.links || [];
   const handleLogout = async () => {
     try {
-      const response = await fetch(`${API}/${user._id}`, {
+      const response = await fetch(`${API_URL}/api/user/logout/${user._id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,13 +55,22 @@ const InternalLayout = () => {
               }}>
               {toggle ? <MenuIcon /> : <MenuOpenIcon />}
             </span>
-            <span>{screenDimension}</span>
-            <button
-              className="nav-link"
-              onClick={handleLogout}
-              style={{ color: "var(--dark-40)" }}>
-              Logout
-            </button>
+            <div class="dropdown">
+              <button class="dropbtn dropdown-toggle  ">
+                {user?.fullName}
+              </button>
+              <div class="dropdown-content">
+                <button
+                  className="dropdown-btn"
+                  onClick={() => navigate("/profile")}
+                  aria-label="Go to Profile">
+                  Profile
+                </button>
+                <button className="dropdown-btn" onClick={handleLogout}>
+                  Logout
+                </button>
+              </div>
+            </div>
           </nav>
 
           <div id="content">

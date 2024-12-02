@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import Modal from "../../../../components/modal/Modal";
 import { toast } from "sonner";
+import { useAuthContext } from "../../../../hooks/context/useAuthContext";
 const DeleteModal = ({ show, onHide, refresh, selectedUser }) => {
-  const DELETE_API_URL = `${process.env.REACT_APP_API_URL}/api/user/${selectedUser?.id}`;
+  const { API_URL } = useAuthContext();
+  const DELETE_API_URL = `${API_URL}/api/user/${selectedUser?.id}`;
   const [isLoading, setIsLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const handleValue = (e) => {

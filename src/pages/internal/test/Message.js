@@ -26,6 +26,16 @@ const Message = ({ msg, index, popoverId, setPopoverid }) => {
         className={`${
           isSender(msg.sender._id) ? "msg-receiver" : "msg-sender"
         } position-relative`}
+        style={{
+          backgroundColor:
+            !isSender(msg.sender._id) && msg.sender.position === 1
+              ? "#85F6B8"
+              : !isSender(msg.sender._id) && msg.sender.position === 2
+              ? "#85E5F6"
+              : !isSender(msg.sender._id) && msg.sender.position === 3
+              ? "#B785F6"
+              : "",
+        }}
         onMouseEnter={() => setPopoverid(msg._id)}
         onMouseLeave={() => setPopoverid("")}>
         <div className="msg-content text-break" style={{ fontSize: "1rem" }}>

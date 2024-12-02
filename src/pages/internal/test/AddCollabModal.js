@@ -1,27 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Modal from "../../../components/modal/Modal";
 import { useAuthContext } from "../../../hooks/context/useAuthContext";
 import useFetch from "../../../hooks/useFetch";
+import { toast } from "sonner";
 
-const AddGroupModal = ({ show, onHide, refresh }) => {
+const AddGroupModal = ({ show, onHide, refresh, socket }) => {
   const { user, API_URL } = useAuthContext();
   const COLLABORATION_API = `${API_URL}/api/collaborator`;
   const client = user?._id;
   const [title, setTitle] = useState("");
+  const titleRef = useRef(null); // Create a ref for the title input
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedJob, setSelectedJob] = useState("");
+  const jobRef = useRef(null); // Create a ref for the title input
   const [selectedApplicants, setSelectedApplicants] = useState([]);
-
-  const [errors, setErrors] = useState({
-    title: null,
-    selectedJob: null,
-    selectedApplicants: null,
-  });
   // Validations
   const handleTitle = (e) => {
     setTitle(e.target.value);
   };
   const handleJob = (e) => {
+    setSelectedApplicants([]);
     setSelectedJob(e.target.value);
   };
 
@@ -42,6 +40,7 @@ const AddGroupModal = ({ show, onHide, refresh }) => {
     : [];
 
   const onClose = () => {
+    refresh();
     onHide();
     reset();
   };
@@ -52,11 +51,22 @@ const AddGroupModal = ({ show, onHide, refresh }) => {
       client: client,
       users: selectedApplicants,
       job: selectedJob,
+      senderId: user?._id,
     };
-    if (title === "" || selectedApplicants.length <= 0 || selectedJob === "") {
+    if (title === "" || selectedApplicants.length < 3 || selectedJob === "") {
+      titleRef.current.focus();
+      toast.error("All fields are required!");
+      if (title === "") {
+        titleRef.current.focus();
+      } else if (selectedApplicants.length < 3) {
+        toast.error("Please select at least 3 applicants");
+      } else if (selectedJob === "") {
+        jobRef.current.focus();
+      } else {
+        titleRef.current.focus();
+        toast.error("All fields are required!");
+      }
       return;
-    } else {
-      console.log(data);
     }
     try {
       const response = await fetch(COLLABORATION_API, {
@@ -65,6 +75,13 @@ const AddGroupModal = ({ show, onHide, refresh }) => {
         credentials: "include",
         body: JSON.stringify(data),
       });
+      if (response.status === 400) {
+        const error = await response.json();
+        titleRef.current.focus(); // Focus on the title input
+        return toast.warning(error.message);
+      }
+      onClose();
+      socket.emit("new_collaborator", { message: "Adding new collaborator" });
     } catch (error) {
       console.error(error);
     }
@@ -75,14 +92,9 @@ const AddGroupModal = ({ show, onHide, refresh }) => {
     setSelectedCategory("");
     setSelectedJob("");
     setSelectedApplicants([]);
+    titleRef.current.value = "";
+    jobRef.current.value = "";
   };
-  useEffect(() => {
-    setErrors({
-      title: title === "" ? true : false,
-      selectedJob: selectedJob === "" ? true : false,
-      selectedApplicants: selectedApplicants.length == 0 ? true : false,
-    });
-  }, [title, selectedJob, selectedApplicants]);
 
   return (
     <Modal
@@ -99,10 +111,9 @@ const AddGroupModal = ({ show, onHide, refresh }) => {
             <label className="form-label">Title</label>
             <input
               type="text"
-              className={`form-control form-control-light ${
-                errors.title && "is-invalid"
-              }`}
+              className={`form-control form-control-light  `}
               onChange={handleTitle}
+              ref={titleRef}
               required
             />
           </div>
@@ -112,8 +123,9 @@ const AddGroupModal = ({ show, onHide, refresh }) => {
             <div className="d-flex gap-2 col-12">
               <div className="col">
                 <select
-                  className={`form-control form-control-light `}
+                  className={`form-control form-control-light`}
                   onChange={handleJob}
+                  ref={jobRef}
                   required>
                   <option value="">Select Job</option>
                   {jobApplicantCounts?.map((job) => (

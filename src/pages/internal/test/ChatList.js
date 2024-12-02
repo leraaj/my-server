@@ -3,6 +3,7 @@ import CreateIcon from "../../../assets/icons/newMessage.svg";
 import dateTimeFormatter from "../../../hooks/dateTimeFormatter";
 import Loader from "../../../components/loader/Loader";
 import { useAuthContext } from "../../../hooks/context/useAuthContext";
+import { toast } from "sonner";
 
 const ChatList = ({
   size,
@@ -13,20 +14,34 @@ const ChatList = ({
   showAddCollabModal,
   fetchRooms,
   socket,
+  io,
 }) => {
   const { user } = useAuthContext();
   const joinRoom = (data) => {
     setSelectedRoom(data);
   };
   useEffect(() => {
-    socket.on("receive_message", (data) => {
+    socket.on("receive_message", () => {
       fetchRooms(); // Update messages after receiving
+      io.emit("refresh_chatlist");
     });
-
     return () => {
       socket.off("receive_message"); // Clean up the listener when the component unmounts
     };
   }, []);
+  useEffect(() => {
+    const refreshChatlist = "Chat list refreshed";
+    // Listen for the refresh_chatlist event
+    socket.on("refresh_chatlist", () => {
+      fetchRooms(); // Update messages after receiving
+    });
+
+    // Cleanup the listener on component unmount
+    return () => {
+      socket.off("refresh_chatlist");
+    };
+  }, []);
+
   return (
     <>
       <div className={`chatList  ${size} ${selectedRoom}`}>

@@ -2,7 +2,7 @@ import React from "react";
 
 const Contact = () => {
   return (
-    <div id="contact" className="landing-section">
+    <div id="contact" className="landing-section pb-5">
       <div className="col pt-5">
         <span className="bar-title" style={{ paddingBottom: "3rem" }}>
           contact us

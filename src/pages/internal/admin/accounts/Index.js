@@ -6,10 +6,16 @@ import CustomButton from "../../../../components/button/CustomButton";
 import AddModal from "./AddModal";
 import UpdateModal from "./UpdateModal";
 import DeleteModal from "./DeleteModal";
+import { useAuthContext } from "../../../../hooks/context/useAuthContext";
 const Accounts = () => {
-  const API = `${process.env.REACT_APP_API_URL}`;
+  const { API_URL } = useAuthContext();
   const [selectedUser, setSelectedUser] = useState({});
-  const { data: users, loading, refresh, error } = useFetch(`${API}/api/users`);
+  const {
+    data: users,
+    loading,
+    refresh,
+    error,
+  } = useFetch(`${API_URL}/api/users`);
   const data = useMemo(() => {
     if (!users) return []; // Return empty array if users data is not available
 

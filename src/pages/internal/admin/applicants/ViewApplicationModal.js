@@ -4,8 +4,10 @@ import useFetchById from "../../../../hooks/useFetchById";
 import CustomButton from "../../../../components/button/CustomButton";
 import { toast } from "sonner";
 import useFetch from "../../../../hooks/useFetch";
+import { useAuthContext } from "../../../../hooks/context/useAuthContext";
 
 const ViewApplicationModal = ({ show, onHide, id, refresh }) => {
+  const { API_URL } = useAuthContext();
   const {
     data: application,
     loading: applicationLoading,
@@ -37,10 +39,10 @@ const ViewApplicationModal = ({ show, onHide, id, refresh }) => {
     application?.complete === 1;
 
   const { refresh: applicationsRefresh } = useFetch(
-    `${process.env.REACT_APP_API_URL}/api/applications`
+    `${API_URL}/api/applications`
   );
   const { refresh: appointmentsRefresh } = useFetch(
-    `${process.env.REACT_APP_API_URL}/api/appointments`
+    `${API_URL}/api/appointments`
   );
   const handleMeetingLink = (e) => {
     setMeetingLink(e.target.value);
@@ -52,7 +54,7 @@ const ViewApplicationModal = ({ show, onHide, id, refresh }) => {
   const handleApplicationInProgress = async () => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/application/${application?._id}`,
+        `${API_URL}/api/application/${application?._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -86,7 +88,7 @@ const ViewApplicationModal = ({ show, onHide, id, refresh }) => {
     };
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/application/${application?._id}`,
+        `${API_URL}/api/application/${application?._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -114,15 +116,12 @@ const ViewApplicationModal = ({ show, onHide, id, refresh }) => {
       meetingTime: meetingTime,
     };
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/appointment `,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(data),
-        }
-      );
+      const response = await fetch(`${API_URL}/api/appointment `, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
       const fnResponse = await response.json();
       if (response.ok) {
         console.log(fnResponse);
@@ -145,7 +144,7 @@ const ViewApplicationModal = ({ show, onHide, id, refresh }) => {
     };
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/application/${application?._id}`,
+        `${API_URL}/api/application/${application?._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

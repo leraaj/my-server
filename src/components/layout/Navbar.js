@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../../styles/navbar.css";
 import useToggle from "../../hooks/useToggle";
+import MenuIcon from "../../assets/icons/menu-bar.svg";
 import Brand from "../../assets/images/brand/darkshot-logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import { Link as ScrollLink } from "react-scroll";
@@ -44,10 +45,8 @@ const Navbar = () => {
       <Link className="navbar-brand " to="/">
         <img src={Brand} alt="Darkshot Production" height="30" />
       </Link>
-      <button
-        className={`btn-toggler ${toggle ? "primary-btn" : "secondary-btn"}`}
-        onClick={toggler}>
-        toggle
+      <button className={`btn-toggler primary-btn`} onClick={toggler}>
+        <img src={MenuIcon} style={{ height: "1rem" }} />
       </button>
       <div className={`list-stack ${toggle ? "show" : ""}`}>
         {landingLinks.map((link, index) => {

@@ -92,6 +92,7 @@ const Index = () => {
             setSelectedRoom={setSelectedRoom}
             showAddCollabModal={showAddCollabModal}
             socket={socket}
+            io={io}
             fetchRooms={fetchRooms}
           />
         )}
@@ -107,6 +108,7 @@ const Index = () => {
           show={addCollabModal}
           onHide={hideAddCollabModal}
           refresh={fetchRooms}
+          socket={socket}
         />
       </div>
     </>
