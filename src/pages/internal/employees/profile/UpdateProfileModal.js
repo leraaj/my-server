@@ -37,15 +37,17 @@ const Index = ({ show, onHide }) => {
     if (!file) {
       return alert("No file selected");
     }
+    console.log(file);
     const formData = new FormData();
     formData.append("resume", file);
-    formData.append("name", user?.fullName);
+    formData.append("name", file?.name);
     formData.append("id", user?._id);
     try {
       axios
         .post(`${API}/upload-resume`, formData)
         .then((res) => {
           console.log(res);
+          onHide();
         })
         .catch((error) => {
           console.error(error);
