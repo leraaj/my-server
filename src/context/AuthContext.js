@@ -16,7 +16,7 @@ const API_URL =
     : NODE_ENVIRONMENT === "production"
     ? SERVER_LINK_HOSTING
     : "http://localhost:3000"; // Add a fallback URL or log an error
-console.log(`NODE_ENVIRONMENT: ${NODE_ENVIRONMENT} `);
+console.log(`NODE_ENVIRONMENT: ${NODE_ENVIRONMENT}\nAPI_URL: ${API_URL} `);
 export const AuthContext = createContext();
 
 const authReducer = (state, action) => {
