@@ -93,6 +93,7 @@ export const AuthContextProvider = ({ children }) => {
         popupFunction,
         popup,
         API_URL,
+        refreshUser,
       }}>
       {children}
     </AuthContext.Provider>

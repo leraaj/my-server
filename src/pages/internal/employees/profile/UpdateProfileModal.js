@@ -8,9 +8,9 @@ import PortfolioTab from "./PortfolioTab";
 import SkillsTab from "./SkillsTab";
 import axios from "axios";
 
-const Index = ({ show, onHide }) => {
+const Index = ({ show, onHide, refresh }) => {
   const isStatic = true;
-  const { user, API_URL } = useAuthContext();
+  const { user, API_URL, refreshUser } = useAuthContext();
   const API = `${API_URL}/api`;
   const [file, setFile] = useState(null);
   // VIEW IMAGE MODAL VARIABLES
