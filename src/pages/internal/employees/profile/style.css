@@ -36,13 +36,15 @@
   border: 1px var(--dark-50) solid;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: start;
+  flex-direction: column;
   margin-bottom: 1rem;
   border-radius: 0.7rem;
 }
 .pill-label {
   color: var(--dark-70);
   font-weight: 600;
+  padding-bottom: 0.5rem;
 }
 .pill-skills {
   border-radius: 1.5rem;

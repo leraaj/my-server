@@ -26,6 +26,22 @@ const authReducer = (state, action) => {
     case "LOGOUT":
       localStorage.clear();
       return { user: undefined };
+    case "UPDATE_RESUME":
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          files: {
+            ...state.user.files,
+            resume: {
+              ...state.user.files.resume,
+              id: action.payload.id, // Update the resume id
+              name: action.payload.name, // Update the resume name
+              mimeType: action.payload.mimeType, // Update the resume mimeType
+            },
+          },
+        },
+      };
     default:
       return state;
   }
@@ -43,6 +59,12 @@ export const AuthContextProvider = ({ children }) => {
     setPopup(value);
     return value;
   };
+  const updateResume = (resumeData) => {
+    dispatch({
+      type: "UPDATE_RESUME",
+      payload: resumeData, // Pass the full object containing id, name, mimeType
+    });
+  };
 
   // Responsive View
   const screenCondition = screenDimension < 600;
@@ -51,16 +73,18 @@ export const AuthContextProvider = ({ children }) => {
     setSmallScreen(screenCondition);
   }, [screenDimension]);
   const refreshUser = async () => {
-    if (state.user) return; // Prevent fetching if user is already set
     setIsLoading(true);
     try {
       const response = await fetch(`${API_URL}/api/user/current-user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // Include credentials in the request
+        credentials: "include", // Ensure credentials are sent
       });
+
       const data = await response.json();
+
       if (response.ok) {
+        console.log("User Refreshed:", data?.user); // Log before dispatching
         dispatch({ type: "LOGIN", payload: data?.user });
       } else {
         setError(data?.message);
@@ -94,6 +118,7 @@ export const AuthContextProvider = ({ children }) => {
         popup,
         API_URL,
         refreshUser,
+        updateResume,
       }}>
       {children}
     </AuthContext.Provider>

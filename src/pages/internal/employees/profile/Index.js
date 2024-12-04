@@ -52,6 +52,9 @@ const Profile = () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
+      console.log(
+        `download:\n${JSON.stringify(user?.files?.resume, null, 2)} `
+      );
       link.setAttribute("download", `${filename}.${fileType}`); // Set the filename for the download
       document.body.appendChild(link);
       link.click(); // Trigger the download
@@ -92,22 +95,20 @@ const Profile = () => {
             </div>
             <div className="pill-details">
               <span className="pill-label col-auto">Resume/CV</span>
-              <span className="row align-items-center mx-0 p-0">
-                <span className="col-auto">
-                  {user?.files?.resume?.name || "Upload one?"}
-                </span>
-                <span className="col-auto">
-                  <button
-                    className="btn btn-dark"
-                    onClick={handleCVDownload}
-                    disabled={resumeLoad} // Disable the button while downloading
-                  >
-                    {resumeLoad ? "Downloading..." : "Download"}
-                  </button>
-                  {/* <a
-                    href={`https://www.googleapis.com/drive/v2/files/${user?.files?.resume?.id}`}>
-                    Download
-                  </a> */}
+              <span className="col-12 row align-items-center m-0 p-0">
+                <span className="col-12 m-0 p-0 d-flex align-items-center justify-align-content-around">
+                  <span className="col  ">
+                    {user?.files?.resume?.name || "Upload one?"}
+                  </span>
+                  <span className="col-auto">
+                    <button
+                      className="btn btn-dark col"
+                      onClick={handleCVDownload}
+                      disabled={resumeLoad} // Disable the button while downloading
+                    >
+                      {resumeLoad ? "Downloading..." : "Download"}
+                    </button>
+                  </span>
                 </span>
               </span>
             </div>

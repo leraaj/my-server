@@ -8,9 +8,9 @@ import PortfolioTab from "./PortfolioTab";
 import SkillsTab from "./SkillsTab";
 import axios from "axios";
 
-const Index = ({ show, onHide, refresh }) => {
+const Index = ({ show, onHide }) => {
   const isStatic = true;
-  const { user, API_URL, refreshUser } = useAuthContext();
+  const { user, updateResume, API_URL } = useAuthContext();
   const API = `${API_URL}/api`;
   const [file, setFile] = useState(null);
   // VIEW IMAGE MODAL VARIABLES
@@ -38,21 +38,29 @@ const Index = ({ show, onHide, refresh }) => {
       return alert("No file selected");
     }
     console.log(file);
+
     const formData = new FormData();
     formData.append("resume", file);
     formData.append("name", file?.name);
     formData.append("id", user?._id);
+
     try {
-      axios
-        .post(`${API}/upload-resume`, formData)
-        .then((res) => {
-          console.log(res);
-          onHide();
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      const res = await axios.post(`${API_URL}/api/upload-resume`, formData);
+
+      const file = res?.data?.file;
+      const name = file?.name;
+      const id = file?.id;
+      const mimeType = file?.mimeType;
+
+      console.log(
+        `Uploaded Resume Details:\n${JSON.stringify(res.data, null, 2)}`
+      );
+
+      // Update the resume with the new details (id, name, mimeType)
+      updateResume({ id, name, mimeType });
+      onHide(); // Close the modal after uploading
     } catch (error) {
+      console.error("Error uploading file:", error);
       alert(`Error uploading file: ${error.message}`);
     }
   };
