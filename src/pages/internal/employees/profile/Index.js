@@ -72,18 +72,25 @@ const Profile = () => {
     <>
       <div className="profile-container">
         <div className="body overflow-auto">
-          <div className="col-auto photo-name-container mb-3">
-            <img
-              src={user?.profile ? placeholder : placeholder}
-              className="profile-picture"
-            />
-            <span className="col-auto user-fullname">{user?.fullName}</span>
-            <span className="col" aria-label="gap-filler" />
-            <button className="btn btn-dark" onClick={showUpdateProfileModal}>
-              Update Profile
-            </button>
+          <div className="row m-0 p-0 align-items-center gap-3 mb-3">
+            <div className="col-12 col-lg-auto photo-name-container row m-0 p-0 ">
+              <span className="col-auto ">
+                <img
+                  src={user?.profile ? placeholder : placeholder}
+                  className="profile-picture"
+                />
+              </span>
+              <span className="col-12 col-md-auto user-fullname ">
+                {user?.fullName}
+              </span>
+            </div>
+            <span className="col-12 col-lg d-flex justify-content-end ">
+              <button className="btn btn-dark" onClick={showUpdateProfileModal}>
+                Update Profile
+              </button>
+            </span>
           </div>
-          <div className="col vstack">
+          <div className="col vstack m-0 p-0">
             <span className="form-label mb-3 fs-5">About</span>
             <div className="pill-details">
               <span className="pill-label">Email</span>
@@ -96,13 +103,13 @@ const Profile = () => {
             <div className="pill-details">
               <span className="pill-label col-auto">Resume/CV</span>
               <span className="col-12 row align-items-center m-0 p-0">
-                <span className="col-12 m-0 p-0 d-flex align-items-center justify-align-content-around">
-                  <span className="col  ">
+                <span className="col-12 m-0 p-0 row align-items-center justify-align-content-around">
+                  <span className="col">
                     {user?.files?.resume?.name || "Upload one?"}
                   </span>
-                  <span className="col-auto">
+                  <span className="col-12 col-md-auto d-flex justify-content-end">
                     <button
-                      className="btn btn-dark col"
+                      className="btn btn-dark col-auto"
                       onClick={handleCVDownload}
                       disabled={resumeLoad} // Disable the button while downloading
                     >

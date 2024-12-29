@@ -87,6 +87,7 @@ const Index = () => {
           <ChatList
             size={chatListSize}
             rooms={rooms}
+            setRooms={setRooms}
             loading={roomsLoading}
             selectedRoom={selectedRoom}
             setSelectedRoom={setSelectedRoom}

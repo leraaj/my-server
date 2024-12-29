@@ -1,13 +1,13 @@
 import React from "react";
 import useFetch from "../../../../hooks/useFetch";
 import CustomButton from "../../../../components/button/CustomButton";
+import { useAuthContext } from "../../../../hooks/context/useAuthContext";
 
 const Career = () => {
-  const { data: jobs, loading: jobLoading } = useFetch(
-    `${process.env.REACT_APP_API_URL}/api/jobs`
-  );
+  const { API_URL } = useAuthContext();
+  const { data: jobs, loading: jobLoading } = useFetch(`${API_URL}/api/jobs`);
   const { data: categories, loading: categoryLoading } = useFetch(
-    `${process.env.REACT_APP_API_URL}/api/categories`
+    `${API_URL}/api/categories`
   );
 
   // Group jobs by category

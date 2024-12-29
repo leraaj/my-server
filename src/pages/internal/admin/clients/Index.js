@@ -3,10 +3,16 @@ import useFetch from "../../../../hooks/useFetch";
 import CustomTable from "../../../../components/table/CustomTable";
 import CustomButton from "../../../../components/button/CustomButton";
 import ViewProfileModal from "./ViewProfileModal";
+import { useAuthContext } from "../../../../hooks/context/useAuthContext";
 
 const Clients = () => {
-  const API = `${process.env.REACT_APP_API_URL}`;
-  const { data: users, loading, refresh, error } = useFetch(`${API}/api/users`);
+  const { API_URL } = useAuthContext();
+  const {
+    data: users,
+    loading,
+    refresh,
+    error,
+  } = useFetch(`${API_URL}/api/users`);
   const [user, setUser] = useState({});
   const data = useMemo(() => {
     if (!users) return []; // Return empty array if users data is not available

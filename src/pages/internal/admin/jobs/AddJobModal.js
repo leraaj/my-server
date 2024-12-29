@@ -5,11 +5,14 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import useFetch from "../../../../hooks/useFetch";
 import { toast } from "sonner";
+import { useAuthContext } from "../../../../hooks/context/useAuthContext";
 
 const AddJobModal = ({ show, onHide, refresh }) => {
+  const { API_URL } = useAuthContext();
   const { data: categoryData, loading: categoryLoading } = useFetch(
-    `${process.env.REACT_APP_API_URL}/api/categories`
+    `${API_URL}/api/categories`
   );
+  console.log(`${API_URL}/api/categories`);
   const JobSchema = yup.object().shape({
     title: yup.string().required("Title is required"),
     category: yup.string().required("Category is required"),
@@ -70,7 +73,7 @@ const AddJobModal = ({ show, onHide, refresh }) => {
   };
   const onSubmit = async (data) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/job`, {
+      const response = await fetch(`${API_URL}/api/job`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

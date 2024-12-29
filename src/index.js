@@ -14,23 +14,23 @@ import { AuthContextProvider } from "./context/AuthContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <AuthContextProvider>
-        <Toaster
-          richColors
-          position="bottom-left"
-          toastOptions={{
-            style: {
-              position: "fixed",
-              bottom: "30px",
-              // top: "50px",
-              left: "30px",
-            },
-          }}
-        />
-        <App />
-      </AuthContextProvider>
-    </BrowserRouter>
-  </React.StrictMode>
+  // <React.StrictMode>
+  <BrowserRouter>
+    <AuthContextProvider>
+      <Toaster
+        richColors
+        position="bottom-left"
+        toastOptions={{
+          style: {
+            position: "fixed",
+            bottom: "30px",
+            // top: "50px",
+            left: "30px",
+          },
+        }}
+      />
+      <App />
+    </AuthContextProvider>
+  </BrowserRouter>
+  // </React.StrictMode>
 );

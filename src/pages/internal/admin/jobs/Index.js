@@ -4,8 +4,10 @@ import CustomTable from "../../../../components/table/CustomTable";
 import CustomButton from "../../../../components/button/CustomButton";
 import AddJobModal from "./AddJobModal";
 import ViewJobModal from "./UpdateJobModal";
+import { useAuthContext } from "../../../../hooks/context/useAuthContext";
 const Jobs = () => {
-  const API = `${process.env.REACT_APP_API_URL}/api/`;
+  const { API_URL } = useAuthContext();
+  const API = `${API_URL}/api/`;
   const [selectedJob, setSelectedJob] = useState({});
   const {
     data: jobs,

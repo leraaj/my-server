@@ -84,7 +84,7 @@ export const AuthContextProvider = ({ children }) => {
       const data = await response.json();
 
       if (response.ok) {
-        console.log("User Refreshed:", data?.user); // Log before dispatching
+        // console.log("User Refreshed:", data?.user); // Log before dispatching
         dispatch({ type: "LOGIN", payload: data?.user });
       } else {
         setError(data?.message);

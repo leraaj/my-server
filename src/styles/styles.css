@@ -310,6 +310,13 @@ input.form-control-light {
   border-left: transparent none !important;
   border-radius: 0 !important;
 }
+input.form-control::-webkit-autofill,
+input.form-control-light::-webkit-autofill {
+  -webkit-background-color: transparent !important;
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+  -webkit-box-shadow: 0 0 0px 1000px #000 inset !important;
+  border-color: #786bff !important;
+}
 input[type="file"].form-control,
 input[type="file"].form-control-light {
   border-color: #786bff !important;
@@ -350,24 +357,22 @@ select.form-select {
 textarea {
   background-color: transparent !important;
   border-radius: 0 !important;
-  border-top-color: pink !important;
-  border-left-color: pink !important;
-  border-right-color: pink !important;
-  border-bottom-color: pink !important;
-  outline-color: pink !important;
+  border-top-color: transparent !important;
+  border-left-color: transparent !important;
+  border-right-color: transparent !important;
+  border-bottom-color: #fff !important;
   box-shadow: none !important;
 }
 textarea:active,
 textarea:focus,
 textarea:hover {
-  box-shadow: none !important;
-  border-top-color: #fff !important;
-  border-left-color: #fff !important;
-  border-right-color: #fff !important;
-  border-bottom-color: #fff !important;
-  outline-color: pink !important;
   background-color: transparent !important;
   border-radius: 0 !important;
+  border-top-color: transparent !important;
+  border-left-color: transparent !important;
+  border-right-color: transparent !important;
+  border-bottom-color: #fff !important;
+  box-shadow: none !important;
 }
 .form-control-light::placeholder {
   color: #999 !important; /* Change the color to whatever you prefer */
@@ -478,7 +483,7 @@ select.form-control option:hover {
   z-index: 1;
 }
 
-.dropdown:hover .dropdown-content {
+.dropdown-content.toggled {
   display: block; /* Show dropdown on hover */
   z-index: 1001 !important;
 }

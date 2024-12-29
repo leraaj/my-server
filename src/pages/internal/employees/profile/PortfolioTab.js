@@ -3,7 +3,7 @@ import AddPhotoImage from "../../../../assets/icons/plus.svg";
 
 const PortfolioModal = ({ showImageModal, files }) => {
   return (
-    <div className="col-12 col-sm pill-details row m-0">
+    <div className="pill-details ">
       <span className="col-12 pill-label mb-2 d-flex justify-content-between">
         <div>Portfolio</div>
         <div>

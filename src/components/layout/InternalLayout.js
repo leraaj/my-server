@@ -10,6 +10,10 @@ import "./sidebar.css";
 import Sidebar from "./Sidebar";
 const InternalLayout = () => {
   const { API_URL } = useAuthContext();
+  const [dropdownToggle, setDropdownToggle] = useState(false);
+  const dropdownToggler = () => {
+    setDropdownToggle(!dropdownToggle);
+  };
   const [hasErrors, setHasErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -56,13 +60,16 @@ const InternalLayout = () => {
               {toggle ? <MenuIcon /> : <MenuOpenIcon />}
             </span>
             <div class="dropdown">
-              <button class="dropbtn dropdown-toggle  ">
+              <button class="dropbtn dropdown-toggle" onClick={dropdownToggler}>
                 {user?.fullName}
               </button>
-              <div class="dropdown-content">
+              <div class={`dropdown-content ${dropdownToggle && "toggled"}`}>
                 <button
                   className="dropdown-btn"
-                  onClick={() => navigate("/profile")}
+                  onClick={() => {
+                    dropdownToggler();
+                    navigate("/profile");
+                  }}
                   aria-label="Go to Profile">
                   Profile
                 </button>
@@ -73,7 +80,7 @@ const InternalLayout = () => {
             </div>
           </nav>
 
-          <div id="content">
+          <div id="content" onClick={() => setDropdownToggle(false)}>
             <Outlet />
           </div>
         </div>

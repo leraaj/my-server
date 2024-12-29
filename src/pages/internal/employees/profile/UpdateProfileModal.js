@@ -76,15 +76,15 @@ const Index = ({ show, onHide }) => {
         onSubmit={handleSubmit}>
         <div className="profile-container">
           <div className="body overflow-auto ">
-            {/* <div className="col-auto photo-name-container mb-3">
+            <div className="col-auto photo-name-container mb-3">
               <img
                 src={user?.profile ? placeholder : placeholder}
                 className="profile-picture"
               />
               <span className="col" aria-label="gap-filler" />
-            </div> */}
+            </div>
             <div className="col vstack">
-              {/* <span className="form-label mb-3 fs-5">About</span>
+              <span className="form-label mb-3 fs-5">About</span>
               <div className="pill-details ">
                 <span className="pill-label">Full Name</span>
                 <span>
@@ -114,7 +114,7 @@ const Index = ({ show, onHide }) => {
                     value={user?.contact}
                   />
                 </span>
-              </div> */}
+              </div>
               <div className=" pill-details ">
                 <span className="pill-label col-auto">Resume/CV</span>
                 <span className="d-flex align-items-center gap-2">
@@ -129,13 +129,11 @@ const Index = ({ show, onHide }) => {
                   </span>
                 </span>
               </div>
-              {/* <div className="col-12 row mx-0 p-0 gap-3 ">
-                <SkillsTab skills={user?.skills} />
-                <PortfolioTab
-                  showImageModal={showImageModal}
-                  files={user?.portfolio}
-                />
-              </div> */}
+              <SkillsTab skills={user?.skills} />
+              <PortfolioTab
+                showImageModal={showImageModal}
+                files={user?.portfolio}
+              />
             </div>
           </div>
         </div>

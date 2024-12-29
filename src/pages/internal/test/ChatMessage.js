@@ -72,13 +72,38 @@ const ChatMessage = ({ selectedRoom, back, socket, fetchRooms }) => {
       });
 
       if (response.ok) {
+        // TESTING - START
+        const messageData = {
+          sender: {
+            _id: user?._id,
+            fullName: user?.fullName,
+            position: user?.position,
+          },
+          collaborator: {
+            _id: selectedRoom?._id,
+          },
+          message: [
+            {
+              type: "text",
+              content: message,
+              timestamp: new Date().toISOString(),
+            },
+          ],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        setCloneMessages((prev) => [...prev, messageData]);
+
+        // TESTING - END
         await socket.emit("send_message", {
           room: selectedRoom?._id,
           title: selectedRoom?.title,
-          message: message,
+          messageData: messageData,
+          roomData: selectedRoom,
         });
-        fetchRooms();
-        fetchMessages();
+
+        // fetchRooms(); //comment the previous
+        // fetchMessages(); //comment the previous
         if (chatContainerRef.current) {
           chatContainerRef.current.scrollTop =
             chatContainerRef.current.scrollHeight; // Scroll to bottom on messages update
@@ -96,6 +121,7 @@ const ChatMessage = ({ selectedRoom, back, socket, fetchRooms }) => {
   };
   const handleFileChange = (event) => {
     const files = Array.from(event.target.files);
+    handleSendingFiles(files);
     if (files.length > 0) {
       // Create object URLs for image files
       const filePaths = files.map((file) => ({
@@ -113,6 +139,7 @@ const ChatMessage = ({ selectedRoom, back, socket, fetchRooms }) => {
       const sortedMessages = [...messages].sort(
         (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
       );
+      console.log(sortedMessages.length > 0 ? sortedMessages : "");
       setCloneMessages(sortedMessages.slice(-limit)); // Avoid direct mutation
     }
   }, [messages, limit]);
@@ -138,15 +165,13 @@ const ChatMessage = ({ selectedRoom, back, socket, fetchRooms }) => {
   };
   useEffect(() => {
     socket.on("receive_message", (data) => {
-      console.log("Someone sent a message");
-      fetchRooms();
-      fetchMessages(); // Update messages after receiving
+      if (user?._id !== data.message.sender._id) {
+        setCloneMessages((prev) => [...prev, data.message]);
+      }
+      // fetchRooms(); //comment previous
+      // fetchMessages(); // comment previous
     });
-
-    return () => {
-      socket.off("receive_message"); // Clean up the listener when the component unmounts
-    };
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -155,6 +180,39 @@ const ChatMessage = ({ selectedRoom, back, socket, fetchRooms }) => {
     }
   }, [cloneMessages]);
 
+  const handleSendingFiles = async (files) => {
+    const formData = new FormData();
+    // Create object URLs for image files and append to FormData
+    const filePaths = files.map((file) => {
+      formData.append("files", file); // Append each file to FormData
+      return {
+        file,
+        src: URL.createObjectURL(file), // Create a Blob URL for preview
+      };
+    });
+
+    // Log the file paths for debugging
+    // formData.append("name", user?.fullName);
+    formData.append("collaboratorId", selectedRoom?._id);
+    formData.append("userId", user?._id);
+    console.log(JSON.stringify(formData, null, 2));
+    // console.log("File Paths:", JSON.stringify(filePaths, null, 2));
+    try {
+      const response = await fetch(`${API_URL}/api/upload-files`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Files uploaded successfully:", data);
+      } else {
+        console.error("Error uploading files:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error during file upload:", error);
+    }
+  };
   return (
     <div className={`chatMessage col col-sm col-md col-lg ${selectedRoom}`}>
       {!selectedRoom?._id ? (
@@ -247,7 +305,14 @@ const ChatMessage = ({ selectedRoom, back, socket, fetchRooms }) => {
                     onClick={handleFilesUploadClick}>
                     <img src={Plus} className="icon" height={15} />
                   </button>
-                  {console.log(selectedFiles)}
+                  {/* {selectedFiles.length > 0 && (
+                    <button
+                      className="btn-send"
+                      onClick={handleSendingFiles}
+                      disabled={messagesLoading}>
+                      <img src={SendIcon} className="icon" alt="Send" /> Files
+                    </button>
+                  )} */}
                   {selectedFiles.map((item, index) => (
                     <span
                       key={index}
