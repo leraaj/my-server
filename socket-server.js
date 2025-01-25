@@ -1,5 +1,7 @@
 // Import the necessary modules
 const { Server } = require("socket.io");
+const ChatModel = require("./model/chatModel");
+const CollaboratorModel = require("./model/collaboratorModel");
 
 // Function to initialize the Socket.IO server
 const initializeSocketServer = (server) => {
@@ -41,7 +43,7 @@ const initializeSocketServer = (server) => {
       console.log(`User with ID: ${socket.id} joined room: ${room}`);
     });
 
-    socket.on("send_message", (data) => {
+    socket.on("send_message", async (data) => {
       // socket.to(data?.room).emit("receive_message"); //comment the previous
       console.log("============================");
       console.log(
@@ -52,18 +54,68 @@ const initializeSocketServer = (server) => {
         "Message: " + JSON.stringify(data.messageData.message[0].content)
       );
       console.log("============================");
-      socket
-        .to(data.room)
-        .emit("receive_message", {
-          message: data.messageData,
-          room: data.roomData,
-        });
-      io.emit("refresh_chatlist");
+      io.emit("receive_message", {
+        message: data.messageData,
+        room: data.roomData,
+      });
+      const collaborators = await CollaboratorModel.find({
+        title: data.title,
+      })
+        .populate("users", "_id fullName")
+        .populate("job", "_id title details")
+        .select("_id job users client title status createdAt updatedAt");
+      const chatPromises = collaborators.map(async (collaborator) => {
+        const latestChat = await ChatModel.findOne({
+          collaborator: collaborator._id,
+        })
+          .sort({ "message.timestamp": -1 })
+          .populate("sender", "_id fullName")
+          .select("message.timestamp");
+        const lastChat = await ChatModel.findOne({
+          collaborator: collaborator._id,
+        })
+          .sort({ "message.timestamp": -1 })
+          .populate("sender", "_id fullName")
+          .select("message");
+        return {
+          collaborator,
+          latestChat: latestChat ? latestChat.message[0] : "None",
+          lastChat: lastChat,
+        };
+      });
+      const updateChats = await Promise.all(chatPromises);
+      io.emit("update_list", { newRoom: updateChats });
     });
 
-    socket.on("new_collaborator", (data) => {
-      console.log(data.message);
-      io.emit("refresh_chatlist");
+    socket.on("new_collaborator", async (data) => {
+      console.log(data.collaborator_title);
+      const collaborators = await CollaboratorModel.find({
+        title: data.collaborator_title,
+      })
+        .populate("users", "_id fullName")
+        .populate("job", "_id title details")
+        .select("_id job users client title status createdAt updatedAt");
+      const chatPromises = collaborators.map(async (collaborator) => {
+        const latestChat = await ChatModel.findOne({
+          collaborator: collaborator._id,
+        })
+          .sort({ "message.timestamp": -1 })
+          .populate("sender", "_id fullName")
+          .select("message.timestamp");
+        const lastChat = await ChatModel.findOne({
+          collaborator: collaborator._id,
+        })
+          .sort({ "message.timestamp": -1 })
+          .populate("sender", "_id fullName")
+          .select("message");
+        return {
+          collaborator,
+          latestChat: latestChat ? latestChat.message[0] : null,
+          lastChat: lastChat,
+        };
+      });
+      const chats = await Promise.all(chatPromises);
+      io.emit("new_groupchat", { newRoom: chats });
     });
     socket.on("error", () => {
       console.log("Socket Error");
