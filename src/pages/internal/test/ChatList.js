@@ -21,57 +21,111 @@ const ChatList = ({
   const joinRoom = (data) => {
     setSelectedRoom(data);
   };
-  // useEffect(() => {
-  //   socket.on("receive_message", (data) => {
-  //     fetchRooms(); // Update messages after receiving
-  //     // update array rooms latestChat and lastChat data when new message arrives
-  //     console.log("Message:");
-  //     console.log(JSON.stringify(data.messageData));
-  //     console.log(JSON.stringify(data.roomData));
-  //     // io.emit("refresh_chatlist");
-  //   });
-  // }, [socket]);
-  useEffect(() => {
-    socket.on("receive_message", (data) => {
-      const myRoom = data.room;
-      const myMessage = data.message;
-      setRooms((prevRooms) =>
-        prevRooms.map((room) => {
-          if (room._id === myRoom._id) {
-            return {
-              ...room,
-              latestChat: { timestamp: myMessage.updatedAt },
-              lastChat: {
-                sender: {
-                  _id: myMessage.sender._id,
-                  fullName: myMessage.sender.fullName,
-                },
-                message: [
-                  {
-                    content: myMessage.message[0].content,
-                    timestamp: myMessage.updatedAt,
-                  },
-                ],
-              },
-            };
-          }
-          return room; // Keep other rooms unchanged
-        })
-      );
-    });
-  }, [socket]);
-  // useEffect(() => {
-  //   const refreshChatlist = "Chat list refreshed";
-  //   // Listen for the refresh_chatlist event
-  //   socket.on("refresh_chatlist", () => {
-  //     fetchRooms(); // Update messages after receiving
-  //   });
 
-  //   // Cleanup the listener on component unmount
-  //   return () => {
-  //     socket.off("refresh_chatlist");
-  //   };
-  // }, []);
+  // Update Chat list by adding new group
+  useEffect(() => {
+    const handleNewGroupChat = (data) => {
+      const collaborator = data.newRoom[0].collaborator;
+      const lastChat = data.newRoom[0].lastChat;
+      const latestChat = data.newRoom[0].latestChat;
+      const addRoom = {
+        _id: collaborator._id,
+        title: collaborator.title,
+        client: collaborator.client,
+        job: collaborator.job,
+        users: collaborator.users,
+        createdAt: collaborator.createdAt,
+        updatedAt: collaborator.createdAt,
+        latestChat: {
+          timestamp: latestChat.timestamp,
+        },
+        lastChat: {
+          _id: lastChat._id,
+          sender: {
+            _id: lastChat.sender._id,
+            fullName: lastChat.sender.fullName,
+          },
+          message: [
+            {
+              type: lastChat.message[0].type,
+              content: lastChat.message[0].content,
+              _id: lastChat.message[0]._id,
+              timestamp: lastChat.message[0].timestamp,
+            },
+          ],
+        },
+        timestamp: new Date().toISOString(),
+      };
+      setRooms((prev) => {
+        const updatedRooms = [addRoom, ...prev];
+        return updatedRooms.sort(
+          (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+        );
+      });
+    };
+    socket.on("new_groupchat", handleNewGroupChat);
+
+    // Cleanup listener on component unmount or socket change
+    return () => {
+      socket.off("new_groupchat", handleNewGroupChat);
+    };
+  }, [socket, setRooms]);
+  // Update Chat list by recent update of sent messages
+
+  useEffect(() => {
+    const handleUpdateList = (data) => {
+      const collaborator = data.newRoom[0].collaborator;
+      const lastChat = data.newRoom[0].lastChat;
+      const latestChat = data.newRoom[0].latestChat;
+
+      const updatedRoom = {
+        _id: collaborator._id,
+        title: collaborator.title,
+        client: collaborator.client,
+        job: collaborator.job,
+        users: collaborator.users,
+        createdAt: collaborator.createdAt,
+        updatedAt: collaborator.createdAt,
+        latestChat: {
+          timestamp: latestChat.timestamp,
+        },
+        lastChat: {
+          _id: lastChat._id,
+          sender: {
+            _id: lastChat.sender._id,
+            fullName: lastChat.sender.fullName,
+          },
+          message: [
+            {
+              type: lastChat.message[0].type,
+              content: lastChat.message[0].content,
+              _id: lastChat.message[0]._id,
+              timestamp: lastChat.message[0].timestamp,
+            },
+          ],
+        },
+        timestamp: new Date().toISOString(),
+      };
+
+      // Update rooms and sort by the `lastChat.timestamp` or `latestChat.timestamp`
+      const updatedRooms = rooms.map((room) => {
+        if (room._id === collaborator._id) {
+          return { ...room, ...updatedRoom };
+        }
+        return room;
+      });
+      const sortedRooms = updatedRooms.sort((a, b) => {
+        const timestampA = a.lastChat?.timestamp || a.latestChat?.timestamp;
+        const timestampB = b.lastChat?.timestamp || b.latestChat?.timestamp;
+        return new Date(timestampB) - new Date(timestampA);
+      });
+      setRooms(sortedRooms);
+    };
+    socket.on("update_list", handleUpdateList);
+    return () => {
+      socket.off("update_list", handleUpdateList);
+    };
+  }, [socket, rooms, setRooms]);
 
   return (
     <>
@@ -87,7 +141,7 @@ const ChatList = ({
           </span>
         </div>
         <div className="body">
-          {(loading && <Loader />) ||
+          {(loading && <Loader />) || rooms.length > 0 ? (
             rooms?.map((room, index) => {
               const { date, formattedTime } = dateTimeFormatter(
                 room?.latestChat?.timestamp || room?.createdAt
@@ -110,7 +164,10 @@ const ChatList = ({
                   </span>
                 </div>
               );
-            })}
+            })
+          ) : (
+            <p className="text-center">Start creating groups</p>
+          )}
         </div>
         <div className="footer"></div>
       </div>

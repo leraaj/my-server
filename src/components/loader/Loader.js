@@ -5,7 +5,7 @@ const Loader = () => {
     <div
       className="d-flex justify-content-center align-items-center"
       style={{ height: "100%", width: "100%" }}>
-      <div class="spinner-grow spinner-grow-sm " />
+      <div class="spinner-grow " />
     </div>
   );
 };

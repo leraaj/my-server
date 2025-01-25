@@ -20,12 +20,6 @@ const Index = () => {
   const { chatListSize, renderChatlist, renderChatconversation } =
     useChatLayout(selectedRoom);
   const [dimensions, chatContainerRef] = useDimensions();
-  // SOCKET
-  const dynamicJoinRoom = (data) => {
-    if (data) {
-      setSelectedRoom(data);
-    }
-  };
 
   // This useEffect listens for changes to selectedRoom
   useEffect(() => {
@@ -53,6 +47,7 @@ const Index = () => {
       if (response.ok) {
         const data = await response.json();
         setRooms(data);
+        console.log(data);
         // data.length > 0 && dynamicJoinRoom(data[0]);
       }
     } catch (error) {
@@ -100,16 +95,18 @@ const Index = () => {
         {renderChatconversation && (
           <ChatMessage
             selectedRoom={selectedRoom}
+            setRooms={setRooms}
             back={goBack}
             socket={socket}
+            io={io}
             fetchRooms={fetchRooms}
           />
         )}
         <AddCollabModal
           show={addCollabModal}
           onHide={hideAddCollabModal}
-          refresh={fetchRooms}
           socket={socket}
+          io={io}
         />
       </div>
     </>

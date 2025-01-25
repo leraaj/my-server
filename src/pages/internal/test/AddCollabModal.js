@@ -4,7 +4,7 @@ import { useAuthContext } from "../../../hooks/context/useAuthContext";
 import useFetch from "../../../hooks/useFetch";
 import { toast } from "sonner";
 
-const AddGroupModal = ({ show, onHide, refresh, socket }) => {
+const AddGroupModal = ({ show, onHide, socket, io }) => {
   const { user, API_URL } = useAuthContext();
   const COLLABORATION_API = `${API_URL}/api/collaborator`;
   const client = user?._id;
@@ -40,7 +40,6 @@ const AddGroupModal = ({ show, onHide, refresh, socket }) => {
     : [];
 
   const onClose = () => {
-    refresh();
     onHide();
     reset();
   };
@@ -81,7 +80,10 @@ const AddGroupModal = ({ show, onHide, refresh, socket }) => {
         return toast.warning(error.message);
       }
       onClose();
-      socket.emit("new_collaborator", { message: "Adding new collaborator" });
+      socket.emit("new_collaborator", {
+        message: "Adding new collaborator",
+        collaborator_title: title,
+      });
     } catch (error) {
       console.error(error);
     }

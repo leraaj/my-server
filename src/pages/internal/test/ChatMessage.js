@@ -16,6 +16,12 @@ const ChatMessage = ({ selectedRoom, back, socket, fetchRooms }) => {
   const [messages, setMessages] = useState([]);
   const [messagesError, setMessagesError] = useState({});
   const [messagesLoading, setMessagesLoading] = useState(false);
+  const [tempCount, setTempCount] = useState(0);
+  const [tempId, setTempId] = useState(`${user?._id}${tempCount}`);
+  const handleTempId = () => {
+    setTempCount((prev) => prev + 1);
+    setTempId(`${user?._id}${tempCount}`);
+  };
   const handleKeyboardTyping = (event) => {
     setMessage(event.target.value);
   };
@@ -74,6 +80,7 @@ const ChatMessage = ({ selectedRoom, back, socket, fetchRooms }) => {
       if (response.ok) {
         // TESTING - START
         const messageData = {
+          _id: `${tempId}`,
           sender: {
             _id: user?._id,
             fullName: user?.fullName,
@@ -93,7 +100,7 @@ const ChatMessage = ({ selectedRoom, back, socket, fetchRooms }) => {
           updatedAt: new Date().toISOString(),
         };
         setCloneMessages((prev) => [...prev, messageData]);
-
+        handleTempId();
         // TESTING - END
         await socket.emit("send_message", {
           room: selectedRoom?._id,
@@ -164,14 +171,32 @@ const ChatMessage = ({ selectedRoom, back, socket, fetchRooms }) => {
     setSelectedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
   useEffect(() => {
-    socket.on("receive_message", (data) => {
-      if (user?._id !== data.message.sender._id) {
-        setCloneMessages((prev) => [...prev, data.message]);
+    // Add the event listener for receiving messages
+    const handleMessage = (data) => {
+      const sameRoom = data?.room?._id === selectedRoom?._id;
+
+      if (user?._id !== data?.message?.sender?._id && sameRoom) {
+        console.log(
+          `Room: ${data?.room?._id}\nSelected Room:${selectedRoom?._id}`
+        );
+        setCloneMessages((prev) => {
+          console.log("Before update:", prev);
+          console.log("New message:", data.message);
+          return [...prev, data.message];
+        });
+
+        console.log("Message received");
       }
-      // fetchRooms(); //comment previous
-      // fetchMessages(); // comment previous
-    });
-  }, [socket]);
+    };
+
+    socket.on("receive_message", handleMessage);
+
+    // Cleanup the event listener when the component unmounts or socket changes
+    return () => {
+      socket.off("receive_message", handleMessage);
+    };
+  }, [socket, user, selectedRoom]);
+  // Make sure the effect depends on socket and user
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -215,7 +240,9 @@ const ChatMessage = ({ selectedRoom, back, socket, fetchRooms }) => {
   };
   return (
     <div className={`chatMessage col col-sm col-md col-lg ${selectedRoom}`}>
-      {!selectedRoom?._id ? (
+      {messagesLoading ? (
+        <Loader />
+      ) : !selectedRoom?._id ? (
         <p
           style={{
             height: "100%",
