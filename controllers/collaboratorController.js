@@ -160,19 +160,6 @@ const addCollaborator = async (req, res) => {
   }
 };
 
-// // Construct the message object using content from the request body
-// const message = {
-//   type: "text", // Use the type from request or default to "text"
-//   content: `${title} has been created`, // Use the content from request
-// };
-
-// // Create a new chat instance
-// const newChat = new ChatModel({
-//   sender: senderId,
-//   collaborator: collaboratorId,
-//   message: [message], // Custom updatedAt date (if needed)
-// });
-
 // Function to update an existing collaborator
 const updateCollaborator = async (req, res) => {
   try {

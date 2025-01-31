@@ -6,6 +6,7 @@ const path = require("path");
 const { auth } = require("../GoogleDrive_API_KEY/googleAuth");
 const UserModel = require("../model/userModel");
 const CollaboratorModel = require("../model/collaboratorModel");
+const ChatModel = require("../model/chatModel");
 
 const createFolder = async (folderName, parentId) => {
   const service = google.drive({ version: "v3", auth });
@@ -39,8 +40,8 @@ const createFolder = async (folderName, parentId) => {
     await service.permissions.create({
       fileId: folderId,
       requestBody: {
-        role: "writer",
-        type: "user",
+        role: "reader",
+        type: "anyone",
         emailAddress: process.env.COMPANY_EMAIL,
       },
     });
@@ -227,29 +228,98 @@ const getFileExtension = (mimeType) => {
   return mimeTypes[mimeType] || "bin"; // Default to .bin if MIME type not recognized
 };
 const uploadChatFiles = async (req, res) => {
+  const service = google.drive({ version: "v3", auth });
   const { userId, collaboratorId } = req.body;
-  const uploadedFiles = req.files; // This contains the uploaded files
+  const uploadedFiles = req.files; // Array of uploaded files
 
-  const user = await UserModel.findById(userId);
-  const collaborator = await CollaboratorModel.findById(collaboratorId);
   try {
+    const user = await UserModel.findById(userId);
+    const collaborator = await CollaboratorModel.findById(collaboratorId);
+    if (!user || !collaborator)
+      throw new Error("User or collaborator not found");
+
+    // Create or get the chat folder for storing files
     const directory = await createChatsFolder(collaborator?.title);
-    console.log(`Directory:\n${directory}\nFiles:\n${req.files}`);
-    // Create or Get a file name duper filing logic for such duped files before proceeding
-    // to step (1)
+    console.log(`Directory: ${directory}\nFiles:`, uploadedFiles);
 
-    // Step (1)
-    // * Iterate uploaded files for duped files
-    // * If file name and file type is the same, add a nth-number to associate that the file name and type
-    //   has already been repeated, but still upload the file
+    // Step (1) - Handle Duplicate File Naming
+    const existingFiles = await service.files.list({
+      q: `'${directory}' in parents and trashed = false`,
+      fields: "files(id, name, mimeType)",
+    });
+    const existingFileNames = existingFiles.data.files.map((file) => file.name);
 
-    // Step (2)
-    // if everything is ok, upload the data first on google, and upon
-    // successfull upload then upload the google data inside the chatModel
+    const uploadedFileData = [];
 
-    res.status(200).send(uploadedFiles);
+    for (const file of uploadedFiles) {
+      let uniqueName = file.originalname;
+      let fileCount = 1;
+
+      // Ensure unique file names within the directory
+      while (existingFileNames.includes(uniqueName)) {
+        const nameParts = file.originalname.split(".");
+        const extension = nameParts.pop();
+        const baseName = nameParts.join(".");
+        uniqueName = `${baseName} (${fileCount}).${extension}`;
+        fileCount++;
+      }
+      existingFileNames.push(uniqueName);
+
+      // Step (2) - Upload File to Google Drive
+      const requestBody = {
+        name: uniqueName,
+        parents: [directory],
+      };
+      const media = {
+        mimeType: file.mimetype,
+        body: fs.createReadStream(file.path),
+      };
+
+      const uploadedFile = await service.files.create({
+        requestBody,
+        media,
+        fields:
+          "id, name, mimeType, webViewLink, webContentLink, thumbnailLink, size, createdTime",
+      });
+
+      // Step (3) - Set File Permissions to Public
+      await service.permissions.create({
+        fileId: uploadedFile.data.id,
+        requestBody: {
+          role: "reader",
+          type: "anyone",
+        },
+      });
+
+      // Step (4) - Store Direct Image URL
+      uploadedFileData.push({
+        type: "file",
+        content: uploadedFile.data.id,
+        // Direct image URL
+        timestamp: new Date(),
+      });
+    }
+
+    // Update the chat model with the uploaded files
+    await ChatModel.create({
+      sender: userId,
+      collaborator: collaboratorId,
+      message: uploadedFileData,
+      createdAt: new Date(),
+    });
+
+    res.status(200).send({
+      success: true,
+      message: "Files uploaded and chat updated successfully",
+      files: uploadedFileData,
+    });
   } catch (err) {
-    res.status(500).send("Error uploading files");
+    console.error("Error uploading files:", err);
+    res.status(500).send({
+      success: false,
+      message: "An error occurred while uploading files",
+      error: err.message,
+    });
   }
 };
 
