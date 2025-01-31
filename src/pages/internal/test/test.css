@@ -196,7 +196,7 @@
 .message-container .msg-receiver {
   display: inline-block;
   width: auto;
-  max-width: 85%;
+  max-width: 75%;
   box-sizing: border-box; /* Ensure padding and border are included in width */
 }
 

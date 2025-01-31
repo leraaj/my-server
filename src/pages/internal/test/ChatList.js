@@ -77,7 +77,6 @@ const ChatList = ({
       const collaborator = data.newRoom[0].collaborator;
       const lastChat = data.newRoom[0].lastChat;
       const latestChat = data.newRoom[0].latestChat;
-
       const updatedRoom = {
         _id: collaborator._id,
         title: collaborator.title,
@@ -106,7 +105,6 @@ const ChatList = ({
         },
         timestamp: new Date().toISOString(),
       };
-
       // Update rooms and sort by the `lastChat.timestamp` or `latestChat.timestamp`
       const updatedRooms = rooms.map((room) => {
         if (room._id === collaborator._id) {
@@ -141,7 +139,9 @@ const ChatList = ({
           </span>
         </div>
         <div className="body">
-          {(loading && <Loader />) || rooms.length > 0 ? (
+          {loading ? (
+            <Loader />
+          ) : rooms.length > 0 ? (
             rooms?.map((room, index) => {
               const { date, formattedTime } = dateTimeFormatter(
                 room?.latestChat?.timestamp || room?.createdAt
@@ -157,7 +157,11 @@ const ChatList = ({
                   <span className="room-latest-message ">
                     {user?._id === room?.lastChat?.sender?._id
                       ? `You: ${room?.lastChat?.message[0]?.content}`
-                      : `${room?.lastChat?.sender?.fullName}: ${room?.lastChat?.message[0]?.content}`}
+                      : `${room?.lastChat?.sender?.fullName}: ${
+                          room?.lastChat?.message[0]?.type === "file"
+                            ? "Sent and attachment"
+                            : room?.lastChat?.message[0]?.content
+                        }`}
                   </span>
                   <span className="room-latest-time">
                     {`${date} - ${formattedTime}`}

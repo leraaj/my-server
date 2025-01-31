@@ -170,8 +170,8 @@ const ChatMessage = ({ selectedRoom, back, socket, fetchRooms }) => {
   const handleDeleteFile = (index) => {
     setSelectedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
+  // Live update of messages
   useEffect(() => {
-    // Add the event listener for receiving messages
     const handleMessage = (data) => {
       const sameRoom = data?.room?._id === selectedRoom?._id;
 
@@ -184,20 +184,16 @@ const ChatMessage = ({ selectedRoom, back, socket, fetchRooms }) => {
           console.log("New message:", data.message);
           return [...prev, data.message];
         });
-
         console.log("Message received");
       }
     };
-
     socket.on("receive_message", handleMessage);
-
-    // Cleanup the event listener when the component unmounts or socket changes
     return () => {
       socket.off("receive_message", handleMessage);
     };
   }, [socket, user, selectedRoom]);
-  // Make sure the effect depends on socket and user
 
+  // scroll to bottom when new chat appear
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =

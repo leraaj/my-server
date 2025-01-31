@@ -1,25 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 import dateTimeFormatter from "../../../hooks/dateTimeFormatter";
 import { useAuthContext } from "../../../hooks/context/useAuthContext";
+import Loader from "../../../components/loader/Loader";
 
 const Message = ({ msg, index, popoverId, setPopoverid }) => {
+  const [loadingStates, setLoadingStates] = useState({});
   const { user, popupFunction } = useAuthContext();
 
-  // Safely check if the message object and its properties exist
-  if (!msg || !msg.sender) return null; // Return null if msg or msg.sender is undefined
+  if (!msg || !msg.sender) return null;
 
-  const isSender = (senderId) => senderId === user?._id; // Check based on user ID
+  const isSender = (senderId) => senderId === user?._id;
   const { date, formattedTime } = dateTimeFormatter(msg.createdAt || null);
-  const content = msg?.message?.[0]?.content || ""; // Default to empty string if content is undefined
+  const content = msg?.message?.[0]?.content || "";
+  const type = msg?.message?.[0]?.type || ";";
+
+  const handleImageLoad = (fileId) => {
+    setLoadingStates((prev) => ({ ...prev, [fileId]: false }));
+  };
+
+  const handleImageError = (fileId) => {
+    setLoadingStates((prev) => ({ ...prev, [fileId]: false }));
+  };
 
   return (
-    <div key={index} className="message-container  ">
+    <div key={index} className="message-container">
       {!isSender(msg.sender._id) && (
         <div
           className="msg-name text-secondary pb-1"
           style={{ fontSize: "0.8rem" }}>
           {msg.sender.fullName}
-        </div> // Display sender name if not the current user
+        </div>
       )}
       <div
         id={msg._id}
@@ -39,18 +49,40 @@ const Message = ({ msg, index, popoverId, setPopoverid }) => {
         onMouseEnter={() => setPopoverid(msg._id)}
         onMouseLeave={() => setPopoverid("")}>
         <div className="msg-content text-break" style={{ fontSize: "1rem" }}>
-          {content}
+          {type === "text" ? content : ""}
+        </div>
+        <div className="msg-content row m-0 p-0  gap-1">
+          {type === "file" &&
+            msg?.message?.map((file) => {
+              const fileId = file?.content;
+              return (
+                <>
+                  {loadingStates[fileId] !== false && <Loader />}
+                  <div style={{ objectFit: "cover" }}>
+                    <img
+                      src={`https://drive.google.com/thumbnail?id=${fileId}&sz=1000`}
+                      // For better clarity
+                      // https://drive.google.com/thumbnail?id=${fileId}&sz=w2000&format=webp
+                      alt={fileId}
+                      style={{
+                        width: "200px",
+                        cursor: "pointer",
+                        display:
+                          loadingStates[fileId] === false ? "block" : "none",
+                      }}
+                      onLoad={() => handleImageLoad(fileId)}
+                      onError={() => handleImageError(fileId)}
+                    />
+                  </div>
+                </>
+              );
+            })}
         </div>
         <div
           className={`popover-container position-absolute mx-1 ${
-            isSender(msg.sender._id)
-              ? `bottom-0 end-100 `
-              : `bottom-0 start-100 `
+            isSender(msg.sender._id) ? `bottom-0 end-100` : `bottom-0 start-100`
           }`}>
-          <div
-            className={`msg-date-time 
-          
-            ${popupFunction(popoverId, msg._id)}`}>
+          <div className={`msg-date-time ${popupFunction(popoverId, msg._id)}`}>
             <span>{date}</span>
             <span>{formattedTime}</span>
           </div>
