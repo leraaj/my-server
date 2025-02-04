@@ -328,14 +328,6 @@ const ChatMessage = ({ selectedRoom, back, socket, fetchRooms }) => {
                     onClick={handleFilesUploadClick}>
                     <img src={Plus} className="icon" height={15} />
                   </button>
-                  {/* {selectedFiles.length > 0 && (
-                    <button
-                      className="btn-send"
-                      onClick={handleSendingFiles}
-                      disabled={messagesLoading}>
-                      <img src={SendIcon} className="icon" alt="Send" /> Files
-                    </button>
-                  )} */}
                   {selectedFiles.map((item, index) => (
                     <span
                       key={index}
