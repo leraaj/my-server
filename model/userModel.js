@@ -57,15 +57,21 @@ const userSchema = new mongoose.Schema(
         id: { type: String },
         name: { type: String },
         mimeType: { type: String },
+        fileType: { type: String }, // Added to categorize the file type
+        filename: { type: String }, // Added filename for the resume file
+        extension: { type: String }, // Added file extension
       },
       portfolio: [
         {
           id: { type: String },
           name: { type: String },
           mimeType: { type: String },
+          fileType: { type: String }, // Added to categorize the file type
+          filename: { type: String }, // Added filename for portfolio files
+          extension: { type: String }, // Added file extension
         },
       ],
-      // Add portfolio object that can have 2 or more files
+      // Portfolio can contain multiple files with similar metadata
     },
   },
   {

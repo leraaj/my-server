@@ -98,15 +98,18 @@ const uploadResume = async (req, res) => {
   const user = await UserModel.findById(id);
   const file = req.file;
   const resume_name = `cvresume_${user?.fullName}`;
+
   try {
     // Create or fetch the user's folder
     const directory = await createUsersFolder(user?.fullName);
+
     // Search for an existing resume file with the same name in the folder
     const searchQuery = `name = '${resume_name}' and '${directory}' in parents and trashed = false`;
     const existingFiles = await service.files.list({
       q: searchQuery,
       fields: "files(id, name)",
     });
+
     // If the file exists, delete it
     if (existingFiles.data.files.length > 0) {
       for (const existingFile of existingFiles.data.files) {
@@ -114,6 +117,7 @@ const uploadResume = async (req, res) => {
         // console.log(`Deleted existing file: ${existingFile.name}`);
       }
     }
+
     // Upload the new resume file
     const requestBody = {
       name: resume_name,
@@ -128,8 +132,12 @@ const uploadResume = async (req, res) => {
       media,
       fields: "id, name, mimeType",
     });
-    // Handle your custom logic for updating USERS here
+
+    // Handle file category and metadata
     const uploadedResume = uploadedFile.data;
+    const fileCategory = await getFileType(uploadedResume.mimeType).category; // Use your function to get the category
+    const fileExtension = await getFileType(uploadedResume.mimeType).mimeType; // Get the extension
+
     // Update the user's resume details in the database
     const updatedUser = await UserModel.findByIdAndUpdate(
       id, // User's ID
@@ -137,7 +145,10 @@ const uploadResume = async (req, res) => {
         "files.resume": {
           id: uploadedResume.id,
           name: uploadedResume.name,
-          mimeType: await getFileExtension(uploadedResume.mimeType),
+          mimeType: uploadedResume.mimeType,
+          fileType: fileCategory, // Save the category of the file
+          filename: uploadedResume.name, // Save the filename
+          extension: fileExtension, // Store the file extension
         },
       },
       { new: true } // Return the updated user document
@@ -153,7 +164,10 @@ const uploadResume = async (req, res) => {
       file: {
         id: uploadedResume.id,
         name: uploadedResume.name,
-        mimeType: await getFileExtension(uploadedResume.mimeType),
+        mimeType: uploadedResume.mimeType,
+        fileType: fileCategory, // Return the file type (category)
+        filename: uploadedResume.name, // Return the filename
+        extension: fileExtension, // Return the file extension
       },
     });
   } catch (err) {
@@ -165,6 +179,7 @@ const uploadResume = async (req, res) => {
     });
   }
 };
+
 const downloadFile = async (req, res) => {
   const { id } = req.params;
   const service = google.drive({ version: "v3", auth });
@@ -226,6 +241,74 @@ const getFileExtension = (mimeType) => {
   };
 
   return mimeTypes[mimeType] || "bin"; // Default to .bin if MIME type not recognized
+};
+const getFileType = (mimeType) => {
+  if (!mimeType || typeof mimeType !== "string") {
+    return { category: "unknown", mimeType };
+  }
+
+  const categories = {
+    image: [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/bmp",
+      "image/webp",
+      "image/svg+xml",
+      "image/tiff",
+      "image/x-icon",
+      "image/heic",
+      "image/vnd.adobe.photoshop", // JPEG, PNG, GIF, BMP, etc.
+    ],
+    document: [
+      "application/pdf",
+      "text/plain",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // XLSX
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation", // PPTX
+      "application/vnd.oasis.opendocument.text", // ODT
+      "application/postscript",
+      "application/illustrator", // AI, EPS
+      "application/vnd.adobe.indesign-idml",
+      "application/x-indesign", // InDesign
+      "application/x-fdf",
+      "application/vnd.adobe.xdp+xml", // Adobe Forms
+    ],
+    music: [
+      "audio/mpeg",
+      "audio/wav",
+      "audio/aac",
+      "audio/flac",
+      "audio/ogg",
+      "audio/mp4",
+      "audio/x-ms-wma",
+      "audio/x-midi",
+      "audio/webm", // music/audio formats
+    ],
+    video: [
+      "video/mp4",
+      "video/x-matroska",
+      "video/x-msvideo",
+      "video/quicktime",
+      "video/webm",
+      "video/x-ms-wmv",
+      "video/x-flv",
+      "video/mpeg",
+      "video/3gpp",
+      "video/x-ms-asf", // video formats
+      "application/x-premiere-project",
+      "application/x-vegas-project", // Video editing
+    ],
+  };
+
+  for (const [category, mimeTypes] of Object.entries(categories)) {
+    if (mimeTypes.includes(mimeType)) {
+      return { category, mimeType };
+    }
+  }
+
+  return { category: "unknown", mimeType };
 };
 const uploadChatFiles = async (req, res) => {
   const service = google.drive({ version: "v3", auth });
@@ -291,11 +374,19 @@ const uploadChatFiles = async (req, res) => {
         },
       });
 
-      // Step (4) - Store Direct Image URL
+      // Step (4) - Handle file category and extension
+      const fileCategory = await getFileType(uploadedFile.data.mimeType)
+        .category; // Get the category of the file
+      const fileExtension = await getFileType(uploadedFile.data.mimeType)
+        .mimeType; // Get the file extension
+
+      // Step (5) - Store the file metadata
       uploadedFileData.push({
         type: "file",
         content: uploadedFile.data.id,
-        // Direct image URL
+        fileType: fileCategory, // Add file category (image, document, music, video)
+        filename: uniqueName, // Save the filename
+        extension: fileExtension, // Store the file extension
         timestamp: new Date(),
       });
     }

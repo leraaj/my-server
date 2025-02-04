@@ -15,7 +15,9 @@ const getChatsByCollaboratorId = async (req, res) => {
       })
       .sort({ createdAt: -1 }) // Sort chat documents by createdAt in descending order
       .populate("collaborator", "_id")
-      .select("_id sender message collaborator createdAt updatedAt");
+      .select(
+        "_id sender message collaborator filetype filename extension createdAt updatedAt"
+      );
 
     // Check and sort messages by timestamp within each chat document in ascending order
     chats.forEach((chat) => {

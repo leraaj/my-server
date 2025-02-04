@@ -15,8 +15,22 @@ const chatSchema = new mongoose.Schema(
     },
     message: [
       {
-        type: { type: String, enum: ["text", "file"], required: true }, // Updated here
-        content: { type: String, required: true }, // Ensure content is required
+        type: { type: String, enum: ["text", "file"], required: true }, // Message can be text or file
+        content: { type: String, required: true }, // Stores text or file URL
+        fileType: {
+          type: String,
+          enum: ["image", "document", "music", "video"],
+          required: function () {
+            return this.type === "file";
+          }, // Required only if it's a file
+        },
+        filename: {
+          // Required if message type is "file"
+          type: String,
+          required: function () {
+            return this.type === "file";
+          }, // Only required for file messages
+        },
         timestamp: {
           type: Date,
           default: Date.now,
