@@ -277,6 +277,7 @@ const getFileType = (mimeType) => {
     ],
     music: [
       "audio/mpeg",
+      "audio/mp3",
       "audio/wav",
       "audio/aac",
       "audio/flac",
