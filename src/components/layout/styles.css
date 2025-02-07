@@ -9,7 +9,7 @@
 #sidebar {
   background-color: var(--dark-80);
   height: 100dvh;
-  min-width: 280px;
+  min-width: 228px;
   overflow: auto;
   transition: width 0.3s ease;
 }

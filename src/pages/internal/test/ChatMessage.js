@@ -383,7 +383,7 @@ const ChatMessage = ({ selectedRoom, back, socket, fetchRooms }) => {
                     type="file"
                     ref={fileInputRef}
                     style={{ display: "none" }}
-                    accept=".doc,.docx,.xls,.xlsx,.pdf,.txt,.ppt,.pptx,image/*,video/*"
+                    accept="*"
                     multiple
                     onChange={handleFileChange}
                   />
