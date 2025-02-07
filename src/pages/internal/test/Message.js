@@ -72,22 +72,36 @@ const Message = ({ msg, index, popoverId, setPopoverid }) => {
                     return (
                       <>
                         {loadingStates[fileId] !== false && <Loader />}
-                        <img
-                          src={`https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`}
-                          className="flex-shrink rounded-4"
-                          style={{
-                            height: "120px",
-                            width: "120px",
-                            objectFit: "cover",
-                            cursor: "pointer",
-                            display:
-                              loadingStates[fileId] === false
-                                ? "block"
-                                : "none",
-                          }}
-                          onLoad={() => handleImageLoad(fileId)}
-                          onError={() => handleImageError(fileId)}
-                        />
+                        <span className="position-relative">
+                          <a
+                            className="btn btn-sm btn-primary rounded-pill z-3 position-absolute top-50 start-50 translate-middle"
+                            style={{
+                              boxShadow: `rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;`,
+                            }}
+                            href={`https://drive.google.com/uc?export=download&id=${fileId}`}>
+                            <img
+                              src={donwloadIcon}
+                              height={15}
+                              className="text-light"
+                            />
+                          </a>
+                          <img
+                            src={`https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`}
+                            className="flex-shrink rounded-4"
+                            style={{
+                              height: "120px",
+                              width: "120px",
+                              objectFit: "cover",
+                              cursor: "pointer",
+                              display:
+                                loadingStates[fileId] === false
+                                  ? "block"
+                                  : "none",
+                            }}
+                            onLoad={() => handleImageLoad(fileId)}
+                            onError={() => handleImageError(fileId)}
+                          />
+                        </span>
                       </>
                     );
                   })
@@ -105,11 +119,11 @@ const Message = ({ msg, index, popoverId, setPopoverid }) => {
                     switch (fileType) {
                       case "music":
                         return (
-                          <div className="container flex-grow-1 border border-dark rounded-3 px-3 py-2 ">
-                            <span className="d-flex justify-content-between align-items-center gap-2 mb-1 ">
+                          <div className="position-relative">
+                            <div className="container flex-grow-1 border border-dark rounded-3 px-3 py-2 ">
                               {fileName}
                               <a
-                                className="btn btn-sm btn-light rounded-pill"
+                                className="btn btn-sm btn-primary rounded-pill position-absolute top-0 start-100 translate-middle shadow-sm"
                                 href={`https://drive.google.com/uc?export=download&id=${fileId}`}>
                                 <img
                                   src={donwloadIcon}
@@ -117,39 +131,41 @@ const Message = ({ msg, index, popoverId, setPopoverid }) => {
                                   className="text-light"
                                 />
                               </a>
-                            </span>
-                            <iframe
-                              src={`https://drive.google.com/file/d/${fileId}/preview`}
-                              width="100%"
-                              height="65"
-                              allow="autoplay"
-                              style={{ backgroundColor: "transparent" }}
-                            />
+                              <iframe
+                                src={`https://drive.google.com/file/d/${fileId}/preview`}
+                                width="100%"
+                                height="65"
+                                allow="autoplay"
+                                style={{ backgroundColor: "transparent" }}
+                              />
+                            </div>
                           </div>
                         );
                         break;
                       case "video":
                         return (
-                          <div className="container flex-grow-1 border border-dark rounded-3 px-3 py-2 ">
-                            <span className="d-flex justify-content-between align-items-center gap-2 mb-1 ">
-                              {fileName}
-                              <a
-                                className="btn btn-sm btn-light rounded-pill"
-                                href={`https://drive.google.com/uc?export=download&id=${fileId}`}>
-                                <img
-                                  src={donwloadIcon}
-                                  height={15}
-                                  className="text-light"
-                                />
-                              </a>
-                            </span>
-                            <iframe
-                              src={`https://drive.google.com/file/d/${fileId}/preview`}
-                              width="100%"
-                              allow="autoplay"
-                              style={{ backgroundColor: "transparent" }}
-                            />
-                          </div>
+                          <span className="position-relative">
+                            <div className="container flex-grow-1 border border-dark rounded-3 px-3 py-2 ">
+                              <span className="d-flex justify-content-between align-items-center gap-2 mb-1 ">
+                                {fileName}
+                                <a
+                                  className="btn btn-sm btn-primary rounded-pill position-absolute top-0 start-100 translate-middle shadow-sm"
+                                  href={`https://drive.google.com/uc?export=download&id=${fileId}`}>
+                                  <img
+                                    src={donwloadIcon}
+                                    height={15}
+                                    className="text-light"
+                                  />
+                                </a>
+                              </span>
+                              <iframe
+                                src={`https://drive.google.com/file/d/${fileId}/preview`}
+                                width="100%"
+                                allow="autoplay"
+                                style={{ backgroundColor: "transparent" }}
+                              />
+                            </div>
+                          </span>
                         );
                         break;
                       case "document":
@@ -158,8 +174,9 @@ const Message = ({ msg, index, popoverId, setPopoverid }) => {
                             <span className="d-flex justify-content-evenly align-items-center gap-2">
                               {fileName || "None"}
                               <a
-                                className="btn btn-sm btn-light rounded-pill"
-                                href={`https://drive.google.com/uc?export=download&id=${fileId}`}>
+                                className="btn btn-sm btn-primary rounded-pill rounded-pill"
+                                href={`https://drive.google.com/uc?export=download&id=${fileId}`}
+                                download>
                                 <img
                                   src={donwloadIcon}
                                   height={15}

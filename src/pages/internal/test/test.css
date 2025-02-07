@@ -62,6 +62,9 @@
   z-index: 0 !important;
   gap: 1rem;
 }
+.chatMessage .header {
+  min-height: calc(var(--header-height) - 20px);
+}
 .chatList .header .action {
   display: flex;
   gap: 0.5rem;
@@ -283,7 +286,7 @@
   position: absolute;
 }
 
-.msg-date-time {
+/* .msg-date-time {
   opacity: 0;
   transition: opacity 0.2s ease-in-out;
   background-color: white;
@@ -328,7 +331,7 @@
   to {
     opacity: 0;
   }
-}
+} */
 .x-button {
   border-radius: 50% !important;
   padding-inline: 0.5rem;
