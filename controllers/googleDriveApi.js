@@ -414,6 +414,47 @@ const uploadChatFiles = async (req, res) => {
     });
   }
 };
+const getFileStatus = async (req, res) => {
+  const { id } = req.params;
+  const service = google.drive({ version: "v3", auth });
+  try {
+    // Step 1: Check if file exists and get metadata
+    const fileMetadata = await service.files.get({
+      id,
+      fields: "id, name, mimeType",
+    });
+
+    if (!fileMetadata.data) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "File not found" });
+    }
+
+    // Step 2: Attempt to fetch the file content to verify accessibility
+    await service.files.get({ id, alt: "media" });
+
+    return res
+      .status(200)
+      .json({ status: "accessible", message: "File is accessible" });
+  } catch (error) {
+    if (error.response) {
+      const { status } = error.response;
+      if (status === 403) {
+        return res
+          .status(403)
+          .json({ status: "error", message: "Permission denied" });
+      }
+      if (status === 404) {
+        return res
+          .status(404)
+          .json({ status: "error", message: "File not found" });
+      }
+    }
+    return res
+      .status(500)
+      .json({ status: "error", message: "Internal server error" });
+  }
+};
 
 module.exports = {
   createFolder,
@@ -423,6 +464,7 @@ module.exports = {
   uploadResume,
   uploadChatFiles,
   downloadFile,
+  getFileStatus,
 };
 
 // const folder_structure = {
