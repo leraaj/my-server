@@ -11,6 +11,8 @@ const ChatModel = require("../model/chatModel");
 const createFolder = async (folderName, parentId) => {
   const service = google.drive({ version: "v3", auth });
 
+  // Google drive api Problem
+
   // Check if folder already exists
   try {
     const existingFolder = await service.files.list({
