@@ -39,6 +39,7 @@ app.use(
       "http://localhost:8100", //Web~
       "http://192.168.137.1", //device
       "http://192.168.1.16:8100", //WIFI
+      "http://192.168.1.10:8100", //WIFI
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -71,6 +72,8 @@ app.use("/api", googleRoute);
 
 // Create HTTP server
 const server = http.createServer(app);
+
+// RECOMMIT
 
 // Initialize the Socket.IO server
 initializeSocketServer(server);
